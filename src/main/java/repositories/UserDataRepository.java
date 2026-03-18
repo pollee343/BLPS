@@ -1,0 +1,13 @@
+package repositories;
+
+import model.entities.UserData;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
+
+public interface UserDataRepository extends JpaRepository<UserData, Long> {
+
+    Optional<UserData> findByPhoneNumber(String phoneNumber);
+
+    Optional<UserData> findByAccountNumber(String accountNumber);
+}

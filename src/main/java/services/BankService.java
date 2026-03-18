@@ -2,9 +2,12 @@ package services;
 
 import lombok.RequiredArgsConstructor;
 import model.entities.Bank;
+import model.entities.UserData;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import repositories.BankRepository;
+import repositories.MoneyOperationRepository;
+import repositories.UserDataRepository;
 
 
 import java.math.BigDecimal;
@@ -14,9 +17,14 @@ import java.math.BigDecimal;
 public class BankService {
 
     private final BankRepository bankRepository;
+    private final UserDataRepository userDataRepository;
+
+    private final BalanceService balanceService;
+    private final PromisedPaymentService promisedPaymentService;
+
 
     @Transactional
-    public boolean processPayment(String cardNumber, String cvc, BigDecimal amount) {
+    public boolean processPayment(String cardNumber, String cvc, BigDecimal amount, Long userDataId) {
         Bank bankAccount = bankRepository.findByCardNumber(cardNumber)
                 .orElseThrow(() -> new RuntimeException("Карта не найдена"));
 
@@ -31,10 +39,18 @@ public class BankService {
         if (bankAccount.getBalance().compareTo(amount) < 0) {
             throw new RuntimeException("Недостаточно средств");
         }
+        UserData userData = userDataRepository.findById(userDataId).orElseThrow(() -> new RuntimeException("Пользователь не найден"));
 
         bankAccount.setBalance(bankAccount.getBalance().subtract(amount));
         bankRepository.save(bankAccount);
 
+        balanceService.topUp(userDataId, amount);
+
+        if (userData.getHasPromisedPayment()){
+            promisedPaymentService.processPromisedPayment(userDataId);
+        }
+
         return true;
     }
+
 }
