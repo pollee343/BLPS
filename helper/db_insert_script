@@ -26,28 +26,34 @@ INSERT INTO bank (
 );
 
 
-IINSERT INTO user_data (
-     account_number,
-     phone_number,
-     balance,
-     remaining_minutes,
-     remaining_bytes,
-     remaining_sms,
-     is_blocked,
-     user_id
- ) VALUES (
-     'ACC1000001',
-     '79161234567',
-     1200.00,
-     500,
-     10737418240, -- 10 ГБ
-     100,
-     FALSE,
-     (SELECT id
-      FROM users
-      WHERE passport_series = '1234'
-        AND passport_number = '567890')
- );
+INSERT INTO user_data (
+    account_number,
+    phone_number,
+    balance,
+    remaining_minutes,
+    remaining_bytes,
+    remaining_sms,
+    has_promised_payment,
+    promised_payment_amount,
+    promised_payment_due_date,
+    is_blocked,
+    user_id
+) VALUES (
+    'ACC1000001',
+    '79161234567',
+    1200.00,
+    500,
+    10737418240, -- 10 ГБ
+    100,
+    FALSE,
+    0,
+    NULL,
+    FALSE,
+    (SELECT id
+     FROM users
+     WHERE passport_series = '1234'
+       AND passport_number = '567890')
+);
 
 INSERT INTO money_operations (
     operation_time,
