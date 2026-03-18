@@ -2,7 +2,6 @@ package model.entities;
 
 import jakarta.persistence.*;
 import model.enams.UsageType;
-import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
 
@@ -21,7 +20,7 @@ public class ServiceUsage {
     @Column(name = "units_used")
     private Integer unitsUsed;
 
-    @Column(name = "operation_time")
+    @Column(name = "operation_time", columnDefinition = "TIMESTAMP")
     private LocalDateTime operationTime;
 
     @ManyToOne

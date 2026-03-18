@@ -3,7 +3,6 @@ package model.entities;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.annotation.Id;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -18,22 +17,22 @@ public class UserData {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "account_number", unique = true)
+    @Column(name = "account_number", unique = true, length = 255, nullable = false)
     private String accountNumber;
 
-    @Column(name = "phone_number", unique = true)
+    @Column(name = "phone_number", unique = true, length = 12, nullable = false)
     private String phoneNumber;
 
-    @Column(name = "balance")
+    @Column(name = "balance", precision = 19, scale = 2, nullable = false)
     private BigDecimal balance;
 
-    @Column(name = "remaining_minutes")
+    @Column(name = "remaining_minutes", nullable = false)
     private Integer remainingMinutes;
 
-    @Column(name = "remaining_bytes")
+    @Column(name = "remaining_bytes", nullable = false)
     private Long remainingBytes;
 
-    @Column(name = "remaining_sms")
+    @Column(name = "remaining_sms", nullable = false)
     private Integer remainingSms;
 
     @ManyToOne
