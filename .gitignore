@@ -40,3 +40,4 @@ build/
 src/main/resources/application.properties
 target/
 out/
+artifact/
