@@ -1,0 +1,100 @@
+INSERT INTO users (
+    last_name,
+    first_name,
+    middle_name,
+    birth_date,
+    passport_series,
+    passport_number
+) VALUES (
+    'Иванов',
+    'Иван',
+    'Иванович',
+    DATE '1999-05-14',
+    '1234',
+    '567890'
+);
+
+
+INSERT INTO bank (
+    card_number,
+    cvc,
+    balance
+) VALUES (
+    '1111222233334444',
+    '123',
+    15000.00
+);
+
+
+INSERT INTO user_data (
+    account_number,
+    phone_number,
+    balance,
+    remaining_minutes,
+    remaining_bytes,
+    remaining_sms,
+    user_id
+) VALUES (
+    'ACC1000001',
+    '79161234567',
+    1200.00,
+    500,
+    10737418240, -- 10 ГБ
+    100,
+    (SELECT id
+     FROM users
+     WHERE passport_series = '1234'
+       AND passport_number = '567890')
+);
+
+
+INSERT INTO money_operations (
+    operation_time,
+    op_type,
+    amount,
+    user_data_id
+) VALUES
+(
+    '2026-03-10 10:15:00',
+    'INCOME',
+    1500.00,
+    (SELECT id FROM user_data WHERE phone_number = '79161234567')
+),
+(
+    '2026-03-12 14:40:00',
+    'EXPENSE',
+    300.00,
+    (SELECT id FROM user_data WHERE phone_number = '79161234567')
+),
+(
+    '2026-03-15 09:00:00',
+    'EXPENSE',
+    100.00,
+    (SELECT id FROM user_data WHERE phone_number = '79161234567')
+);
+
+
+INSERT INTO service_usage (
+    op_type,
+    units_used,
+    operation_time,
+    user_data_id
+) VALUES
+(
+    'CALL',
+    35,
+    '2026-03-11 12:00:00',
+    (SELECT id FROM user_data WHERE phone_number = '79161234567')
+),
+(
+    'SMS',
+    12,
+    '2026-03-11 13:30:00',
+    (SELECT id FROM user_data WHERE phone_number = '79161234567')
+),
+(
+    'INTERNET',
+    2048,
+    '2026-03-12 18:20:00',
+    (SELECT id FROM user_data WHERE phone_number = '79161234567')
+);
