@@ -39,6 +39,9 @@ public class UserData {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Column(name = "is_blocked", nullable = false)
+    private Boolean isBlocked = false;
+
     @OneToMany(mappedBy = "user_data")
     private List<MoneyOperation> moneyOperations;
 
