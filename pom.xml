@@ -13,6 +13,9 @@
     <groupId>blps</groupId>
     <artifactId>blps</artifactId>
     <version>1.0</version>
+    <packaging>war</packaging>
+    <name>app</name>
+    <description>app</description>
 
     <properties>
         <java.version>17</java.version>
