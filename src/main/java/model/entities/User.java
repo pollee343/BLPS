@@ -3,7 +3,6 @@ package model.entities;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.annotation.Id; //todo выбрать правильный импорт для id
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,22 +17,22 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "last_name")
+    @Column(name = "last_name", length = 255, nullable = false)
     private String lastName;
 
-    @Column(name = "first_name")
+    @Column(name = "first_name", length = 255, nullable = false)
     private String firstName;
 
-    @Column(name = "middle_name")
+    @Column(name = "middle_name", length = 255)
     private String middleName;
 
-    @Column(name = "birth_date")
+    @Column(name = "birth_date", columnDefinition = "DATE")
     private LocalDate birthDate;
 
-    @Column(name = "passport_series")
+    @Column(name = "passport_series", length = 4)
     private String passportSeries;
 
-    @Column(name = "passport_number")
+    @Column(name = "passport_number", length = 6)
     private String passportNumber;
 
     @OneToMany(mappedBy = "user_data_id")

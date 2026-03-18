@@ -1,0 +1,106 @@
+-- DDL: создание всех таблиц для проекта BLPS
+-- БД: PostgreSQL
+-- ============================================================
+
+-- ============================================================
+-- Типы enum
+-- ============================================================
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_type
+        WHERE typname = 'operation_type'
+    ) THEN
+CREATE TYPE operation_type AS ENUM ('INCOME', 'EXPENSE');
+END IF;
+END
+$$;
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_type
+        WHERE typname = 'usage_type'
+    ) THEN
+CREATE TYPE usage_type AS ENUM ('CALL', 'SMS', 'INTERNET');
+END IF;
+END
+$$;
+
+-- ============================================================
+-- Таблица users
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS users (
+    id BIGSERIAL PRIMARY KEY,
+    last_name VARCHAR(255) NOT NULL,
+    first_name VARCHAR(255) NOT NULL,
+    middle_name VARCHAR(255),
+    birth_date DATE NOT NULL,
+    passport_series VARCHAR(4) NOT NULL,
+    passport_number VARCHAR(6) NOT NULL,
+    CONSTRAINT uq_users_passport UNIQUE (passport_series, passport_number)
+    );
+
+-- ============================================================
+-- Таблица bank
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS bank (
+    id BIGSERIAL PRIMARY KEY,
+    card_number VARCHAR(16) NOT NULL UNIQUE,
+    cvc VARCHAR(3) NOT NULL,
+    balance NUMERIC(19, 2) NOT NULL DEFAULT 0,
+    CONSTRAINT chk_bank_balance_non_negative CHECK (balance >= 0)
+    );
+
+-- ============================================================
+-- Таблица user_data
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS user_data (
+    id BIGSERIAL PRIMARY KEY,
+    account_number VARCHAR(255) NOT NULL UNIQUE,
+    phone_number VARCHAR(12) NOT NULL UNIQUE,
+    balance NUMERIC(19, 2) NOT NULL DEFAULT 0 ,
+    remaining_minutes INTEGER NOT NULL DEFAULT 0,
+    remaining_bytes BIGINT NOT NULL DEFAULT 0,
+    remaining_sms INTEGER NOT NULL DEFAULT 0,
+    user_id BIGINT REFERENCES users(id) ON DELETE SET NULL,
+
+    CONSTRAINT chk_user_data_balance_non_negative CHECK (balance >= 0),
+    CONSTRAINT chk_user_data_minutes_non_negative CHECK (remaining_minutes >= 0),
+    CONSTRAINT chk_user_data_bytes_non_negative CHECK (remaining_bytes >= 0),
+    CONSTRAINT chk_user_data_sms_non_negative CHECK (remaining_sms >= 0)
+    );
+
+-- ============================================================
+-- Таблица money_operations
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS money_operations (
+    id BIGSERIAL PRIMARY KEY,
+    operation_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    op_type operation_type NOT NULL,
+    amount NUMERIC(19, 2) NOT NULL,
+    user_data_id BIGINT NOT NULL REFERENCES user_data(id) ON DELETE CASCADE,
+
+    CONSTRAINT chk_money_operations_amount_positive CHECK (amount > 0)
+    );
+
+-- ============================================================
+-- Таблица service_usage
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS service_usage (
+    id BIGSERIAL PRIMARY KEY,
+    op_type usage_type NOT NULL,
+    units_used INTEGER NOT NULL,
+    operation_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    user_data_id BIGINT NOT NULL REFERENCES user_data(id) ON DELETE CASCADE,
+
+    CONSTRAINT chk_service_usage_units_positive CHECK (units_used > 0)
+    );

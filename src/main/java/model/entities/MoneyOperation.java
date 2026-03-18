@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import model.enams.OperationType;
-import org.springframework.data.annotation.Id;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -19,14 +18,14 @@ public class MoneyOperation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "operation_time")
+    @Column(name = "operation_time", columnDefinition = "TIMESTAMP")
     private LocalDateTime operationTime;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
     private OperationType type;
 
-    @Column(name = "amount")
+    @Column(name = "amount", precision = 19, scale = 2, nullable = false)
     private BigDecimal amount;
 
     @ManyToOne
