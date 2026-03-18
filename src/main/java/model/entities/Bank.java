@@ -36,13 +36,13 @@ public class Bank {
 //    @Column(name = "passport_number")
 //    private String passportNumber;
 
-    @Column(name = "card_number")
+    @Column(name = "card_number", length = 16, nullable = false, unique = true)
     private String cardNumber;
 
-    @Column(name = "cvc")
+    @Column(name = "cvc", length = 3, nullable = false)
     private String cvc;
 
-    @Column(name = "balance")
+    @Column(name = "balance", precision = 19, scale = 2, nullable = false)
     private BigDecimal balance;
 
 }
