@@ -1,12 +1,12 @@
-package services;
+package app.services;
 
 import jakarta.transaction.Transactional;
-import model.enams.OperationType;
-import model.entities.MoneyOperation;
-import model.entities.UserData;
+import app.model.enams.OperationType;
+import app.model.entities.MoneyOperation;
+import app.model.entities.UserData;
 import org.springframework.stereotype.Service;
-import repositories.MoneyOperationRepository;
-import repositories.UserDataRepository;
+import app.repositories.MoneyOperationRepository;
+import app.repositories.UserDataRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

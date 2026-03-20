@@ -1,7 +1,7 @@
-package model.entities;
+package app.model.entities;
 
 import jakarta.persistence.*;
-import model.enams.UsageType;
+import app.model.enams.UsageType;
 
 import java.time.LocalDateTime;
 

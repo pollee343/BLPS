@@ -1,9 +1,9 @@
-package model.entities;
+package app.model.entities;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import model.enams.OperationType;
+import app.model.enams.OperationType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

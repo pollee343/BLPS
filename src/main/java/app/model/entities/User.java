@@ -1,4 +1,4 @@
-package model.entities;
+package app.model.entities;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -35,7 +35,7 @@ public class User {
     @Column(name = "passport_number", length = 6)
     private String passportNumber;
 
-    @OneToMany(mappedBy = "user_data_id")
+    @OneToMany(mappedBy = "user")
     private List<UserData> userData;
 
 }

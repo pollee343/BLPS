@@ -1,13 +1,12 @@
-package services;
+package app.services;
 
 import lombok.RequiredArgsConstructor;
-import model.entities.Bank;
-import model.entities.UserData;
+import app.model.entities.Bank;
+import app.model.entities.UserData;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import repositories.BankRepository;
-import repositories.MoneyOperationRepository;
-import repositories.UserDataRepository;
+import app.repositories.BankRepository;
+import app.repositories.UserDataRepository;
 
 
 import java.math.BigDecimal;
