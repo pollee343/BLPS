@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 public class ExpensesResponse {
     private String accountNumber;
     private LocalDateTime MoneyOperationTime;
+    private String MoneyOperationName;
     private OperationType MoneyOperationType;
     private BigDecimal MoneyOperationAmount;
 

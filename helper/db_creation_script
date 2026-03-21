@@ -66,6 +66,7 @@ CREATE TABLE IF NOT EXISTS user_data (
 CREATE TABLE IF NOT EXISTS money_operations (
     id BIGSERIAL PRIMARY KEY,
     operation_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    name VARCHAR(300) NOT NULL,
     op_type operation_type NOT NULL,
     amount NUMERIC(19, 2) NOT NULL,
     user_data_id BIGINT NOT NULL REFERENCES user_data(id) ON DELETE CASCADE,

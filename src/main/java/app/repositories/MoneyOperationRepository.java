@@ -1,5 +1,6 @@
 package app.repositories;
 
+import app.model.enams.OperationType;
 import app.model.entities.MoneyOperation;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -12,4 +13,6 @@ public interface MoneyOperationRepository extends JpaRepository<MoneyOperation, 
     List<MoneyOperation> findByUserDataId(Long userDataId);
 
     List<MoneyOperation> findByUserDataIdAndOperationTimeBetween(Long userDataId, LocalDateTime from, LocalDateTime to);
+    List<MoneyOperation> findByUserDataIdAndOperationTimeBetweenAndType(Long userDataId, LocalDateTime from, LocalDateTime to, OperationType type);
+
 }

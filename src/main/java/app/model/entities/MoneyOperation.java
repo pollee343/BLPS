@@ -21,8 +21,11 @@ public class MoneyOperation {
     @Column(name = "operation_time", columnDefinition = "TIMESTAMP")
     private LocalDateTime operationTime;
 
+    @Column(name = "name", length = 300, nullable = false)
+    private String name;
+
     @Enumerated(EnumType.STRING)
-    @Column(name = "type")
+    @Column(name = "op_type")
     private OperationType type;
 
     @Column(name = "amount", precision = 19, scale = 2, nullable = false)

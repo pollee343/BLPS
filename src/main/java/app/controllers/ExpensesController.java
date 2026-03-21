@@ -1,6 +1,7 @@
 package app.controllers;
 
 import app.dto.ExpensesResponse;
+import app.model.enams.OperationType;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +35,30 @@ public class ExpensesController {
             from = to.withDayOfMonth(1);
         }
         logger.info("ExpensesForPeriod request received. Params: accountNumber={}, from={}, to={}", accountNumber, from, to);
+        return expensesService.getExpensesForPeriod(accountNumber, from, to);
+    }
+
+    @GetMapping(value = "/forPeriodAndOperationType", produces = APPLICATION_JSON_VALUE)
+    public List<ExpensesResponse> getExpensesForPeriodAndOperation(@RequestParam("accountNumber") String accountNumber,
+                                                       @RequestParam(name = "from", required = false) LocalDate from,
+                                                       @RequestParam(name = "to", required = false) LocalDate to,
+                                                       @RequestParam("operationType") OperationType operationType){
+        if (from == null && to == null) {
+            to = LocalDate.now();
+            from = to.withDayOfMonth(1);
+        }
+        return expensesService.getExpensesForPeriodAndOperationType(accountNumber, from, to, operationType);
+    }
+
+    @GetMapping(value = "/forPeriodAndOperationName", produces = APPLICATION_JSON_VALUE)
+    public List<ExpensesResponse> getForPeriodAndOperationName(@RequestParam("accountNumber") String accountNumber,
+                                                                   @RequestParam(name = "from", required = false) LocalDate from,
+                                                                   @RequestParam(name = "to", required = false) LocalDate to,
+                                                                   @RequestParam("operationName") String operationName){
+        if (from == null && to == null) {
+            to = LocalDate.now();
+            from = to.withDayOfMonth(1);
+        }
         return expensesService.getExpensesForPeriod(accountNumber, from, to);
     }
 
