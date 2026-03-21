@@ -21,7 +21,7 @@ public class BankService {
 
     private final BalanceService balanceService;
     private final PromisedPaymentService promisedPaymentService;
-
+//todo статус операций банка
 
     @Transactional
     public boolean processPayment(String cardNumber, String cvc, BigDecimal amount, Long userDataId) {
