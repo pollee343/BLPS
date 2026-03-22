@@ -1,6 +1,7 @@
 package app.services;
 
 import lombok.RequiredArgsConstructor;
+import app.model.enams.BankOperationStatus;
 import app.model.entities.Bank;
 import app.model.entities.UserData;
 import org.springframework.stereotype.Service;
@@ -8,8 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 import app.repositories.BankRepository;
 import app.repositories.UserDataRepository;
 
-
 import java.math.BigDecimal;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -17,39 +18,49 @@ public class BankService {
 
     private final BankRepository bankRepository;
     private final UserDataRepository userDataRepository;
-
     private final BalanceService balanceService;
     private final PromisedPaymentService promisedPaymentService;
 
+    private final Random random = new Random();
 
     @Transactional
-    public boolean processPayment(String cardNumber, String cvc, BigDecimal amount, Long userDataId) {
-        Bank bankAccount = bankRepository.findByCardNumber(cardNumber)
-                .orElseThrow(() -> new RuntimeException("Карта не найдена"));
+    public BankOperationStatus processPayment(String cardNumber, String cvc, BigDecimal amount, Long userDataId) {
+
+        // имитация тех ошибки банка
+        if (random.nextInt(10) == 0) {
+            return BankOperationStatus.ERROR;
+        }
+
+        Bank bankAccount = bankRepository.findByCardNumber(cardNumber).orElse(null);
+
+        if (bankAccount == null) {
+            return BankOperationStatus.DECLINED;
+        }
 
         if (!bankAccount.getCvc().equals(cvc)) {
-            throw new RuntimeException("Неверный CVC");
+            return BankOperationStatus.DECLINED;
         }
 
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new RuntimeException("Некорректная сумма");
+            return BankOperationStatus.DECLINED;
         }
 
         if (bankAccount.getBalance().compareTo(amount) < 0) {
-            throw new RuntimeException("Недостаточно средств");
+            return BankOperationStatus.DECLINED;
         }
-        UserData userData = userDataRepository.findById(userDataId).orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+
+        UserData userData = userDataRepository.findById(userDataId)
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
 
         bankAccount.setBalance(bankAccount.getBalance().subtract(amount));
         bankRepository.save(bankAccount);
 
         balanceService.topUp(userDataId, amount);
 
-        if (userData.getHasPromisedPayment()){
+        if (userData.getHasPromisedPayment()) {
             promisedPaymentService.processPromisedPayment(userDataId);
         }
 
-        return true;
+        return BankOperationStatus.SUCCESS;
     }
-
 }

@@ -45,6 +45,7 @@ public class PromisedPaymentService {
         op.setType(OperationType.INCOME);
         op.setAmount(amount);
         op.setUserData(userData);
+        op.setName("Подключение обещанного платежа");
 
         moneyOperationRepository.save(op);
     }
@@ -72,6 +73,7 @@ public class PromisedPaymentService {
             op.setType(OperationType.EXPENSE);
             op.setAmount(amount);
             op.setUserData(userData);
+            op.setName("Списание обещанного платежа");
 
             moneyOperationRepository.save(op);
 

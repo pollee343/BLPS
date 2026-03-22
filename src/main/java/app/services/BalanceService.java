@@ -33,6 +33,7 @@ public class BalanceService {
         op.setType(OperationType.INCOME);
         op.setAmount(amount);
         op.setUserData(userData);
+        op.setName("Регистрация платежа: Банковская карта");
 
         moneyOperationRepository.save(op);
     }
