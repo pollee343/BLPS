@@ -3,11 +3,9 @@ package app.services;
 import lombok.RequiredArgsConstructor;
 import app.model.enams.BankOperationStatus;
 import app.model.entities.Bank;
-import app.model.entities.UserData;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import app.repositories.BankRepository;
-import app.repositories.UserDataRepository;
 
 import java.math.BigDecimal;
 import java.util.Random;
@@ -17,14 +15,11 @@ import java.util.Random;
 public class BankService {
 
     private final BankRepository bankRepository;
-    private final UserDataRepository userDataRepository;
-    private final BalanceService balanceService;
-    private final PromisedPaymentService promisedPaymentService;
 
     private final Random random = new Random();
 
     @Transactional
-    public BankOperationStatus processPayment(String cardNumber, String cvc, BigDecimal amount, Long userDataId) {
+    public BankOperationStatus processPayment(String cardNumber, String cvc, BigDecimal amount) {
 
         // имитация тех ошибки банка
         if (random.nextInt(10) == 0) {
@@ -49,17 +44,8 @@ public class BankService {
             return BankOperationStatus.DECLINED;
         }
 
-        UserData userData = userDataRepository.findById(userDataId)
-                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
-
         bankAccount.setBalance(bankAccount.getBalance().subtract(amount));
         bankRepository.save(bankAccount);
-
-        balanceService.topUp(userDataId, amount);
-
-        if (userData.getHasPromisedPayment()) {
-            promisedPaymentService.processPromisedPayment(userDataId);
-        }
 
         return BankOperationStatus.SUCCESS;
     }

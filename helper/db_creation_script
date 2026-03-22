@@ -22,6 +22,18 @@ END IF;
 END
 $$;
 
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_type
+        WHERE typname = 'usage_direction'
+    ) THEN
+CREATE TYPE usage_direction AS ENUM ('INCOMING', 'OUTGOING');
+END IF;
+END
+$$;
+
 CREATE TABLE IF NOT EXISTS users (
     id BIGSERIAL PRIMARY KEY,
     last_name VARCHAR(255) NOT NULL,
@@ -76,7 +88,9 @@ CREATE TABLE IF NOT EXISTS money_operations (
 
 CREATE TABLE IF NOT EXISTS service_usage (
     id BIGSERIAL PRIMARY KEY,
-    op_type usage_type NOT NULL,
+    operation_type usage_type NOT NULL,
+    direction usage_direction,
+    name VARCHAR(300),
     units_used INTEGER NOT NULL,
     operation_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     user_data_id BIGINT NOT NULL REFERENCES user_data(id) ON DELETE CASCADE,

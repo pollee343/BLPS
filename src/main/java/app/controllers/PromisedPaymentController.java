@@ -26,13 +26,4 @@ public class PromisedPaymentController {
         }
     }
 
-    @PostMapping("/process/{userDataId}")
-    public ResponseEntity<?> processPromisedPayment(@PathVariable Long userDataId) {
-        try {
-            promisedPaymentService.processPromisedPayment(userDataId);
-            return ResponseEntity.ok("Обработка обещанного платежа выполнена");
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
 }
