@@ -30,7 +30,7 @@ INSERT INTO user_data (
     account_number,
     phone_number,
     balance,
-    remaining_minutes,
+    remaining_seconds,
     remaining_bytes,
     remaining_sms,
     has_promised_payment,

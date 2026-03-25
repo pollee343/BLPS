@@ -28,8 +28,8 @@ public class UserData {
     @Column(name = "balance", precision = 19, scale = 2, nullable = false)
     private BigDecimal balance = BigDecimal.ZERO;
 
-    @Column(name = "remaining_minutes", nullable = false)
-    private Integer remainingMinutes = 0;
+    @Column(name = "remaining_seconds", nullable = false)
+    private Integer remainingSeconds = 0;
 
     @Column(name = "remaining_bytes", nullable = false)
     private Long remainingBytes = 0L;
