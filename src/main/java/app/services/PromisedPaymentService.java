@@ -57,6 +57,7 @@ public class PromisedPaymentService {
         userData.setPromisedPaymentDueDate(LocalDateTime.now().plusDays(3));
 
         MoneyOperation op = new MoneyOperation();
+        op.setOperationTime(LocalDateTime.now());
         op.setType(OperationType.INCOME);
         op.setAmount(amount);
         op.setUserData(userData);

@@ -2,6 +2,7 @@ package app.controllers;
 
 
 import app.dto.PaymentRequest;
+import app.dto.SpendRequest;
 import app.model.enams.BankOperationStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,21 @@ public class BalanceController {
                 case DECLINED -> ResponseEntity.badRequest().body("Банк отклонил операцию");
                 case ERROR -> ResponseEntity.internalServerError().body("Техническая ошибка банка");
             };
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    //для заполнения бд операциями
+    @PostMapping("/spend")
+    public ResponseEntity<?> spend(@RequestBody SpendRequest request) {
+        try {
+            balanceService.spend(
+                    request.getUserDataId(),
+                    request.getAmount(),
+                    request.getName()
+            );
+            return ResponseEntity.ok("Баланс успешно уменьшен");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

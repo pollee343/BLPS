@@ -58,7 +58,7 @@ INSERT INTO user_data (
 INSERT INTO money_operations (
     operation_time,
     op_type,
-    name,
+    op_name,
     amount,
     user_data_id
 ) VALUES

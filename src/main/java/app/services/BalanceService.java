@@ -12,6 +12,7 @@ import app.repositories.MoneyOperationRepository;
 import app.repositories.UserDataRepository;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Service
 public class BalanceService {
@@ -46,6 +47,7 @@ public class BalanceService {
         userData.setBalance(userData.getBalance().add(request.getAmount()));
 
         MoneyOperation op = new MoneyOperation();
+        op.setOperationTime(LocalDateTime.now());
         op.setType(OperationType.INCOME);
         op.setAmount(request.getAmount());
         op.setUserData(userData);
@@ -66,6 +68,7 @@ public class BalanceService {
         userData.setBalance(userData.getBalance().subtract(amount));
 
         MoneyOperation op = new MoneyOperation();
+        op.setOperationTime(LocalDateTime.now());
         op.setType(OperationType.EXPENSE);
         op.setAmount(amount);
         op.setUserData(userData);

@@ -1,38 +1,10 @@
-DO $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1
-        FROM pg_type
-        WHERE typname = 'operation_type'
-    ) THEN
+DROP TYPE IF EXISTS usage_direction CASCADE;
+DROP TYPE IF EXISTS usage_type CASCADE;
+DROP TYPE IF EXISTS operation_type CASCADE;
+
 CREATE TYPE operation_type AS ENUM ('INCOME', 'EXPENSE');
-END IF;
-END
-$$;
-
-DO $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1
-        FROM pg_type
-        WHERE typname = 'usage_type'
-    ) THEN
 CREATE TYPE usage_type AS ENUM ('CALL', 'SMS', 'INTERNET');
-END IF;
-END
-$$;
-
-DO $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1
-        FROM pg_type
-        WHERE typname = 'usage_direction'
-    ) THEN
 CREATE TYPE usage_direction AS ENUM ('INCOMING', 'OUTGOING');
-END IF;
-END
-$$;
 
 CREATE TABLE IF NOT EXISTS users (
     id BIGSERIAL PRIMARY KEY,
@@ -78,7 +50,7 @@ CREATE TABLE IF NOT EXISTS user_data (
 CREATE TABLE IF NOT EXISTS money_operations (
     id BIGSERIAL PRIMARY KEY,
     operation_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    name VARCHAR(300) NOT NULL,
+    op_name VARCHAR(300) NOT NULL,
     op_type operation_type NOT NULL,
     amount NUMERIC(19, 2) NOT NULL,
     user_data_id BIGINT NOT NULL REFERENCES user_data(id) ON DELETE CASCADE,
@@ -95,5 +67,4 @@ CREATE TABLE IF NOT EXISTS service_usage (
     operation_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     user_data_id BIGINT NOT NULL REFERENCES user_data(id) ON DELETE CASCADE,
 
-    CONSTRAINT chk_service_usage_units_positive CHECK (units_used > 0)
     );
