@@ -9,4 +9,5 @@ public class PaymentRequest {
     private String cardNumber;
     private String cvc;
     private BigDecimal amount;
-    private Long userDataId;}
+    private Long userDataId;
+}

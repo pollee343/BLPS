@@ -20,11 +20,9 @@ public class PageNumberHandler implements IEventHandler {
         PdfPage page = docEvent.getPage();
         Rectangle pageSize = page.getPageSize();
 
-        // Формирование строки номера страницы
         String pageNumber = String.format("Страница %d из %d",
                 pdf.getPageNumber(page), pdf.getNumberOfPages());
 
-        // Отрисовка номера
         PdfCanvas canvas = new PdfCanvas(page);
         try {
             canvas.beginText()

@@ -77,5 +77,5 @@ CREATE TABLE IF NOT EXISTS service_usage (
     name VARCHAR(300),
     units_used INTEGER NOT NULL,
     operation_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    user_data_id BIGINT NOT NULL REFERENCES user_data(id) ON DELETE CASCADE,
+    user_data_id BIGINT NOT NULL REFERENCES user_data(id) ON DELETE CASCADE
     );
