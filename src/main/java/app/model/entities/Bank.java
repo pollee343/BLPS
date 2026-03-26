@@ -16,24 +16,6 @@ public class Bank {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @Column(name = "last_name")
-//    private String lastName;
-//
-//    @Column(name = "first_name")
-//    private String firstName;
-//
-//    @Column(name = "middle_name")
-//    private String middleName;
-//
-//    @Column(name = "birth_date")
-//    private LocalDate birthDate;
-//
-//    @Column(name = "passport_series")
-//    private String passportSeries;
-//
-//    @Column(name = "passport_number")
-//    private String passportNumber;
-
     @Column(name = "card_number", length = 16, nullable = false, unique = true)
     private String cardNumber;
 

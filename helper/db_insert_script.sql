@@ -58,7 +58,7 @@ INSERT INTO user_data (
 INSERT INTO money_operations (
     operation_time,
     op_type,
-    name,
+    op_name,
     amount,
     user_data_id
 ) VALUES
@@ -105,7 +105,7 @@ INSERT INTO service_usage (
     'SMS',
     'INCOMING',
     'Входящее СМС',
-    0,
+ 0,
     '2026-02-11 13:30:00',
     (SELECT id FROM user_data WHERE phone_number = '79161234567')
 ),

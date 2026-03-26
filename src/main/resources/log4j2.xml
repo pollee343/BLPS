@@ -1,4 +1,4 @@
-oding="UTF-8"?>
+<encoding="UTF-8"?>
 <Configuration>
     <Properties>
         <Property name="socket.host">${bundle:application:logstash.host}</Property>
