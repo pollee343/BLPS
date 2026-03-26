@@ -33,9 +33,6 @@ INSERT INTO user_data (
     remaining_seconds,
     remaining_bytes,
     remaining_sms,
-    has_promised_payment,
-    promised_payment_amount,
-    promised_payment_due_date,
     is_blocked,
     user_id
 ) VALUES (
@@ -45,9 +42,6 @@ INSERT INTO user_data (
     500,
     10737418240, -- 10 ГБ
     100,
-    FALSE,
-    0,
-    NULL,
     FALSE,
     (SELECT id
      FROM users
@@ -115,5 +109,33 @@ INSERT INTO service_usage (
     NULL,
     2048,
     '2026-02-12 18:20:00',
+    (SELECT id FROM user_data WHERE phone_number = '79161234567')
+);
+
+INSERT INTO promised_payments (
+    amount,
+    amount_to_repay,
+    status,
+    created_at,
+    due_date,
+    repaid_at,
+    user_data_id
+) VALUES
+(
+    1000.00,
+    1200.00,
+    'PAID',
+    '2026-02-05 09:00:00',
+    '2026-02-08 09:00:00',
+    '2026-02-07 18:30:00',
+    (SELECT id FROM user_data WHERE phone_number = '79161234567')
+),
+(
+    1500.00,
+    1800.00,
+    'ACTIVE',
+    '2026-03-20 11:00:00',
+    '2026-03-23 11:00:00',
+    NULL,
     (SELECT id FROM user_data WHERE phone_number = '79161234567')
 );

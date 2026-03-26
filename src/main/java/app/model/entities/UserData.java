@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,23 +39,16 @@ public class UserData {
     @Column(name = "is_blocked", nullable = false)
     private Boolean isBlocked = false;
 
-    @Column(name = "has_promised_payment", nullable = false)
-    private Boolean hasPromisedPayment = false;
-
-    @Column(name = "promised_payment_amount", precision = 19, scale = 2, nullable = false)
-    private BigDecimal promisedPaymentAmount = BigDecimal.ZERO;
-
-    @Column(name = "promised_payment_due_date")
-    private LocalDateTime promisedPaymentDueDate;
-
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    //todo маппинг kiss or miss cringe or hype?
     @OneToMany(mappedBy = "userData")
     private List<MoneyOperation> moneyOperations = new ArrayList<>();
 
     @OneToMany(mappedBy = "userData")
     private List<ServiceUsage> serviceUsages = new ArrayList<>();
+
+    @OneToMany(mappedBy = "userData")
+    private List<PromisedPayment> promisedPayments = new ArrayList<>();
 }

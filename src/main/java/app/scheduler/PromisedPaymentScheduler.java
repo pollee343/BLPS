@@ -1,7 +1,7 @@
 package app.scheduler;
 
-import app.model.entities.UserData;
-import app.repositories.UserDataRepository;
+import app.model.enams.PromisedPaymentStatus;
+import app.repositories.PromisedPaymentRepository;
 import app.services.PromisedPaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -14,17 +14,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PromisedPaymentScheduler {
 
-    private final UserDataRepository userDataRepository;
+    private final PromisedPaymentRepository promisedPaymentRepository;
     private final PromisedPaymentService promisedPaymentService;
 
     // каждый ЧАС проверяет просроченные обещанные платежи
     @Scheduled(fixedRate = 3_600_000)
     public void processOverduePromisedPayments() {
-        List<UserData> overdue = userDataRepository
-                .findAllPromisedPaymentTimedOut(LocalDateTime.now());
+        List<Long> userIds = promisedPaymentRepository.findDistinctUserIdsWithDuePayments(
+                List.of(PromisedPaymentStatus.ACTIVE, PromisedPaymentStatus.OVERDUE),
+                LocalDateTime.now()
+        );
 
-        for (UserData userData : overdue) {
-            promisedPaymentService.processPromisedPayment(userData.getId());
+        for (Long userId : userIds) {
+            promisedPaymentService.processPromisedPayment(userId);
         }
     }
 }

@@ -1,10 +1,12 @@
 DROP TYPE IF EXISTS usage_direction CASCADE;
 DROP TYPE IF EXISTS usage_type CASCADE;
 DROP TYPE IF EXISTS operation_type CASCADE;
+DROP TYPE IF EXISTS promised_payment_status CASCADE;
 
 CREATE TYPE operation_type AS ENUM ('INCOME', 'EXPENSE');
 CREATE TYPE usage_type AS ENUM ('CALL', 'SMS', 'INTERNET');
 CREATE TYPE usage_direction AS ENUM ('INCOMING', 'OUTGOING');
+CREATE TYPE promised_payment_status AS ENUM ('ACTIVE', 'OVERDUE', 'PAID');
 
 DO $$
 BEGIN
@@ -47,9 +49,6 @@ CREATE TABLE IF NOT EXISTS user_data (
     remaining_bytes BIGINT NOT NULL DEFAULT 0,
     remaining_sms INTEGER NOT NULL DEFAULT 0,
     is_blocked BOOLEAN NOT NULL DEFAULT FALSE,
-    has_promised_payment BOOLEAN NOT NULL DEFAULT FALSE,
-    promised_payment_amount NUMERIC(19, 2) NOT NULL DEFAULT 0,
-    promised_payment_due_date TIMESTAMP,
 
     user_id BIGINT REFERENCES users(id) ON DELETE SET NULL,
 
@@ -68,6 +67,21 @@ CREATE TABLE IF NOT EXISTS money_operations (
     user_data_id BIGINT NOT NULL REFERENCES user_data(id) ON DELETE CASCADE,
 
     CONSTRAINT chk_money_operations_amount_positive CHECK (amount > 0)
+);
+
+CREATE TABLE IF NOT EXISTS promised_payments (
+    id BIGSERIAL PRIMARY KEY,
+    amount NUMERIC(19, 2) NOT NULL,
+    amount_to_repay NUMERIC(19, 2) NOT NULL,
+    status promised_payment_status NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    due_date TIMESTAMP NOT NULL,
+    repaid_at TIMESTAMP,
+    user_data_id BIGINT NOT NULL REFERENCES user_data(id) ON DELETE CASCADE,
+
+    CONSTRAINT chk_promised_payments_amount_positive CHECK (amount > 0),
+    CONSTRAINT chk_promised_payments_amount_single_limit CHECK (amount <= 1500.00),
+    CONSTRAINT chk_promised_payments_amount_to_repay_positive CHECK (amount_to_repay > 0)
 );
 
 CREATE TABLE IF NOT EXISTS service_usage (
