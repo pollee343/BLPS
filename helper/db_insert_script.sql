@@ -58,49 +58,61 @@ INSERT INTO user_data (
 INSERT INTO money_operations (
     operation_time,
     op_type,
+    op_name,
     amount,
     user_data_id
 ) VALUES
 (
     '2026-03-10 10:15:00',
     'INCOME',
+    'Регистрация платежа: SberPay',
     1500.00,
     (SELECT id FROM user_data WHERE phone_number = '79161234567')
 ),
 (
     '2026-03-12 14:40:00',
     'EXPENSE',
+    'Ежемесячная плата услуги Х',
     300.00,
     (SELECT id FROM user_data WHERE phone_number = '79161234567')
 ),
 (
     '2026-03-15 09:00:00',
     'EXPENSE',
+    'Покупка услуги Х',
     100.00,
     (SELECT id FROM user_data WHERE phone_number = '79161234567')
 );
 
 
 INSERT INTO service_usage (
-    op_type,
+    operation_type,
+    direction,
+    name,
     units_used,
     operation_time,
     user_data_id
 ) VALUES
 (
     'CALL',
+    'OUTGOING',
+    'Исходящий звонок',
     35,
     '2026-03-11 12:00:00',
     (SELECT id FROM user_data WHERE phone_number = '79161234567')
 ),
 (
     'SMS',
+    'INCOMING',
+    'Входящее СМС',
     12,
     '2026-03-11 13:30:00',
     (SELECT id FROM user_data WHERE phone_number = '79161234567')
 ),
 (
     'INTERNET',
+    NULL,
+    NULL,
     2048,
     '2026-03-12 18:20:00',
     (SELECT id FROM user_data WHERE phone_number = '79161234567')

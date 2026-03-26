@@ -1,4 +1,4 @@
-package model.enams;
+package app.model.enams;
 
 public enum BankOperationStatus {
     SUCCESS,

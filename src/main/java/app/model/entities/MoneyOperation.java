@@ -1,9 +1,9 @@
-package model.entities;
+package app.model.entities;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import model.enams.OperationType;
+import app.model.enams.OperationType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -21,8 +21,11 @@ public class MoneyOperation {
     @Column(name = "operation_time", columnDefinition = "TIMESTAMP")
     private LocalDateTime operationTime;
 
+    @Column(name = "op_name", length = 300, nullable = false)
+    private String name;
+
     @Enumerated(EnumType.STRING)
-    @Column(name = "type")
+    @Column(name = "op_type")
     private OperationType type;
 
     @Column(name = "amount", precision = 19, scale = 2, nullable = false)

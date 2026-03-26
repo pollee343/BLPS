@@ -1,6 +1,6 @@
-package repositories;
+package app.repositories;
 
-import model.entities.Bank;
+import app.model.entities.Bank;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
