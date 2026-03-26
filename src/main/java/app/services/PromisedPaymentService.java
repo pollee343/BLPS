@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
 //todo проверить что все вызовы от клиента из бпмн есть
 //todo написать запросы
 
-@Slf4j
 @Service
 public class PromisedPaymentService {
 

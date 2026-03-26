@@ -1,6 +1,5 @@
 package app.controllers;
 
-import app.dto.MessageWithFileResponse;
 import app.dto.MessageOnlyResponse;
 import app.services.ReportService;
 import jakarta.mail.MessagingException;
