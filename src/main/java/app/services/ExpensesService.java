@@ -34,7 +34,7 @@ public class ExpensesService {
                 .orElseThrow(() -> new EntityNotFoundException("Пользователь с заданным лицевым счетом не найден"));
         Long userDataId = userData.getId();
         LocalDateTime fromDate = from.atStartOfDay();
-        LocalDateTime toDate = to.atStartOfDay();
+        LocalDateTime toDate = to.atTime(23, 59, 59);
         return moneyOperationRepository.findByUserDataIdAndOperationTimeBetween(userDataId, fromDate, toDate)
                 .stream()
                 .map(this::buildExpensesResponse)
@@ -50,7 +50,7 @@ public class ExpensesService {
                 .orElseThrow(() -> new EntityNotFoundException("Пользователь с заданным лицевым счетом не найден"));
         Long userDataId = userData.getId();
         LocalDateTime fromDate = from.atStartOfDay();
-        LocalDateTime toDate = to.atStartOfDay();
+        LocalDateTime toDate = to.atTime(23, 59, 59);
         return moneyOperationRepository
                 .findByUserDataIdAndOperationTimeBetweenAndType(userDataId, fromDate, toDate, operationType)
                 .stream()
@@ -67,7 +67,7 @@ public class ExpensesService {
                 .orElseThrow(() -> new EntityNotFoundException("Пользователь с заданным лицевым счетом не найден"));
         Long userDataId = userData.getId();
         LocalDateTime fromDate = from.atStartOfDay();
-        LocalDateTime toDate = to.atStartOfDay();
+        LocalDateTime toDate = to.atTime(23, 59, 59);
         List<ExpensesResponse> result = moneyOperationRepository
                 .findByUserDataIdAndOperationTimeBetweenAndNameLike(userDataId, fromDate, toDate, "%" + operationName + "%")
                 .stream()

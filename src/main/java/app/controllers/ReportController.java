@@ -5,6 +5,7 @@ import app.services.ReportService;
 import jakarta.mail.MessagingException;
 import jakarta.validation.constraints.Email;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,14 +28,8 @@ public class ReportController {
     public ResponseEntity<byte[]> getInformationAboutExpenses(@RequestParam("accountNumber") String accountNumber,
                                                                                @RequestParam(name = "from", required = false) LocalDate from,
                                                                                @RequestParam(name = "to", required = false) LocalDate to) throws MessagingException, IOException {
-        if (to == null) {
-            to = LocalDate.now();
-        }
-        if (from == null) {
-            from = to.withDayOfMonth(1);
-        }
-
-        byte[] data = reportService.getInformationAboutExpenses(accountNumber, from, to);
+        Pair<LocalDate, LocalDate> date = checkDates(from, to);
+        byte[] data = reportService.getInformationAboutExpenses(accountNumber, date.getFirst(), date.getSecond());
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=report.pdf")
@@ -48,14 +43,9 @@ public class ReportController {
                                                                                @RequestParam(name = "from", required = false) LocalDate from,
                                                                                @RequestParam(name = "to", required = false) LocalDate to,
                                                                                @RequestParam(name = "email") @Email String email) throws MessagingException, IOException {
-        if (to == null) {
-            to = LocalDate.now();
-        }
-        if (from == null) {
-            from = to.withDayOfMonth(1);
-        }
 
-        byte[] data = reportService.getInformationAboutExpenses(accountNumber, from, to);
+        Pair<LocalDate, LocalDate> date = checkDates(from, to);
+        byte[] data = reportService.getInformationAboutExpenses(accountNumber, date.getFirst(), date.getSecond());
 
         reportService.sendEmail(email, "Детализация расходов от МТС",
                 "Сообщение является автоматическим, отвечать на него не нужно", data);
@@ -81,5 +71,18 @@ public class ReportController {
 //                .contentType(MediaType.APPLICATION_PDF)
 //                .contentLength(data.length)
 //                .body(data);
+    }
+
+    private Pair<LocalDate, LocalDate> checkDates(LocalDate from, LocalDate to) {
+        if (to == null) {
+            to = LocalDate.now();
+        }
+        if (from == null) {
+            from = to.withDayOfMonth(1);
+        }
+        if (from.isAfter(to)) {
+            throw new IllegalArgumentException("Дата начала периода должна быть раньше даты конца");
+        }
+        return Pair.of(from, to);
     }
 }
