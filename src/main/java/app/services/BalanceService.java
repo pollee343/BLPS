@@ -1,6 +1,7 @@
 package app.services;
 
 import jakarta.transaction.Transactional;
+import app.dto.BalanceResponse;
 import app.dto.PaymentRequest;
 import app.model.enams.BankOperationStatus;
 import app.model.enams.OperationType;
@@ -77,5 +78,15 @@ public class BalanceService {
         moneyOperationRepository.save(op);
     }
 
+    public BalanceResponse getBalance(Long userDataId) {
+        UserData userData = userDataRepository.findById(userDataId)
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+
+        return new BalanceResponse(
+                userData.getId(),
+                userData.getAccountNumber(),
+                userData.getBalance()
+        );
+    }
 
 }

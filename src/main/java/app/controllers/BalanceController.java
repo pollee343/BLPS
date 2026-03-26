@@ -1,6 +1,7 @@
 package app.controllers;
 
 
+import app.dto.BalanceResponse;
 import app.dto.PaymentRequest;
 import app.dto.SpendRequest;
 import app.model.enams.BankOperationStatus;
@@ -27,9 +28,19 @@ public class BalanceController {
             }
             return switch (status) {
                 case SUCCESS -> ResponseEntity.ok("Баланс успешно пополнен");
-                case DECLINED -> ResponseEntity.badRequest().body("Банк отклонил операцию");
+                case DECLINED -> ResponseEntity.badRequest().body("Банк отклонил операцию (проверьте сумму и данные)");
                 case ERROR -> ResponseEntity.internalServerError().body("Техническая ошибка банка");
             };
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/{userDataId}")
+    public ResponseEntity<?> getBalance(@PathVariable Long userDataId) {
+        try {
+            BalanceResponse response = balanceService.getBalance(userDataId);
+            return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
