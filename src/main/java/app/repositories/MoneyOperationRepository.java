@@ -14,5 +14,7 @@ public interface MoneyOperationRepository extends JpaRepository<MoneyOperation, 
 
     List<MoneyOperation> findByUserDataIdAndOperationTimeBetween(Long userDataId, LocalDateTime from, LocalDateTime to);
     List<MoneyOperation> findByUserDataIdAndOperationTimeBetweenAndType(Long userDataId, LocalDateTime from, LocalDateTime to, OperationType type);
+    List<MoneyOperation> findByUserDataIdAndOperationTimeBetweenAndNameLike(Long userDataId, LocalDateTime from, LocalDateTime to, String name);
+    List<MoneyOperation> findByUserDataIdAndOperationTimeBefore(Long userDataId, LocalDateTime from);
 
 }

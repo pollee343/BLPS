@@ -6,6 +6,18 @@ CREATE TYPE operation_type AS ENUM ('INCOME', 'EXPENSE');
 CREATE TYPE usage_type AS ENUM ('CALL', 'SMS', 'INTERNET');
 CREATE TYPE usage_direction AS ENUM ('INCOMING', 'OUTGOING');
 
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_type
+        WHERE typname = 'usage_direction'
+    ) THEN
+CREATE TYPE usage_direction AS ENUM ('INCOMING', 'OUTGOING');
+END IF;
+END
+$$;
+
 CREATE TABLE IF NOT EXISTS users (
     id BIGSERIAL PRIMARY KEY,
     last_name VARCHAR(255) NOT NULL,
@@ -31,7 +43,7 @@ CREATE TABLE IF NOT EXISTS user_data (
     phone_number VARCHAR(12) NOT NULL UNIQUE,
 
     balance NUMERIC(19, 2) NOT NULL DEFAULT 0,
-    remaining_minutes INTEGER NOT NULL DEFAULT 0,
+    remaining_seconds INTEGER NOT NULL DEFAULT 0,
     remaining_bytes BIGINT NOT NULL DEFAULT 0,
     remaining_sms INTEGER NOT NULL DEFAULT 0,
     is_blocked BOOLEAN NOT NULL DEFAULT FALSE,
@@ -42,7 +54,7 @@ CREATE TABLE IF NOT EXISTS user_data (
     user_id BIGINT REFERENCES users(id) ON DELETE SET NULL,
 
     CONSTRAINT chk_user_data_balance_non_negative CHECK (balance >= 0),
-    CONSTRAINT chk_user_data_minutes_non_negative CHECK (remaining_minutes >= 0),
+    CONSTRAINT chk_user_data_minutes_non_negative CHECK (remaining_seconds >= 0),
     CONSTRAINT chk_user_data_bytes_non_negative CHECK (remaining_bytes >= 0),
     CONSTRAINT chk_user_data_sms_non_negative CHECK (remaining_sms >= 0)
 );
@@ -56,7 +68,7 @@ CREATE TABLE IF NOT EXISTS money_operations (
     user_data_id BIGINT NOT NULL REFERENCES user_data(id) ON DELETE CASCADE,
 
     CONSTRAINT chk_money_operations_amount_positive CHECK (amount > 0)
-    );
+);
 
 CREATE TABLE IF NOT EXISTS service_usage (
     id BIGSERIAL PRIMARY KEY,
@@ -66,5 +78,4 @@ CREATE TABLE IF NOT EXISTS service_usage (
     units_used INTEGER NOT NULL,
     operation_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     user_data_id BIGINT NOT NULL REFERENCES user_data(id) ON DELETE CASCADE,
-
     );

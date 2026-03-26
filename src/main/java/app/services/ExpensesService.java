@@ -1,9 +1,10 @@
 package app.services;
 
-import app.controllers.ExpensesController;
 import app.dto.ExpensesResponse;
 import app.model.enams.OperationType;
 import app.model.entities.MoneyOperation;
+import app.model.entities.UserData;
+import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +26,13 @@ public class ExpensesService {
     @Autowired
     private UserDataRepository userDataRepository;
 
-    public List<ExpensesResponse> getExpensesForPeriod(String accountNumber, LocalDate from, LocalDate to) {
-        Long userDataId = userDataRepository.findByAccountNumber(accountNumber).get().getId(); // todo работа с optional
+    public List<ExpensesResponse> getExpensesForPeriod(String accountNumber,
+                                                       LocalDate from,
+                                                       LocalDate to) {
+        UserData userData = userDataRepository
+                .findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь с заданным лицевым счетом не найден"));
+        Long userDataId = userData.getId();
         LocalDateTime fromDate = from.atStartOfDay();
         LocalDateTime toDate = to.atStartOfDay();
         return moneyOperationRepository.findByUserDataIdAndOperationTimeBetween(userDataId, fromDate, toDate)
@@ -39,7 +45,10 @@ public class ExpensesService {
                                                                        LocalDate from,
                                                                        LocalDate to,
                                                                        OperationType operationType) {
-        Long userDataId = userDataRepository.findByAccountNumber(accountNumber).get().getId(); // todo работа с optional
+        UserData userData = userDataRepository
+                .findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь с заданным лицевым счетом не найден"));
+        Long userDataId = userData.getId();
         LocalDateTime fromDate = from.atStartOfDay();
         LocalDateTime toDate = to.atStartOfDay();
         return moneyOperationRepository
@@ -47,6 +56,27 @@ public class ExpensesService {
                 .stream()
                 .map(this::buildExpensesResponse)
                 .collect(Collectors.toList());
+    }
+
+    public List<ExpensesResponse> getForPeriodAndOperationName(String accountNumber,
+                                                               LocalDate from,
+                                                               LocalDate to,
+                                                               String operationName) {
+        UserData userData = userDataRepository
+                .findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь с заданным лицевым счетом не найден"));
+        Long userDataId = userData.getId();
+        LocalDateTime fromDate = from.atStartOfDay();
+        LocalDateTime toDate = to.atStartOfDay();
+        List<ExpensesResponse> result = moneyOperationRepository
+                .findByUserDataIdAndOperationTimeBetweenAndNameLike(userDataId, fromDate, toDate, "%" + operationName + "%")
+                .stream()
+                .map(this::buildExpensesResponse)
+                .collect(Collectors.toList());
+        if (result.isEmpty()) {
+            throw new EntityNotFoundException("Операция " + operationName + " не найдена");
+        }
+        return result;
     }
 
     private ExpensesResponse buildExpensesResponse(MoneyOperation moneyOperation) {

@@ -29,9 +29,11 @@ public class ExpensesController {
     @GetMapping(value = "/forPeriod", produces = APPLICATION_JSON_VALUE)
     public List<ExpensesResponse> getExpensesForPeriod(@RequestParam("accountNumber") String accountNumber,
                                                        @RequestParam(name = "from", required = false) LocalDate from,
-                                                       @RequestParam(name = "to", required = false) LocalDate to){
-        if (from == null && to == null) {
+                                                       @RequestParam(name = "to", required = false) LocalDate to) {
+        if (to == null) {
             to = LocalDate.now();
+        }
+        if (from == null) {
             from = to.withDayOfMonth(1);
         }
         logger.info("ExpensesForPeriod request received. Params: accountNumber={}, from={}, to={}", accountNumber, from, to);
@@ -43,10 +45,13 @@ public class ExpensesController {
                                                        @RequestParam(name = "from", required = false) LocalDate from,
                                                        @RequestParam(name = "to", required = false) LocalDate to,
                                                        @RequestParam("operationType") OperationType operationType){
-        if (from == null && to == null) {
+        if (to == null) {
             to = LocalDate.now();
+        }
+        if (from == null) {
             from = to.withDayOfMonth(1);
         }
+        logger.info("ExpensesForPeriodAndOperationName request received. Params: accountNumber={}, from={}, to={}, operationType={}", accountNumber, from, to, operationType);
         return expensesService.getExpensesForPeriodAndOperationType(accountNumber, from, to, operationType);
     }
 
@@ -55,11 +60,14 @@ public class ExpensesController {
                                                                    @RequestParam(name = "from", required = false) LocalDate from,
                                                                    @RequestParam(name = "to", required = false) LocalDate to,
                                                                    @RequestParam("operationName") String operationName){
-        if (from == null && to == null) {
+        if (to == null) {
             to = LocalDate.now();
+        }
+        if (from == null) {
             from = to.withDayOfMonth(1);
         }
-        return expensesService.getExpensesForPeriod(accountNumber, from, to);
+        logger.info("ExpensesForPeriodAndOperationName request received. Params: accountNumber={}, from={}, to={}, operationName={}", accountNumber, from, to, operationName);
+        return expensesService.getForPeriodAndOperationName(accountNumber, from, to, operationName);
     }
 
 }

@@ -30,7 +30,7 @@ INSERT INTO user_data (
     account_number,
     phone_number,
     balance,
-    remaining_minutes,
+    remaining_seconds,
     remaining_bytes,
     remaining_sms,
     has_promised_payment,
@@ -63,21 +63,21 @@ INSERT INTO money_operations (
     user_data_id
 ) VALUES
 (
-    '2026-03-10 10:15:00',
+    '2026-02-10 10:15:00',
     'INCOME',
     'Регистрация платежа: SberPay',
     1500.00,
     (SELECT id FROM user_data WHERE phone_number = '79161234567')
 ),
 (
-    '2026-03-12 14:40:00',
+    '2026-02-12 14:40:00',
     'EXPENSE',
     'Ежемесячная плата услуги Х',
     300.00,
     (SELECT id FROM user_data WHERE phone_number = '79161234567')
 ),
 (
-    '2026-03-15 09:00:00',
+    '2026-02-15 09:00:00',
     'EXPENSE',
     'Покупка услуги Х',
     100.00,
@@ -98,15 +98,15 @@ INSERT INTO service_usage (
     'OUTGOING',
     'Исходящий звонок',
     35,
-    '2026-03-11 12:00:00',
+    '2026-02-11 12:00:00',
     (SELECT id FROM user_data WHERE phone_number = '79161234567')
 ),
 (
     'SMS',
     'INCOMING',
     'Входящее СМС',
-    12,
-    '2026-03-11 13:30:00',
+ 0,
+    '2026-02-11 13:30:00',
     (SELECT id FROM user_data WHERE phone_number = '79161234567')
 ),
 (
@@ -114,6 +114,6 @@ INSERT INTO service_usage (
     NULL,
     NULL,
     2048,
-    '2026-03-12 18:20:00',
+    '2026-02-12 18:20:00',
     (SELECT id FROM user_data WHERE phone_number = '79161234567')
 );
