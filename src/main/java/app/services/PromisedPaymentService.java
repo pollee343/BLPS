@@ -7,7 +7,6 @@ import app.model.enams.UsageType;
 import app.model.entities.MoneyOperation;
 import app.model.entities.ServiceUsage;
 import app.model.entities.UserData;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import app.repositories.MoneyOperationRepository;
 import app.repositories.ServiceUsageRepository;
@@ -15,8 +14,8 @@ import app.repositories.UserDataRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-//todo проверить что все проверки из бпмн есть
-//todo проверить что все вызовы от клиента из бпмн есть
+
+
 //todo написать запросы
 
 @Service

@@ -53,7 +53,6 @@ public class UserData {
     @JoinColumn(name = "user_id")
     private User user;
 
-    //todo маппинг kiss or miss cringe or hype?
     @OneToMany(mappedBy = "userData")
     private List<MoneyOperation> moneyOperations = new ArrayList<>();
 
