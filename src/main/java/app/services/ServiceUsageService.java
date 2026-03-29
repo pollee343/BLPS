@@ -8,16 +8,16 @@ import app.repositories.ServiceUsageRepository;
 import app.repositories.UserDataRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class ServiceUsageService {
 
-    @Autowired
-    private ServiceUsageRepository serviceUsageRepository;
-    @Autowired
-    private UserDataRepository userDataRepository;
+    private final ServiceUsageRepository serviceUsageRepository;
+    private final UserDataRepository userDataRepository;
 
     @Transactional
     public void createServiceUsage(ServiceUsage serviceUsage) {

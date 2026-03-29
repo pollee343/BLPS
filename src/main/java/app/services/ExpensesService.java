@@ -5,6 +5,7 @@ import app.model.enams.OperationType;
 import app.model.entities.MoneyOperation;
 import app.model.entities.UserData;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +19,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ExpensesService {
 
     private static Logger logger = LoggerFactory.getLogger(ExpensesService.class);
-    @Autowired
-    private MoneyOperationRepository moneyOperationRepository;
-    @Autowired
-    private UserDataRepository userDataRepository;
+    private final MoneyOperationRepository moneyOperationRepository;
+    private final UserDataRepository userDataRepository;
 
     public List<ExpensesResponse> getExpensesForPeriod(String accountNumber,
                                                        LocalDate from,

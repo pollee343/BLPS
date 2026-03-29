@@ -3,11 +3,13 @@ package app.repositories;
 import app.model.enams.OperationType;
 import app.model.entities.MoneyOperation;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Repository
 public interface MoneyOperationRepository extends JpaRepository<MoneyOperation, Long> {
 
     List<MoneyOperation> findByUserDataId(Long userDataId);
