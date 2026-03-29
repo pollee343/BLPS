@@ -6,18 +6,18 @@ import app.model.entities.UserData;
 import app.repositories.UserDataRepository;
 import app.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserDataService {
 
-    @Autowired
-    private UserDataRepository userDataRepository;
-    @Autowired
-    private UserRepository userRepository;
+    private final UserDataRepository userDataRepository;
+    private final UserRepository userRepository;
 
     public void createUserData(UserData userData) {
         User user = userRepository.findById(userData.getUser().getId())

@@ -22,7 +22,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequestMapping("/api/expenses")
-@RequiredArgsConstructor
 public class ExpensesController {
 
     private static Logger logger = LoggerFactory.getLogger(ExpensesController.class);

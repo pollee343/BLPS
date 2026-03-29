@@ -30,6 +30,7 @@ import com.itextpdf.layout.properties.VerticalAlignment;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,20 +50,16 @@ import java.util.*;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ReportService {
 
     private static Logger logger = LoggerFactory.getLogger(ReportService.class);
 
-    @Autowired
-    private JavaMailSender emailSender;
-    @Autowired
-    private ReportBuilder reportBuilder;
-    @Autowired
-    private UserDataRepository userDataRepository;
-    @Autowired
-    private MoneyOperationRepository moneyOperationRepository;
-    @Autowired
-    private ServiceUsageRepository serviceUsageRepository;
+    private final JavaMailSender emailSender;
+    private final ReportBuilder reportBuilder;
+    private final UserDataRepository userDataRepository;
+    private final MoneyOperationRepository moneyOperationRepository;
+    private final ServiceUsageRepository serviceUsageRepository;
 
     public byte[] getBill(String accountNumber, LocalDate date, String email) throws IOException {
 
