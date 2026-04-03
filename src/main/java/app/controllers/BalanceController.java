@@ -23,6 +23,7 @@ public class BalanceController {
 
     @PostMapping("/top-up")
     public ResponseEntity<?> topUp(@RequestBody PaymentRequest request) {
+        log.info("Top up payment");
         try {
             BankOperationStatus status = balanceService.topUp(request);
             if (status == BankOperationStatus.SUCCESS) {

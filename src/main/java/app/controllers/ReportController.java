@@ -1,13 +1,10 @@
 package app.controllers;
 
-import app.dto.MessageOnlyResponse;
-import app.services.ReportService;
 import app.services.interfases.ReportServiceInterface;
 import jakarta.mail.MessagingException;
 import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -43,7 +40,7 @@ public class ReportController {
     }
 
     @GetMapping("/getInformationAboutExpensesOnEmail")
-    public ResponseEntity<MessageOnlyResponse> getInformationAboutExpensesOnEmail(@RequestParam("accountNumber") String accountNumber,
+    public ResponseEntity<String> getInformationAboutExpensesOnEmail(@RequestParam("accountNumber") String accountNumber,
                                                                                @RequestParam(name = "from", required = false) LocalDate from,
                                                                                @RequestParam(name = "to", required = false) LocalDate to,
                                                                                @RequestParam(name = "email") @Email String email) throws MessagingException, IOException {
@@ -54,19 +51,19 @@ public class ReportController {
         reportService.sendEmail(email, "Детализация расходов от МТС",
                 "Сообщение является автоматическим, отвечать на него не нужно", data);
         return ResponseEntity.ok()
-                .body(new MessageOnlyResponse("Отчет успешно сформирован и отправлен на почту " + email));
+                .body("Отчет успешно сформирован и отправлен на почту " + email);
 
     }
 
     @GetMapping("/getBill")
-    public ResponseEntity<MessageOnlyResponse> getBill(@RequestParam("accountNumber") String accountNumber,
+    public ResponseEntity<String> getBill(@RequestParam("accountNumber") String accountNumber,
                                                            @RequestParam(name = "date") LocalDate date,
                                                            @RequestParam(name = "email") @Email String email) throws MessagingException, IOException {
         byte[] data = reportService.getBill(accountNumber, date, email);
         reportService.sendEmail(email, "Счет от МТС",
                 "Сообщение является автоматическим, отвечать на него не нужно", data);
         return ResponseEntity.ok()
-                .body(new MessageOnlyResponse("Счет успешно сформирован и отправлен на почту " + email));
+                .body("Счет успешно сформирован и отправлен на почту " + email);
 
 
 //        //todo этот вариант только для тестов, отправляется только на почту

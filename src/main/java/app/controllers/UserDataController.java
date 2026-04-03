@@ -1,16 +1,11 @@
 package app.controllers;
 
 import app.dto.IncreaseRemainingResponse;
-import app.dto.MessageOnlyResponse;
-import app.model.entities.User;
 import app.model.entities.UserData;
-import app.repositories.UserDataRepository;
-import app.services.UserDataService;
 import app.services.interfases.UserDataServiceInterface;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,15 +23,15 @@ public class UserDataController {
     private final UserDataServiceInterface userDataService;
 
     @PostMapping("/createUserData")
-    public ResponseEntity<MessageOnlyResponse> createUserData(@Valid @RequestBody UserData userData) {
+    public ResponseEntity<String> createUserData(@Valid @RequestBody UserData userData) {
         userDataService.createUserData(userData);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new MessageOnlyResponse("Данные пользователя добавлены"));
+        return ResponseEntity.status(HttpStatus.CREATED).body("Данные пользователя добавлены");
     }
 
     @PostMapping("/increaseRemaining")
-    public ResponseEntity<MessageOnlyResponse> increaseRemaining(@Valid @RequestBody IncreaseRemainingResponse increaseRemainingResponse) {
+    public ResponseEntity<String> increaseRemaining(@Valid @RequestBody IncreaseRemainingResponse increaseRemainingResponse) {
         userDataService.increaseRemaining(increaseRemainingResponse);
-        return ResponseEntity.ok(new MessageOnlyResponse("Данные пользователя добавлены"));
+        return ResponseEntity.ok("Данные пользователя обновлены");
     }
 
     @GetMapping(name = "/getAll", produces = APPLICATION_JSON_VALUE)
