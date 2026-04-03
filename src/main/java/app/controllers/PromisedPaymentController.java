@@ -15,15 +15,11 @@ public class PromisedPaymentController {
 
     @PostMapping("/take")
     public ResponseEntity<?> takePromisedPayment(@RequestBody PromisedPaymentRequest request) {
-        try {
-            promisedPaymentService.takePromisedPayment(
-                    request.getUserDataId(),
-                    request.getAmount()
-            );
-            return ResponseEntity.ok("Обещанный платеж успешно подключен");
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        promisedPaymentService.takePromisedPayment(
+                request.getUserDataId(),
+                request.getAmount()
+        );
+        return ResponseEntity.ok("Обещанный платеж успешно подключен");
     }
 
 }

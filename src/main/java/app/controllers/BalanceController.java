@@ -21,44 +21,32 @@ public class BalanceController {
 
     @PostMapping("/top-up")
     public ResponseEntity<?> topUp(@RequestBody PaymentRequest request) {
-        try {
-            BankOperationStatus status = balanceService.topUp(request);
-            if (status == BankOperationStatus.SUCCESS) {
-                promisedPaymentService.processPromisedPayment(request.getUserDataId());
-            }
-            return switch (status) {
-                case SUCCESS -> ResponseEntity.ok("Баланс успешно пополнен");
-                case DECLINED -> ResponseEntity.badRequest().body("Банк отклонил операцию (проверьте сумму и данные)");
-                case ERROR -> ResponseEntity.internalServerError().body("Техническая ошибка банка");
-            };
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+        BankOperationStatus status = balanceService.topUp(request);
+        if (status == BankOperationStatus.SUCCESS) {
+            promisedPaymentService.processPromisedPayment(request.getUserDataId());
         }
+        return switch (status) {
+            case SUCCESS -> ResponseEntity.ok("Баланс успешно пополнен");
+            case DECLINED -> ResponseEntity.badRequest().body("Банк отклонил операцию (проверьте сумму и данные)");
+            case ERROR -> ResponseEntity.internalServerError().body("Техническая ошибка банка");
+        };
     }
 
     @GetMapping("/{userDataId}")
     public ResponseEntity<?> getBalance(@PathVariable Long userDataId) {
-        try {
-            BalanceResponse response = balanceService.getBalance(userDataId);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        BalanceResponse response = balanceService.getBalance(userDataId);
+        return ResponseEntity.ok(response);
     }
 
     //для заполнения бд операциями
     @PostMapping("/spend")
     public ResponseEntity<?> spend(@RequestBody SpendRequest request) {
-        try {
-            balanceService.spend(
-                    request.getUserDataId(),
-                    request.getAmount(),
-                    request.getName()
-            );
-            return ResponseEntity.ok("Баланс успешно уменьшен");
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        balanceService.spend(
+                request.getUserDataId(),
+                request.getAmount(),
+                request.getName()
+        );
+        return ResponseEntity.ok("Баланс успешно уменьшен");
     }
 
 }

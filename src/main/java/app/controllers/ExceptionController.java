@@ -43,11 +43,18 @@ public class ExceptionController {
         return new MessageOnlyResponse("Ошибка при отправке отчета на почту");
     }
 
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(RuntimeException.class)
     public MessageOnlyResponse handleRuntimeException(RuntimeException e) {
         logger.error(e.getMessage());
         e.printStackTrace();
+        return new MessageOnlyResponse(e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(Exception.class)
+    public MessageOnlyResponse handleUnknownException(Exception e) {
+        logger.error(e.getMessage(), e);
         return new MessageOnlyResponse("Внутренняя ошибка сервера");
     }
 }
