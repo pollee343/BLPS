@@ -5,26 +5,28 @@ import app.model.entities.User;
 import app.model.entities.UserData;
 import app.repositories.UserDataRepository;
 import app.repositories.UserRepository;
+import app.services.interfases.UserDataServiceInterface;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class UserDataService {
+public class UserDataService implements UserDataServiceInterface {
 
     private final UserDataRepository userDataRepository;
     private final UserRepository userRepository;
 
+    @Override
     public void createUserData(UserData userData) {
         User user = userRepository.findById(userData.getUser().getId())
                 .orElseThrow(() ->new IllegalArgumentException("Пользователя с заданным id не существует"));
         userDataRepository.save(userData);
     }
 
+    @Override
     public void increaseRemaining(IncreaseRemainingResponse increaseRemainingResponse) {
         UserData userData = userDataRepository
                 .findByAccountNumber(increaseRemainingResponse.getAccountNumber())
@@ -36,6 +38,7 @@ public class UserDataService {
         userDataRepository.save(userData);
     }
 
+    @Override
     public List<UserData> getAllUserData() {
         return userDataRepository.findAll();
     }

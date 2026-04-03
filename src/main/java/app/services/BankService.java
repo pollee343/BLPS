@@ -1,5 +1,6 @@
 package app.services;
 
+import app.services.interfases.BankServiceInterface;
 import lombok.RequiredArgsConstructor;
 import app.model.enams.BankOperationStatus;
 import app.model.entities.Bank;
@@ -12,12 +13,13 @@ import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
-public class BankService {
+public class BankService implements BankServiceInterface {
 
     private final BankRepository bankRepository;
 
     private final Random random = new Random();
 
+    @Override
     @Transactional
     public BankOperationStatus processPayment(String cardNumber, String cvc, BigDecimal amount) {
 

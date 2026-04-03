@@ -2,8 +2,11 @@ package app.controllers;
 
 import app.dto.MessageOnlyResponse;
 import app.services.ReportService;
+import app.services.interfases.ReportServiceInterface;
 import jakarta.mail.MessagingException;
 import jakarta.validation.constraints.Email;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.http.HttpHeaders;
@@ -19,10 +22,11 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/report")
+@RequiredArgsConstructor
+@Log4j2
 public class ReportController {
 
-    @Autowired
-    private ReportService reportService;
+    private final ReportServiceInterface reportService;
 
     @GetMapping("/getInformationAboutExpenses")
     public ResponseEntity<byte[]> getInformationAboutExpenses(@RequestParam("accountNumber") String accountNumber,

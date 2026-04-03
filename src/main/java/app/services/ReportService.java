@@ -1,6 +1,5 @@
 package app.services;
 
-import app.PDFUtils.PageNumberHandler;
 import app.PDFUtils.ReportBuilder;
 import app.model.enams.OperationType;
 import app.model.enams.UsageDirection;
@@ -12,29 +11,12 @@ import app.model.utils.OperationInformation;
 import app.repositories.MoneyOperationRepository;
 import app.repositories.ServiceUsageRepository;
 import app.repositories.UserDataRepository;
-import app.repositories.UserRepository;
-import com.itextpdf.io.source.ByteArrayOutputStream;
-import com.itextpdf.kernel.events.PdfDocumentEvent;
-import com.itextpdf.kernel.font.PdfFont;
-import com.itextpdf.kernel.font.PdfFontFactory;
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.layout.Document;
-import com.itextpdf.layout.borders.Border;
-import com.itextpdf.layout.borders.SolidBorder;
-import com.itextpdf.layout.element.*;
-import com.itextpdf.layout.properties.HorizontalAlignment;
-import com.itextpdf.layout.properties.TextAlignment;
-import com.itextpdf.layout.properties.UnitValue;
-import com.itextpdf.layout.properties.VerticalAlignment;
+import app.services.interfases.ReportServiceInterface;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -45,15 +27,13 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ReportService {
-
-    private static Logger logger = LoggerFactory.getLogger(ReportService.class);
+@Log4j2
+public class ReportService implements ReportServiceInterface {
 
     private final JavaMailSender emailSender;
     private final ReportBuilder reportBuilder;
@@ -61,6 +41,7 @@ public class ReportService {
     private final MoneyOperationRepository moneyOperationRepository;
     private final ServiceUsageRepository serviceUsageRepository;
 
+    @Override
     public byte[] getBill(String accountNumber, LocalDate date, String email) throws IOException {
 
         if (date.getDayOfMonth() != 1){
@@ -112,6 +93,7 @@ public class ReportService {
         return reportBuilder.getBillReport(accountNumber, date, to, userData, total, remains, rem_on_from, email, incomes);
     }
 
+    @Override
     public byte[] getInformationAboutExpenses(String accountNumber, LocalDate from, LocalDate to) throws IOException {
 
         if (to.isAfter(ChronoLocalDate.from(LocalDate.now().atStartOfDay()))){
@@ -213,10 +195,11 @@ public class ReportService {
             operation.setName("Мобильный интернет");
             operation.setDescription("Мобильный интернет: трафик " + amount + units);
         }
-        logger.info(operation.toString());
+        log.info(operation.toString());
         return operation;
     }
 
+    @Override
     public void sendEmail(String email, String title, String text, byte[] content) throws MessagingException {
         final MimeMessage mimeMessage = this.emailSender.createMimeMessage();
         final MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true);
@@ -227,6 +210,6 @@ public class ReportService {
         messageHelper.setText(text);
         messageHelper.addAttachment("report.pdf", new ByteArrayResource(content));
         emailSender.send(mimeMessage);
-        logger.info("Send message success on email: {}", email);
+        log.info("Send message success on email: {}", email);
     }
 }

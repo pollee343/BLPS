@@ -4,11 +4,10 @@ import app.dto.ExpensesResponse;
 import app.model.enams.OperationType;
 import app.model.entities.MoneyOperation;
 import app.model.entities.UserData;
+import app.services.interfases.ExpensesServiceInterface;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import app.repositories.MoneyOperationRepository;
 import app.repositories.UserDataRepository;
@@ -20,12 +19,13 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ExpensesService {
+@Log4j2
+public class ExpensesService implements ExpensesServiceInterface {
 
-    private static Logger logger = LoggerFactory.getLogger(ExpensesService.class);
     private final MoneyOperationRepository moneyOperationRepository;
     private final UserDataRepository userDataRepository;
 
+    @Override
     public List<ExpensesResponse> getExpensesForPeriod(String accountNumber,
                                                        LocalDate from,
                                                        LocalDate to) {
@@ -41,6 +41,7 @@ public class ExpensesService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public List<ExpensesResponse> getExpensesForPeriodAndOperationType(String accountNumber,
                                                                        LocalDate from,
                                                                        LocalDate to,
@@ -58,6 +59,7 @@ public class ExpensesService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public List<ExpensesResponse> getForPeriodAndOperationName(String accountNumber,
                                                                LocalDate from,
                                                                LocalDate to,

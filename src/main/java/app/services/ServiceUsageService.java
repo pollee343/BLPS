@@ -6,19 +6,20 @@ import app.model.entities.ServiceUsage;
 import app.model.entities.UserData;
 import app.repositories.ServiceUsageRepository;
 import app.repositories.UserDataRepository;
+import app.services.interfases.ServiceUsageServiceInterface;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ServiceUsageService {
+public class ServiceUsageService implements ServiceUsageServiceInterface {
 
     private final ServiceUsageRepository serviceUsageRepository;
     private final UserDataRepository userDataRepository;
 
+    @Override
     @Transactional
     public void createServiceUsage(ServiceUsage serviceUsage) {
         UserData userData = userDataRepository

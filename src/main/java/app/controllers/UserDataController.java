@@ -6,7 +6,10 @@ import app.model.entities.User;
 import app.model.entities.UserData;
 import app.repositories.UserDataRepository;
 import app.services.UserDataService;
+import app.services.interfases.UserDataServiceInterface;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,10 +21,11 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequestMapping("/api/userData")
+@RequiredArgsConstructor
+@Log4j2
 public class UserDataController {
 
-    @Autowired
-    private UserDataService userDataService;
+    private final UserDataServiceInterface userDataService;
 
     @PostMapping("/createUserData")
     public ResponseEntity<MessageOnlyResponse> createUserData(@Valid @RequestBody UserData userData) {

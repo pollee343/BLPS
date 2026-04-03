@@ -3,6 +3,7 @@ package app.scheduler;
 import app.model.enams.PromisedPaymentStatus;
 import app.repositories.PromisedPaymentRepository;
 import app.services.PromisedPaymentService;
+import app.services.interfases.PromisedPaymentServiceInterface;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -15,7 +16,7 @@ import java.util.List;
 public class PromisedPaymentScheduler {
 
     private final PromisedPaymentRepository promisedPaymentRepository;
-    private final PromisedPaymentService promisedPaymentService;
+    private final PromisedPaymentServiceInterface promisedPaymentService;
 
     // каждый ЧАС проверяет просроченные обещанные платежи
     @Scheduled(fixedRate = 3_600_000)

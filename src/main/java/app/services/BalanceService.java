@@ -1,5 +1,7 @@
 package app.services;
 
+import app.services.interfases.BalanceServiceInterface;
+import app.services.interfases.BankServiceInterface;
 import jakarta.transaction.Transactional;
 import app.dto.BalanceResponse;
 import app.dto.PaymentRequest;
@@ -8,6 +10,7 @@ import app.model.enams.OperationType;
 import app.model.entities.MoneyOperation;
 import app.model.entities.UserData;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import app.repositories.MoneyOperationRepository;
 import app.repositories.UserDataRepository;
@@ -16,20 +19,15 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Service
-public class BalanceService {
+@RequiredArgsConstructor
+
+public class BalanceService implements BalanceServiceInterface {
 
     private final UserDataRepository userDataRepository;
     private final MoneyOperationRepository moneyOperationRepository;
-    private final BankService bankService;
+    private final BankServiceInterface bankService;
 
-    public BalanceService(UserDataRepository userDataRepository,
-                          MoneyOperationRepository moneyOperationRepository,
-                          BankService bankService) {
-        this.userDataRepository = userDataRepository;
-        this.moneyOperationRepository = moneyOperationRepository;
-        this.bankService = bankService;
-    }
-
+    @Override
     @Transactional
     public BankOperationStatus topUp(PaymentRequest request) {
         BankOperationStatus status = bankService.processPayment(
@@ -59,6 +57,7 @@ public class BalanceService {
         return BankOperationStatus.SUCCESS;
     }
 
+    @Override
     @Transactional
     public void spend(Long userDataId, BigDecimal amount, String name) {
         UserData userData = userDataRepository.findById(userDataId).orElseThrow(() -> new RuntimeException("Пользователь не найден"));
@@ -78,6 +77,7 @@ public class BalanceService {
         moneyOperationRepository.save(op);
     }
 
+    @Override
     public BalanceResponse getBalance(Long userDataId) {
         UserData userData = userDataRepository.findById(userDataId)
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));

@@ -2,31 +2,28 @@ package app.controllers;
 
 import app.dto.ExpensesResponse;
 import app.model.enams.OperationType;
+import app.services.interfases.ExpensesServiceInterface;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.util.Pair;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import app.services.ExpensesService;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequestMapping("/api/expenses")
+@RequiredArgsConstructor
+@Log4j2
 public class ExpensesController {
 
-    private static Logger logger = LoggerFactory.getLogger(ExpensesController.class);
-    @Autowired
-    private ExpensesService expensesService;
+    private final ExpensesServiceInterface expensesService;
 
     @GetMapping(value = "/forPeriod", produces = APPLICATION_JSON_VALUE)
     public List<ExpensesResponse> getExpensesForPeriod(@RequestParam("accountNumber") String accountNumber,
@@ -34,7 +31,7 @@ public class ExpensesController {
                                                        @RequestParam(name = "to", required = false) LocalDate to) {
 
         Pair<LocalDate, LocalDate> data = checkDates(from, to);
-        logger.info("ExpensesForPeriod request received. Params: accountNumber={}, from={}, to={}", accountNumber, data.getFirst(), data.getSecond());
+        log.info("ExpensesForPeriod request received. Params: accountNumber={}, from={}, to={}", accountNumber, data.getFirst(), data.getSecond());
         return expensesService.getExpensesForPeriod(accountNumber, data.getFirst(), data.getSecond());
     }
 
@@ -45,7 +42,7 @@ public class ExpensesController {
                                                        @RequestParam("operationType") OperationType operationType){
 
         Pair<LocalDate, LocalDate> data = checkDates(from, to);
-        logger.info("ExpensesForPeriodAndOperationName request received. Params: accountNumber={}, from={}, to={}, operationType={}", accountNumber, data.getFirst(), data.getSecond(), operationType);
+        log.info("ExpensesForPeriodAndOperationName request received. Params: accountNumber={}, from={}, to={}, operationType={}", accountNumber, data.getFirst(), data.getSecond(), operationType);
         return expensesService.getExpensesForPeriodAndOperationType(accountNumber, data.getFirst(), data.getSecond(), operationType);
     }
 
@@ -55,7 +52,7 @@ public class ExpensesController {
                                                                    @RequestParam(name = "to", required = false) LocalDate to,
                                                                    @RequestParam("operationName") String operationName){
         Pair<LocalDate, LocalDate> data = checkDates(from, to);
-        logger.info("ExpensesForPeriodAndOperationName request received. Params: accountNumber={}, from={}, to={}, operationName={}", accountNumber, data.getFirst(), data.getSecond(), operationName);
+        log.info("ExpensesForPeriodAndOperationName request received. Params: accountNumber={}, from={}, to={}, operationName={}", accountNumber, data.getFirst(), data.getSecond(), operationName);
         return expensesService.getForPeriodAndOperationName(accountNumber, data.getFirst(), data.getSecond(), operationName);
     }
 

@@ -12,6 +12,8 @@ import app.repositories.MoneyOperationRepository;
 import app.repositories.PromisedPaymentRepository;
 import app.repositories.ServiceUsageRepository;
 import app.repositories.UserDataRepository;
+import app.services.interfases.PromisedPaymentServiceInterface;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,23 +23,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-public class PromisedPaymentService {
+@RequiredArgsConstructor
+public class PromisedPaymentService implements PromisedPaymentServiceInterface {
 
     private final UserDataRepository userDataRepository;
     private final PromisedPaymentRepository promisedPaymentRepository;
     private final MoneyOperationRepository moneyOperationRepository;
     private final ServiceUsageRepository serviceUsageRepository;
 
-    public PromisedPaymentService(UserDataRepository userDataRepository,
-                                  PromisedPaymentRepository promisedPaymentRepository,
-                                  MoneyOperationRepository moneyOperationRepository,
-                                  ServiceUsageRepository serviceUsageRepository) {
-        this.userDataRepository = userDataRepository;
-        this.promisedPaymentRepository = promisedPaymentRepository;
-        this.moneyOperationRepository = moneyOperationRepository;
-        this.serviceUsageRepository = serviceUsageRepository;
-    }
-
+    @Override
     @Transactional
     public void takePromisedPayment(Long userDataId, BigDecimal amount) {
         validateRequestedAmount(amount);
@@ -81,6 +75,7 @@ public class PromisedPaymentService {
         moneyOperationRepository.save(op);
     }
 
+    @Override
     @Transactional
     public void processPromisedPayment(Long userDataId) {
         UserData userData = userDataRepository.findById(userDataId)
