@@ -1,5 +1,7 @@
 package app.services;
 
+import app.dao.MoneyOperationDAOService;
+import app.dao.UserDataDAOService;
 import app.dto.ExpensesResponse;
 import app.model.enams.OperationType;
 import app.model.entities.MoneyOperation;
@@ -9,8 +11,6 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
-import app.repositories.MoneyOperationRepository;
-import app.repositories.UserDataRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -22,20 +22,20 @@ import java.util.stream.Collectors;
 @Log4j2
 public class ExpensesService implements ExpensesServiceInterface {
 
-    private final MoneyOperationRepository moneyOperationRepository;
-    private final UserDataRepository userDataRepository;
+    private final MoneyOperationDAOService moneyOperationDAOService;
+    private final UserDataDAOService userDataDAOService;
 
     @Override
     public List<ExpensesResponse> getExpensesForPeriod(String accountNumber,
                                                        LocalDate from,
                                                        LocalDate to) {
-        UserData userData = userDataRepository
+        UserData userData = userDataDAOService
                 .findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new EntityNotFoundException("Пользователь с заданным лицевым счетом не найден"));
         Long userDataId = userData.getId();
         LocalDateTime fromDate = from.atStartOfDay();
         LocalDateTime toDate = to.atTime(23, 59, 59);
-        return moneyOperationRepository.findByUserDataIdAndOperationTimeBetween(userDataId, fromDate, toDate)
+        return moneyOperationDAOService.findByUserDataIdAndOperationTimeBetween(userDataId, fromDate, toDate)
                 .stream()
                 .map(this::buildExpensesResponse)
                 .collect(Collectors.toList());
@@ -46,13 +46,13 @@ public class ExpensesService implements ExpensesServiceInterface {
                                                                        LocalDate from,
                                                                        LocalDate to,
                                                                        OperationType operationType) {
-        UserData userData = userDataRepository
+        UserData userData = userDataDAOService
                 .findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new EntityNotFoundException("Пользователь с заданным лицевым счетом не найден"));
         Long userDataId = userData.getId();
         LocalDateTime fromDate = from.atStartOfDay();
         LocalDateTime toDate = to.atTime(23, 59, 59);
-        return moneyOperationRepository
+        return moneyOperationDAOService
                 .findByUserDataIdAndOperationTimeBetweenAndType(userDataId, fromDate, toDate, operationType)
                 .stream()
                 .map(this::buildExpensesResponse)
@@ -64,13 +64,13 @@ public class ExpensesService implements ExpensesServiceInterface {
                                                                LocalDate from,
                                                                LocalDate to,
                                                                String operationName) {
-        UserData userData = userDataRepository
+        UserData userData = userDataDAOService
                 .findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new EntityNotFoundException("Пользователь с заданным лицевым счетом не найден"));
         Long userDataId = userData.getId();
         LocalDateTime fromDate = from.atStartOfDay();
         LocalDateTime toDate = to.atTime(23, 59, 59);
-        List<ExpensesResponse> result = moneyOperationRepository
+        List<ExpensesResponse> result = moneyOperationDAOService
                 .findByUserDataIdAndOperationTimeBetweenAndNameLike(userDataId, fromDate, toDate, "%" + operationName + "%")
                 .stream()
                 .map(this::buildExpensesResponse)

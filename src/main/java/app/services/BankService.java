@@ -1,12 +1,12 @@
 package app.services;
 
+import app.dao.BankDAOService;
 import app.services.interfases.BankServiceInterface;
 import lombok.RequiredArgsConstructor;
 import app.model.enams.BankOperationStatus;
 import app.model.entities.Bank;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import app.repositories.BankRepository;
 
 import java.math.BigDecimal;
 import java.util.Random;
@@ -15,7 +15,7 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class BankService implements BankServiceInterface {
 
-    private final BankRepository bankRepository;
+    private final BankDAOService bankDAOService;
 
     private final Random random = new Random();
 
@@ -28,7 +28,7 @@ public class BankService implements BankServiceInterface {
             return BankOperationStatus.ERROR;
         }
 
-        Bank bankAccount = bankRepository.findByCardNumber(cardNumber).orElse(null);
+        Bank bankAccount = bankDAOService.findByCardNumber(cardNumber).orElse(null);
 
         if (bankAccount == null) {
             return BankOperationStatus.DECLINED;
@@ -47,7 +47,7 @@ public class BankService implements BankServiceInterface {
         }
 
         bankAccount.setBalance(bankAccount.getBalance().subtract(amount));
-        bankRepository.save(bankAccount);
+        bankDAOService.save(bankAccount);
 
         return BankOperationStatus.SUCCESS;
     }

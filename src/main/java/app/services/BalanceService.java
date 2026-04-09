@@ -1,5 +1,7 @@
 package app.services;
 
+import app.dao.MoneyOperationDAOService;
+import app.dao.UserDataDAOService;
 import app.services.interfases.BalanceServiceInterface;
 import app.services.interfases.BankServiceInterface;
 import jakarta.transaction.Transactional;
@@ -12,8 +14,6 @@ import app.model.entities.UserData;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import app.repositories.MoneyOperationRepository;
-import app.repositories.UserDataRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -23,8 +23,9 @@ import java.time.LocalDateTime;
 
 public class BalanceService implements BalanceServiceInterface {
 
-    private final UserDataRepository userDataRepository;
-    private final MoneyOperationRepository moneyOperationRepository;
+    private final UserDataDAOService userDataDAOService;
+    private final MoneyOperationDAOService moneyOperationDAOService;
+
     private final BankServiceInterface bankService;
 
     @Override
@@ -40,7 +41,7 @@ public class BalanceService implements BalanceServiceInterface {
             return status;
         }
 
-        UserData userData = userDataRepository.findById(request.getUserDataId())
+        UserData userData = userDataDAOService.findById(request.getUserDataId())
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
 
         userData.setBalance(userData.getBalance().add(request.getAmount()));
@@ -52,7 +53,7 @@ public class BalanceService implements BalanceServiceInterface {
         op.setUserData(userData);
         op.setName("Регистрация платежа: Банковская карта");
 
-        moneyOperationRepository.save(op);
+        moneyOperationDAOService.save(op);
 
         return BankOperationStatus.SUCCESS;
     }
@@ -60,7 +61,7 @@ public class BalanceService implements BalanceServiceInterface {
     @Override
     @Transactional
     public void spend(Long userDataId, BigDecimal amount, String name) {
-        UserData userData = userDataRepository.findById(userDataId).orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+        UserData userData = userDataDAOService.findById(userDataId).orElseThrow(() -> new RuntimeException("Пользователь не найден"));
 
         if (userData.getBalance().compareTo(amount) < 0) {
             throw new RuntimeException("Недостаточно средств");
@@ -74,12 +75,12 @@ public class BalanceService implements BalanceServiceInterface {
         op.setUserData(userData);
         op.setName(name);
 
-        moneyOperationRepository.save(op);
+        moneyOperationDAOService.save(op);
     }
 
     @Override
     public BalanceResponse getBalance(Long userDataId) {
-        UserData userData = userDataRepository.findById(userDataId)
+        UserData userData = userDataDAOService.findById(userDataId)
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
 
         return new BalanceResponse(

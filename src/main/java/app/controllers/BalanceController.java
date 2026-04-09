@@ -1,6 +1,5 @@
 package app.controllers;
 
-
 import app.dto.BalanceResponse;
 import app.dto.PaymentRequest;
 import app.dto.SpendRequest;
