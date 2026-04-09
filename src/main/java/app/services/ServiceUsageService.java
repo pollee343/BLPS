@@ -22,9 +22,10 @@ public class ServiceUsageService implements ServiceUsageServiceInterface {
     @Override
     @Transactional
     public void createServiceUsage(ServiceUsage serviceUsage) {
-        UserData userData = userDataDAOService
-                .findByAccountNumber(serviceUsage.getUserData().getAccountNumber())
-                .orElseThrow(() -> new EntityNotFoundException("Пользователь с заданным лицевым счетом не найден"));
+        if (serviceUsage.getUserData() == null) {
+            throw new IllegalArgumentException("Пользователя с заданным userDataId не существует");
+        }
+        UserData userData = serviceUsage.getUserData();
 
         if (serviceUsage.getDirection().equals(UsageDirection.OUTGOING)){
             if (serviceUsage.getOperationType().equals(UsageType.CALL)){

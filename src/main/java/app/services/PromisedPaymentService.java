@@ -13,6 +13,7 @@ import app.model.entities.PromisedPayment;
 import app.model.entities.ServiceUsage;
 import app.model.entities.UserData;
 import app.services.interfases.PromisedPaymentServiceInterface;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,10 +38,10 @@ public class PromisedPaymentService implements PromisedPaymentServiceInterface {
         validateRequestedAmount(amount);
 
         UserData userData = userDataDAOService.findById(userDataId)
-                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
 
         if (promisedPaymentDAOService.existsByUserDataIdAndStatus(userDataId, PromisedPaymentStatus.OVERDUE)) {
-            throw new RuntimeException("Нельзя взять новый обещанный платеж, пока не погашена просроченная задолженность");
+            throw new IllegalArgumentException("Нельзя взять новый обещанный платеж, пока не погашена просроченная задолженность");
         }
 
         LocalDateTime now = LocalDateTime.now();
@@ -50,7 +51,7 @@ public class PromisedPaymentService implements PromisedPaymentServiceInterface {
 
         if (monthlyTaken.add(amount).compareTo(BigDecimal.valueOf(3000)) > 0) {
             BigDecimal available = BigDecimal.valueOf(3000).subtract(monthlyTaken).max(BigDecimal.ZERO);
-            throw new RuntimeException("Превышен месячный лимит обещанных платежей. Доступно: " + available + " руб.");
+            throw new IllegalArgumentException("Превышен месячный лимит обещанных платежей. Доступно: " + available + " руб.");
         }
 
         PromisedPayment promisedPayment = new PromisedPayment();
@@ -79,7 +80,7 @@ public class PromisedPaymentService implements PromisedPaymentServiceInterface {
     @Transactional
     public void processPromisedPayment(Long userDataId) {
         UserData userData = userDataDAOService.findById(userDataId)
-                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
 
         LocalDateTime now = LocalDateTime.now();
         boolean hadOverdueBefore = promisedPaymentDAOService.existsByUserDataIdAndStatus(userDataId, PromisedPaymentStatus.OVERDUE);
@@ -139,10 +140,10 @@ public class PromisedPaymentService implements PromisedPaymentServiceInterface {
 
     private void validateRequestedAmount(BigDecimal amount) {
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new RuntimeException("Сумма обещанного платежа должна быть положительной");
+            throw new IllegalArgumentException("Сумма обещанного платежа должна быть положительной");
         }
         if (amount.compareTo(BigDecimal.valueOf(1500)) > 0) {
-            throw new RuntimeException("За один раз можно взять не более 1500 руб.");
+            throw new IllegalArgumentException("За один раз можно взять не более 1500 руб.");
         }
     }
 
