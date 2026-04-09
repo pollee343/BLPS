@@ -1,5 +1,9 @@
 package app.services;
 
+import app.dao.MoneyOperationDAOService;
+import app.dao.PromisedPaymentDAOService;
+import app.dao.ServiceUsageDAOService;
+import app.dao.UserDataDAOService;
 import app.model.enams.PromisedPaymentStatus;
 import app.model.enams.OperationType;
 import app.model.enams.UsageDirection;
@@ -8,10 +12,6 @@ import app.model.entities.MoneyOperation;
 import app.model.entities.PromisedPayment;
 import app.model.entities.ServiceUsage;
 import app.model.entities.UserData;
-import app.repositories.MoneyOperationRepository;
-import app.repositories.PromisedPaymentRepository;
-import app.repositories.ServiceUsageRepository;
-import app.repositories.UserDataRepository;
 import app.services.interfases.PromisedPaymentServiceInterface;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,27 +26,27 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PromisedPaymentService implements PromisedPaymentServiceInterface {
 
-    private final UserDataRepository userDataRepository;
-    private final PromisedPaymentRepository promisedPaymentRepository;
-    private final MoneyOperationRepository moneyOperationRepository;
-    private final ServiceUsageRepository serviceUsageRepository;
+    private final UserDataDAOService userDataDAOService;
+    private final PromisedPaymentDAOService promisedPaymentDAOService;
+    private final MoneyOperationDAOService moneyOperationDAOService;
+    private final ServiceUsageDAOService serviceUsageDAOService;
 
     @Override
     @Transactional
     public void takePromisedPayment(Long userDataId, BigDecimal amount) {
         validateRequestedAmount(amount);
 
-        UserData userData = userDataRepository.findById(userDataId)
+        UserData userData = userDataDAOService.findById(userDataId)
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
 
-        if (promisedPaymentRepository.existsByUserDataIdAndStatus(userDataId, PromisedPaymentStatus.OVERDUE)) {
+        if (promisedPaymentDAOService.existsByUserDataIdAndStatus(userDataId, PromisedPaymentStatus.OVERDUE)) {
             throw new RuntimeException("Нельзя взять новый обещанный платеж, пока не погашена просроченная задолженность");
         }
 
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime monthStart = now.toLocalDate().withDayOfMonth(1).atStartOfDay();
         LocalDateTime nextMonthStart = monthStart.plusMonths(1);
-        BigDecimal monthlyTaken = promisedPaymentRepository.sumAmountTakenForPeriod(userDataId, monthStart, nextMonthStart);
+        BigDecimal monthlyTaken = promisedPaymentDAOService.sumAmountTakenForPeriod(userDataId, monthStart, nextMonthStart);
 
         if (monthlyTaken.add(amount).compareTo(BigDecimal.valueOf(3000)) > 0) {
             BigDecimal available = BigDecimal.valueOf(3000).subtract(monthlyTaken).max(BigDecimal.ZERO);
@@ -63,7 +63,7 @@ public class PromisedPaymentService implements PromisedPaymentServiceInterface {
 
         userData.setBalance(userData.getBalance().add(amount));
 
-        promisedPaymentRepository.save(promisedPayment);
+        promisedPaymentDAOService.save(promisedPayment);
 
         MoneyOperation op = new MoneyOperation();
         op.setOperationTime(now);
@@ -72,19 +72,19 @@ public class PromisedPaymentService implements PromisedPaymentServiceInterface {
         op.setUserData(userData);
         op.setName("Подключение обещанного платежа");
 
-        moneyOperationRepository.save(op);
+        moneyOperationDAOService.save(op);
     }
 
     @Override
     @Transactional
     public void processPromisedPayment(Long userDataId) {
-        UserData userData = userDataRepository.findById(userDataId)
+        UserData userData = userDataDAOService.findById(userDataId)
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
 
         LocalDateTime now = LocalDateTime.now();
-        boolean hadOverdueBefore = promisedPaymentRepository.existsByUserDataIdAndStatus(userDataId, PromisedPaymentStatus.OVERDUE);
+        boolean hadOverdueBefore = promisedPaymentDAOService.existsByUserDataIdAndStatus(userDataId, PromisedPaymentStatus.OVERDUE);
         List<PromisedPayment> paymentsToProcess =
-                promisedPaymentRepository.findByUserDataIdAndStatusInAndDueDateLessThanEqualOrderByDueDateAscCreatedAtAsc(
+                promisedPaymentDAOService.findByUserDataIdAndStatusInAndDueDateLessThanEqualOrderByDueDateAscCreatedAtAsc(
                         userDataId,
                         List.of(PromisedPaymentStatus.ACTIVE, PromisedPaymentStatus.OVERDUE),
                         now
@@ -100,7 +100,7 @@ public class PromisedPaymentService implements PromisedPaymentServiceInterface {
 
             if (payment.getStatus() == PromisedPaymentStatus.ACTIVE) {
                 payment.setStatus(PromisedPaymentStatus.OVERDUE);
-                promisedPaymentRepository.save(payment);
+                promisedPaymentDAOService.save(payment);
                 sendSms(userData,
                         "Номер заблокирован из-за просроченного обещанного платежа на "
                                 + payment.getAmountToRepay() + " руб.");
@@ -110,7 +110,7 @@ public class PromisedPaymentService implements PromisedPaymentServiceInterface {
         }
 
         if (!hasOverdue) {
-            hasOverdue = promisedPaymentRepository.existsByUserDataIdAndStatus(userDataId, PromisedPaymentStatus.OVERDUE);
+            hasOverdue = promisedPaymentDAOService.existsByUserDataIdAndStatus(userDataId, PromisedPaymentStatus.OVERDUE);
         }
 
         userData.setIsBlocked(hasOverdue);
@@ -125,7 +125,7 @@ public class PromisedPaymentService implements PromisedPaymentServiceInterface {
 
         payment.setStatus(PromisedPaymentStatus.PAID);
         payment.setRepaidAt(now);
-        promisedPaymentRepository.save(payment);
+        promisedPaymentDAOService.save(payment);
 
         MoneyOperation op = new MoneyOperation();
         op.setOperationTime(now);
@@ -134,7 +134,7 @@ public class PromisedPaymentService implements PromisedPaymentServiceInterface {
         op.setUserData(userData);
         op.setName("Списание обещанного платежа");
 
-        moneyOperationRepository.save(op);
+        moneyOperationDAOService.save(op);
     }
 
     private void validateRequestedAmount(BigDecimal amount) {
@@ -160,6 +160,6 @@ public class PromisedPaymentService implements PromisedPaymentServiceInterface {
         sms.setOperationTime(LocalDateTime.now());
         sms.setUserData(userData);
 
-        serviceUsageRepository.save(sms);
+        serviceUsageDAOService.save(sms);
     }
 }

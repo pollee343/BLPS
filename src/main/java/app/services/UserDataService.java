@@ -1,10 +1,10 @@
 package app.services;
 
+import app.dao.UserDAOService;
+import app.dao.UserDataDAOService;
 import app.dto.IncreaseRemainingResponse;
 import app.model.entities.User;
 import app.model.entities.UserData;
-import app.repositories.UserDataRepository;
-import app.repositories.UserRepository;
 import app.services.interfases.UserDataServiceInterface;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -16,30 +16,30 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserDataService implements UserDataServiceInterface {
 
-    private final UserDataRepository userDataRepository;
-    private final UserRepository userRepository;
+    private final UserDataDAOService userDataDAOService;
+    private final UserDAOService userDAOService;
 
     @Override
     public void createUserData(UserData userData) {
-        User user = userRepository.findById(userData.getUser().getId())
+        User user = userDAOService.findById(userData.getUser().getId())
                 .orElseThrow(() ->new IllegalArgumentException("Пользователя с заданным id не существует"));
-        userDataRepository.save(userData);
+        userDataDAOService.save(userData);
     }
 
     @Override
     public void increaseRemaining(IncreaseRemainingResponse increaseRemainingResponse) {
-        UserData userData = userDataRepository
+        UserData userData = userDataDAOService
                 .findByAccountNumber(increaseRemainingResponse.getAccountNumber())
                 .orElseThrow(() -> new EntityNotFoundException("Пользователь с заданным лицевым счетом не найден"));
 
         userData.setRemainingSeconds(userData.getRemainingSeconds() + increaseRemainingResponse.getRemainingSeconds());
         userData.setRemainingSms(userData.getRemainingSms() + increaseRemainingResponse.getRemainingSms());
         userData.setRemainingBytes(userData.getRemainingBytes() + increaseRemainingResponse.getRemainingBytes());
-        userDataRepository.save(userData);
+        userDataDAOService.save(userData);
     }
 
     @Override
     public List<UserData> getAllUserData() {
-        return userDataRepository.findAll();
+        return userDataDAOService.findAll();
     }
 }

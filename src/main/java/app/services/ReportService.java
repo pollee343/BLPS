@@ -1,6 +1,9 @@
 package app.services;
 
 import app.PDFUtils.ReportBuilder;
+import app.dao.MoneyOperationDAOService;
+import app.dao.ServiceUsageDAOService;
+import app.dao.UserDataDAOService;
 import app.model.enams.OperationType;
 import app.model.enams.UsageDirection;
 import app.model.enams.UsageType;
@@ -8,9 +11,6 @@ import app.model.entities.MoneyOperation;
 import app.model.entities.ServiceUsage;
 import app.model.entities.UserData;
 import app.model.utils.OperationInformation;
-import app.repositories.MoneyOperationRepository;
-import app.repositories.ServiceUsageRepository;
-import app.repositories.UserDataRepository;
 import app.services.interfases.ReportServiceInterface;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -37,9 +37,10 @@ public class ReportService implements ReportServiceInterface {
 
     private final JavaMailSender emailSender;
     private final ReportBuilder reportBuilder;
-    private final UserDataRepository userDataRepository;
-    private final MoneyOperationRepository moneyOperationRepository;
-    private final ServiceUsageRepository serviceUsageRepository;
+
+    private final UserDataDAOService userDataDAOService;
+    private final MoneyOperationDAOService moneyOperationDAOService;
+    private final ServiceUsageDAOService serviceUsageDAOService;
 
     @Override
     public byte[] getBill(String accountNumber, LocalDate date, String email) throws IOException {
@@ -58,12 +59,12 @@ public class ReportService implements ReportServiceInterface {
         LocalDateTime fromTime = date.atStartOfDay();
         LocalDateTime toTime = date.plusMonths(1).minusDays(1).atTime(23, 59);
 
-        UserData userData = userDataRepository
+        UserData userData = userDataDAOService
                 .findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new EntityNotFoundException("Пользователь с заданным лицевым счетом не найден"));
 
         List<MoneyOperation> moneyOperations =
-                moneyOperationRepository.findByUserDataIdAndOperationTimeBetween(userData.getId(), fromTime, toTime);
+                moneyOperationDAOService.findByUserDataIdAndOperationTimeBetween(userData.getId(), fromTime, toTime);
 
         BigDecimal total = BigDecimal.ZERO;
         BigDecimal incs = BigDecimal.ZERO;
@@ -80,7 +81,7 @@ public class ReportService implements ReportServiceInterface {
                 ? BigDecimal.ZERO : total.subtract(incs);
 
         List<MoneyOperation> moneyOpsBig =
-                moneyOperationRepository.findByUserDataIdAndOperationTimeBefore(userData.getId(), fromTime);
+                moneyOperationDAOService.findByUserDataIdAndOperationTimeBefore(userData.getId(), fromTime);
         BigDecimal rem_on_from = BigDecimal.ZERO;
         for (MoneyOperation moneyOperation : moneyOpsBig) {
             if (moneyOperation.getType() == OperationType.INCOME){
@@ -100,7 +101,7 @@ public class ReportService implements ReportServiceInterface {
             throw new IllegalArgumentException("Детализированная информация доступна только за время до текущего момента");
         }
 
-        UserData userData = userDataRepository
+        UserData userData = userDataDAOService
                 .findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new EntityNotFoundException("Пользователь с заданным лицевым счетом не найден"));
 
@@ -108,7 +109,7 @@ public class ReportService implements ReportServiceInterface {
         LocalDateTime toTime = to.atTime(23, 59);
 
         List<MoneyOperation> moneyOperations =
-                moneyOperationRepository.findByUserDataIdAndOperationTimeBetween(userData.getId(), fromTime, toTime);
+                moneyOperationDAOService.findByUserDataIdAndOperationTimeBetween(userData.getId(), fromTime, toTime);
 
         Map<String, BigDecimal> forCategory = new HashMap<>();
         for (MoneyOperation moneyOperation : moneyOperations) {
@@ -122,7 +123,7 @@ public class ReportService implements ReportServiceInterface {
         }
 
         List<ServiceUsage> serviceUsages =
-                serviceUsageRepository.findByUserDataIdAndOperationTimeBetween(userData.getId(), fromTime, toTime);
+                serviceUsageDAOService.findByUserDataIdAndOperationTimeBetween(userData.getId(), fromTime, toTime);
         serviceUsages.sort(Comparator.comparing(ServiceUsage::getOperationTime));
 
         List<OperationInformation> operations = new ArrayList<>();
