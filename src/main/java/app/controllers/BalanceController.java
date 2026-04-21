@@ -4,19 +4,19 @@ import app.dto.BalanceResponse;
 import app.dto.PaymentRequest;
 import app.dto.SpendRequest;
 import app.model.enams.BankOperationStatus;
+import app.services.interfases.BalanceServiceInterface;
+import app.services.interfases.PromisedPaymentServiceInterface;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import app.services.BalanceService;
-import app.services.PromisedPaymentService;
 
 @RestController
 @RequestMapping("/api/balance")
 @RequiredArgsConstructor
 public class BalanceController {
 
-    private final BalanceService balanceService;
-    private final PromisedPaymentService promisedPaymentService;
+    private final BalanceServiceInterface balanceService;
+    private final PromisedPaymentServiceInterface promisedPaymentService;
 
     @PostMapping("/top-up")
     public ResponseEntity<?> topUp(@RequestBody PaymentRequest request) {

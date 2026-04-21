@@ -7,6 +7,7 @@ CREATE TYPE operation_type AS ENUM ('INCOME', 'EXPENSE');
 CREATE TYPE usage_type AS ENUM ('CALL', 'SMS', 'INTERNET');
 CREATE TYPE usage_direction AS ENUM ('INCOMING', 'OUTGOING');
 CREATE TYPE promised_payment_status AS ENUM ('ACTIVE', 'OVERDUE', 'PAID');
+CREATE TYPE application_type AS ENUM ('PROMISED_PAYMENT_REJECTION', 'LEGALLY_RELIABLE_REPORT');
 
 DO $$
 BEGIN
@@ -93,3 +94,11 @@ CREATE TABLE IF NOT EXISTS service_usage (
     operation_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     user_data_id BIGINT NOT NULL REFERENCES user_data(id) ON DELETE CASCADE
     );
+
+CREATE TABLE IF NOT EXISTS applications (
+    id BIGSERIAL PRIMARY KEY,
+    user_data_id BIGINT NOT NULL REFERENCES user_data(id) ON DELETE CASCADE,
+    app_type application_type NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    is_waiting BOOLEAN NOT NULL DEFAULT true
+)

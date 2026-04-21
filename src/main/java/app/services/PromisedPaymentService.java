@@ -4,6 +4,7 @@ import app.dao.MoneyOperationDAOService;
 import app.dao.PromisedPaymentDAOService;
 import app.dao.ServiceUsageDAOService;
 import app.dao.UserDataDAOService;
+import app.dto.PromisedPaymentDataResponse;
 import app.model.enams.PromisedPaymentStatus;
 import app.model.enams.OperationType;
 import app.model.enams.UsageDirection;
@@ -120,6 +121,15 @@ public class PromisedPaymentService implements PromisedPaymentServiceInterface {
             sendSms(userData, "Все просроченные обещанные платежи погашены. Номер разблокирован.");
         }
     }
+
+    @Override
+    public List<PromisedPaymentDataResponse> getPromisedPaymentRejectData(String accountNumber){
+        UserData userData = userDataDAOService.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+        // todo
+        return null;
+    }
+
 
     private void repayPromisedPayment(UserData userData, PromisedPayment payment, LocalDateTime now) {
         userData.setBalance(userData.getBalance().subtract(payment.getAmountToRepay()));

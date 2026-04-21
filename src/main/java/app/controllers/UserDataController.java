@@ -38,4 +38,11 @@ public class UserDataController {
     public List<UserData> getAll() {
         return userDataService.getAllUserData();
     }
+
+    //todo
+    @GetMapping("/getUserDataForPromisedPaymentRejection")
+    public ResponseEntity<String> getUserDataForPromisedPaymentRejection(){
+
+        return ResponseEntity.ok("");
+    }
 }
