@@ -1,5 +1,6 @@
 package app.model.entities;
 
+import app.model.auth.UserAuth;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,7 +36,10 @@ public class User {
     @Column(name = "passport_number", length = 6)
     private String passportNumber;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserData> userData;
+
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private UserAuth auth;
 
 }

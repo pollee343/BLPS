@@ -101,4 +101,25 @@ CREATE TABLE IF NOT EXISTS applications (
     app_type application_type NOT NULL,
     email VARCHAR(255) NOT NULL,
     is_waiting BOOLEAN NOT NULL DEFAULT true
-)
+);
+
+create table users_auth (
+    user_id bigint primary key,
+    username varchar(100) not null unique,
+    password_hash varchar(255) not null,
+    enabled boolean not null default true,
+    foreign key (user_id) references users(id)
+);
+
+create table roles (
+    id bigint primary key generated always as identity,
+    name varchar(100) not null unique
+);
+
+create table user_roles (
+    user_id bigint not null,
+    role_id bigint not null,
+    primary key (user_id, role_id),
+    foreign key (user_id) references users_auth(user_id),
+    foreign key (role_id) references roles(id)
+);

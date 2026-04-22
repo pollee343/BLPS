@@ -7,10 +7,10 @@ import app.model.enams.ApplicationType;
 import app.model.entities.Application;
 import app.model.entities.UserData;
 import app.services.interfases.ApplicationServiceInterface;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,6 +57,14 @@ public class ApplicationService implements ApplicationServiceInterface {
                 .stream()
                 .map(this::buildApplicationResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void makeApplicationProcessed(UserData userData, ApplicationType applicationType) {
+        Application application = applicationDAOService.findWaitingApplications(userData, applicationType)
+                .orElseThrow(() -> new EntityNotFoundException("Не найдены необработанные заявки"));
+        application.setIsWaiting(false);
+        applicationDAOService.createApplication(application);
     }
 
     private void createApplication(String email, ApplicationType applicationType, UserData userData) {

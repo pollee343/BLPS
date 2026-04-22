@@ -6,6 +6,11 @@ import app.services.interfases.ApplicationServiceInterface;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.annotation.CurrentSecurityContext;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,12 +23,13 @@ public class ApplicationController {
     private final ApplicationServiceInterface applicationService;
 
     @PostMapping("/promisedPaymentRejection")
-    public ResponseEntity<String> promisedPaymentRejection(@Valid @RequestBody ApplicationRequest applicationRequest) {
+    public ResponseEntity<String> promisedPaymentRejection(@Valid @RequestBody ApplicationRequest applicationRequest,
+                                                           @AuthenticationPrincipal Jwt jwt) {
         applicationService.promisedPaymentRejection(applicationRequest.getAccountNumber(), applicationRequest.getEmail());
         return ResponseEntity.ok("Заявка на получение информации об отказе в получении обещанного платежа успешно получена");
     }
 
-    //todo только модератор
+    @PreAuthorize("hasRole('MODERATOR')")
     @GetMapping("/getAllPromisedPaymentRejectionApps")
     public List<ApplicationResponse> getAllPromisedPaymentRejectionApps() {
         return applicationService.getAllPromisedPaymentRejectionApps();
@@ -35,7 +41,7 @@ public class ApplicationController {
         return ResponseEntity.ok("Заявка на получение юридически достоверного отчета успешно получена");
     }
 
-    //todo только админ
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/getAllLegallyReliableRetortApps")
     public List<ApplicationResponse> getAllLegallyReliableRetortApps(){
         return applicationService.getAllLegallyReliableRetortApps();

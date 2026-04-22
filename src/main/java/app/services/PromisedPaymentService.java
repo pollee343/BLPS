@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -126,8 +127,20 @@ public class PromisedPaymentService implements PromisedPaymentServiceInterface {
     public List<PromisedPaymentDataResponse> getPromisedPaymentRejectData(String accountNumber){
         UserData userData = userDataDAOService.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
-        // todo
-        return null;
+        return promisedPaymentDAOService.getByUserData(userData)
+                .stream()
+                .map(this::buildPromisedPaymentDataResponse)
+                .collect(Collectors.toList());
+    }
+
+    private PromisedPaymentDataResponse buildPromisedPaymentDataResponse(PromisedPayment promisedPayment) {
+        return new PromisedPaymentDataResponse()
+                .setAmount(promisedPayment.getAmount())
+                .setStatus(promisedPayment.getStatus())
+                .setAmountToRepay(promisedPayment.getAmountToRepay())
+                .setDueDate(promisedPayment.getDueDate())
+                .setCreatedAt(promisedPayment.getCreatedAt())
+                .setRepaidAt(promisedPayment.getRepaidAt());
     }
 
 

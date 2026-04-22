@@ -1,6 +1,8 @@
 package app.services.interfases;
 
 import app.dto.ApplicationResponse;
+import app.model.enams.ApplicationType;
+import app.model.entities.UserData;
 
 import java.util.List;
 
@@ -9,4 +11,5 @@ public interface ApplicationServiceInterface {
     void legallyReliableReport(String accountNumber, String email);
     List<ApplicationResponse> getAllPromisedPaymentRejectionApps();
     List<ApplicationResponse> getAllLegallyReliableRetortApps();
+    void makeApplicationProcessed(UserData userData, ApplicationType applicationType);
 }

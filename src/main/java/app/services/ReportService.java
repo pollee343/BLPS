@@ -14,6 +14,7 @@ import app.model.entities.MoneyOperation;
 import app.model.entities.ServiceUsage;
 import app.model.entities.UserData;
 import app.model.utils.OperationInformation;
+import app.services.interfases.ApplicationServiceInterface;
 import app.services.interfases.ReportServiceInterface;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -46,6 +47,8 @@ public class ReportService implements ReportServiceInterface {
     private final MoneyOperationDAOService moneyOperationDAOService;
     private final ServiceUsageDAOService serviceUsageDAOService;
     private final ApplicationDAOService applicationDAOService;
+
+    private final ApplicationServiceInterface applicationService;
 
     @Override
     public byte[] getBill(String accountNumber, LocalDate date, String email) throws IOException {
@@ -238,5 +241,6 @@ public class ReportService implements ReportServiceInterface {
                     "",
                     file.getBytes());
         }
+        applicationService.makeApplicationProcessed(userData, applicationType);
     }
 }

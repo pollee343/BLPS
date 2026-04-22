@@ -2,6 +2,7 @@ package app.repositories;
 
 import app.model.enams.PromisedPaymentStatus;
 import app.model.entities.PromisedPayment;
+import app.model.entities.UserData;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -42,4 +43,6 @@ public interface PromisedPaymentRepository extends JpaRepository<PromisedPayment
             """)
     List<Long> findDistinctUserIdsWithDuePayments(@Param("statuses") Collection<PromisedPaymentStatus> statuses,
                                                   @Param("now") LocalDateTime now);
+
+    List<PromisedPayment> getByUserData(UserData userData);
 }

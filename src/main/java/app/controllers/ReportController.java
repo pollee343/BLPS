@@ -1,5 +1,6 @@
 package app.controllers;
 
+import app.dao.ReportSendingBodyRequest;
 import app.dto.ApplicationResponse;
 import app.model.enams.ApplicationType;
 import app.services.interfases.ReportServiceInterface;
@@ -76,16 +77,14 @@ public class ReportController {
 
     // todo
     @PostMapping(name = "/sendReportOnEmail", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> sendReportOnEmail(@RequestParam String accountNumber,
-                                                    @RequestParam ApplicationType applicationType,
-                                                    @RequestPart("file") MultipartFile file) throws MessagingException, IOException {
+    public ResponseEntity<String> sendReportOnEmail(@RequestBody ReportSendingBodyRequest body) throws MessagingException, IOException {
 
-        if (file.isEmpty()) {
+        if (body.getFile().isEmpty()) {
             return ResponseEntity.badRequest().body("Файл не загружен");
         }
 
-        String contentType = file.getContentType();
-        String originalFilename = file.getOriginalFilename();
+        String contentType = body.getFile().getContentType();
+        String originalFilename = body.getFile().getOriginalFilename();
 
         boolean pdfByMime = MediaType.APPLICATION_PDF_VALUE.equalsIgnoreCase(contentType);
         boolean pdfByName = originalFilename != null
@@ -95,7 +94,7 @@ public class ReportController {
             return ResponseEntity.badRequest().body("Разрешён только PDF");
         }
 
-        reportService.sendReportOnEmail(accountNumber, applicationType, file);
+        reportService.sendReportOnEmail(body.getAccountNumber(), body.getApplicationType(), body.getFile());
         return ResponseEntity.ok("sendReportOnEmail");
     }
 

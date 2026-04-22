@@ -1,7 +1,9 @@
 package app.controllers;
 
 import app.dto.IncreaseRemainingResponse;
+import app.dto.PromisedPaymentDataResponse;
 import app.model.entities.UserData;
+import app.services.interfases.PromisedPaymentServiceInterface;
 import app.services.interfases.UserDataServiceInterface;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class UserDataController {
 
     private final UserDataServiceInterface userDataService;
+    private final PromisedPaymentServiceInterface promisedPaymentService;
 
     @PostMapping("/createUserData")
     public ResponseEntity<String> createUserData(@Valid @RequestBody UserData userData) {
@@ -41,8 +44,7 @@ public class UserDataController {
 
     //todo
     @GetMapping("/getUserDataForPromisedPaymentRejection")
-    public ResponseEntity<String> getUserDataForPromisedPaymentRejection(){
-
-        return ResponseEntity.ok("");
+    public List<PromisedPaymentDataResponse> getUserDataForPromisedPaymentRejection(@RequestParam String accountNumber) {
+        return promisedPaymentService.getPromisedPaymentRejectData(accountNumber);
     }
 }
