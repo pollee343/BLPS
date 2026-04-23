@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import app.model.enams.BankOperationStatus;
 import app.model.entities.Bank;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Random;
@@ -20,7 +19,6 @@ public class BankService implements BankServiceInterface {
     private final Random random = new Random();
 
     @Override
-    @Transactional
     public BankOperationStatus processPayment(String cardNumber, String cvc, BigDecimal amount) {
 
         // имитация тех ошибки банка

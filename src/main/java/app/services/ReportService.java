@@ -16,10 +16,11 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -32,8 +33,9 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Log4j2
 public class ReportService implements ReportServiceInterface {
+
+    private static final Logger log = LoggerFactory.getLogger(ReportService.class);
 
     private final JavaMailSender emailSender;
     private final ReportBuilder reportBuilder;

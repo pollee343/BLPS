@@ -4,7 +4,8 @@ import app.services.interfases.ReportServiceInterface;
 import jakarta.mail.MessagingException;
 import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.util.Pair;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -20,8 +21,9 @@ import java.time.LocalDate;
 @RestController
 @RequestMapping("/api/report")
 @RequiredArgsConstructor
-@Log4j2
 public class ReportController {
+
+    private static final Logger log = LoggerFactory.getLogger(ReportController.class);
 
     private final ReportServiceInterface reportService;
 

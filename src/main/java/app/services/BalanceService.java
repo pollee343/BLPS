@@ -4,7 +4,7 @@ import app.dao.MoneyOperationDAOService;
 import app.dao.UserDataDAOService;
 import app.services.interfases.BalanceServiceInterface;
 import app.services.interfases.BankServiceInterface;
-import jakarta.transaction.Transactional;
+import app.services.interfases.PromisedPaymentServiceInterface;
 import app.dto.BalanceResponse;
 import app.dto.PaymentRequest;
 import app.model.enams.BankOperationStatus;
@@ -14,6 +14,7 @@ import app.model.entities.UserData;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -27,18 +28,23 @@ public class BalanceService implements BalanceServiceInterface {
     private final MoneyOperationDAOService moneyOperationDAOService;
 
     private final BankServiceInterface bankService;
+    private final PromisedPaymentServiceInterface promisedPaymentService;
+    private final TransactionTemplate transactionTemplate;
 
     @Override
-    @Transactional
     public BankOperationStatus topUp(PaymentRequest request) {
-        BankOperationStatus status = bankService.processPayment(
+        return transactionTemplate.execute(status -> topUpInTransaction(request));
+    }
+
+    private BankOperationStatus topUpInTransaction(PaymentRequest request) {
+        BankOperationStatus bankStatus = bankService.processPayment(
                 request.getCardNumber(),
                 request.getCvc(),
                 request.getAmount()
         );
 
-        if (status != BankOperationStatus.SUCCESS) {
-            return status;
+        if (bankStatus != BankOperationStatus.SUCCESS) {
+            return bankStatus;
         }
 
         UserData userData = userDataDAOService.findById(request.getUserDataId())
@@ -55,13 +61,19 @@ public class BalanceService implements BalanceServiceInterface {
 
         moneyOperationDAOService.save(op);
 
+        promisedPaymentService.processPromisedPayment(request.getUserDataId());
+
         return BankOperationStatus.SUCCESS;
     }
 
     @Override
-    @Transactional
     public void spend(Long userDataId, BigDecimal amount, String name) {
-        UserData userData = userDataDAOService.findById(userDataId).orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+        transactionTemplate.executeWithoutResult(status -> spendInTransaction(userDataId, amount, name));
+    }
+
+    private void spendInTransaction(Long userDataId, BigDecimal amount, String name) {
+        UserData userData = userDataDAOService.findById(userDataId)
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
 
         if (userData.getBalance().compareTo(amount) < 0) {
             throw new RuntimeException("Недостаточно средств");

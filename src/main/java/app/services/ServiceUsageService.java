@@ -7,10 +7,9 @@ import app.model.enams.UsageType;
 import app.model.entities.ServiceUsage;
 import app.model.entities.UserData;
 import app.services.interfases.ServiceUsageServiceInterface;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @Service
 @RequiredArgsConstructor
@@ -18,10 +17,14 @@ public class ServiceUsageService implements ServiceUsageServiceInterface {
 
     private final ServiceUsageDAOService serviceUsageDAOService;
     private final UserDataDAOService userDataDAOService;
+    private final TransactionTemplate transactionTemplate;
 
     @Override
-    @Transactional
     public void createServiceUsage(ServiceUsage serviceUsage) {
+        transactionTemplate.executeWithoutResult(status -> createServiceUsageInTransaction(serviceUsage));
+    }
+
+    private void createServiceUsageInTransaction(ServiceUsage serviceUsage) {
         if (serviceUsage.getUserData() == null) {
             throw new IllegalArgumentException("Пользователя с заданным userDataId не существует");
         }
