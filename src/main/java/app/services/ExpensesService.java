@@ -2,7 +2,7 @@ package app.services;
 
 import app.dao.MoneyOperationDAOService;
 import app.dao.UserDataDAOService;
-import app.dto.ExpensesResponse;
+import app.dto.responses.ExpensesResponse;
 import app.model.enams.OperationType;
 import app.model.entities.MoneyOperation;
 import app.model.entities.UserData;

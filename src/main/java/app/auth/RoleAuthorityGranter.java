@@ -14,7 +14,7 @@ public class RoleAuthorityGranter implements AuthorityGranter {
     @Override
     public Set<String> grant(Principal principal) {
         if (principal instanceof RolePrincipal rolePrincipal) {
-            return Set.of(rolePrincipal.getName());
+            return Set.of("ROLE_" + rolePrincipal.getName());
         }
         return Set.of();
     }

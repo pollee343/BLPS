@@ -1,7 +1,6 @@
 package app.controllers;
 
 import app.dao.ReportSendingBodyRequest;
-import app.dto.ApplicationResponse;
 import app.model.enams.ApplicationType;
 import app.services.interfases.ReportServiceInterface;
 import jakarta.mail.MessagingException;
@@ -12,6 +11,7 @@ import org.springframework.data.util.Pair;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,6 +26,8 @@ public class ReportController {
 
     private final ReportServiceInterface reportService;
 
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')" +
+            "&& @securityService.canAccessAccountNumber(authentication, #accountNumber)")
     @GetMapping("/getInformationAboutExpenses")
     public ResponseEntity<byte[]> getInformationAboutExpenses(@RequestParam("accountNumber") String accountNumber,
                                                                                @RequestParam(name = "from", required = false) LocalDate from,
@@ -40,6 +42,8 @@ public class ReportController {
                 .body(data);
     }
 
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')" +
+            "&& @securityService.canAccessAccountNumber(authentication, #accountNumber)")
     @GetMapping("/getInformationAboutExpensesOnEmail")
     public ResponseEntity<String> getInformationAboutExpensesOnEmail(@RequestParam("accountNumber") String accountNumber,
                                                                                @RequestParam(name = "from", required = false) LocalDate from,
@@ -56,6 +60,8 @@ public class ReportController {
 
     }
 
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')" +
+            "&& @securityService.canAccessAccountNumber(authentication, #accountNumber)")
     @GetMapping("/getBill")
     public ResponseEntity<String> getBill(@RequestParam("accountNumber") String accountNumber,
                                                            @RequestParam(name = "date") LocalDate date,
@@ -75,16 +81,18 @@ public class ReportController {
 //                .body(data);
     }
 
-    // todo
-    @PostMapping(name = "/sendReportOnEmail", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> sendReportOnEmail(@RequestBody ReportSendingBodyRequest body) throws MessagingException, IOException {
+    @PreAuthorize("hasRole('MODERATOR') || hasRole('ADMIN')")
+    @PostMapping(path = "/sendReportOnEmail", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> sendReportOnEmail(@RequestParam String accountNumber,
+                                                    @RequestParam ApplicationType applicationType,
+                                                    @RequestPart("file") MultipartFile file) throws MessagingException, IOException {
 
-        if (body.getFile().isEmpty()) {
+        if (file.isEmpty()) {
             return ResponseEntity.badRequest().body("Файл не загружен");
         }
 
-        String contentType = body.getFile().getContentType();
-        String originalFilename = body.getFile().getOriginalFilename();
+        String contentType = file.getContentType();
+        String originalFilename = file.getOriginalFilename();
 
         boolean pdfByMime = MediaType.APPLICATION_PDF_VALUE.equalsIgnoreCase(contentType);
         boolean pdfByName = originalFilename != null
@@ -94,7 +102,7 @@ public class ReportController {
             return ResponseEntity.badRequest().body("Разрешён только PDF");
         }
 
-        reportService.sendReportOnEmail(body.getAccountNumber(), body.getApplicationType(), body.getFile());
+        reportService.sendReportOnEmail(accountNumber, applicationType, file);
         return ResponseEntity.ok("sendReportOnEmail");
     }
 

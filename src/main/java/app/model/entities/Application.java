@@ -10,7 +10,6 @@ import lombok.experimental.Accessors;
 @Setter
 @Entity
 @Table(name = "applications")
-@Accessors(chain = true)
 public class Application {
 
     @Id
@@ -18,7 +17,7 @@ public class Application {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "application_type")
+    @Column(name = "app_type")
     private ApplicationType applicationType;
 
     @Column(name = "email", length = 255, nullable = false)

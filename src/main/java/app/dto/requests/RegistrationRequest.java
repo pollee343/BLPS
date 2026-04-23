@@ -1,12 +1,13 @@
-package app.dto;
+package app.dto.requests;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 public class RegistrationRequest {
@@ -18,8 +19,8 @@ public class RegistrationRequest {
     @Size(min = 3, max = 18)
     private String password;
 
-    @NotBlank
-    private String roleName;
+    @NotEmpty
+    private List<String> roleNames;
 
     @NotBlank
     private String firstName;

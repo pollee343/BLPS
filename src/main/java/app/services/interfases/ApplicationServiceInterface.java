@@ -1,6 +1,6 @@
 package app.services.interfases;
 
-import app.dto.ApplicationResponse;
+import app.dto.responses.ApplicationResponse;
 import app.model.enams.ApplicationType;
 import app.model.entities.UserData;
 

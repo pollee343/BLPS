@@ -1,4 +1,4 @@
-package app.dto;
+package app.dto.responses;
 
 import app.model.enams.PromisedPaymentStatus;
 

@@ -1,4 +1,4 @@
-package app.dto;
+package app.dto.requests;
 
 import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;

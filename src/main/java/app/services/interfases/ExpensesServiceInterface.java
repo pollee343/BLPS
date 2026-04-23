@@ -1,6 +1,6 @@
 package app.services.interfases;
 
-import app.dto.ExpensesResponse;
+import app.dto.responses.ExpensesResponse;
 import app.model.enams.OperationType;
 
 import java.time.LocalDate;

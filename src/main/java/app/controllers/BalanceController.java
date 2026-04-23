@@ -1,13 +1,14 @@
 package app.controllers;
 
-import app.dto.BalanceResponse;
-import app.dto.PaymentRequest;
-import app.dto.SpendRequest;
+import app.dto.responses.BalanceResponse;
+import app.dto.requests.PaymentRequest;
+import app.dto.requests.SpendRequest;
 import app.model.enams.BankOperationStatus;
 import app.services.interfases.BalanceServiceInterface;
 import app.services.interfases.PromisedPaymentServiceInterface;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,6 +19,7 @@ public class BalanceController {
     private final BalanceServiceInterface balanceService;
     private final PromisedPaymentServiceInterface promisedPaymentService;
 
+    @PreAuthorize("hasRole('USER') || hasRole('MODERATOR') || hasRole('ADMIN')")
     @PostMapping("/top-up")
     public ResponseEntity<?> topUp(@RequestBody PaymentRequest request) {
         BankOperationStatus status = balanceService.topUp(request);
@@ -31,6 +33,8 @@ public class BalanceController {
         };
     }
 
+    @PreAuthorize("hasRole('USER') || hasRole('MODERATOR') || hasRole('ADMIN')" +
+            "&& @securityService.canAccessUserData(authentication, #userDataId)")
     @GetMapping("/{userDataId}")
     public ResponseEntity<?> getBalance(@PathVariable Long userDataId) {
         BalanceResponse response = balanceService.getBalance(userDataId);

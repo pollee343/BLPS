@@ -14,5 +14,4 @@ import org.springframework.web.multipart.MultipartFile;
 public class ReportSendingBodyRequest {
     private String accountNumber;
     private ApplicationType applicationType;
-    private MultipartFile file;
 }

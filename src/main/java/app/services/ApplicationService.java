@@ -2,7 +2,7 @@ package app.services;
 
 import app.dao.ApplicationDAOService;
 import app.dao.UserDataDAOService;
-import app.dto.ApplicationResponse;
+import app.dto.responses.ApplicationResponse;
 import app.model.enams.ApplicationType;
 import app.model.entities.Application;
 import app.model.entities.UserData;
@@ -68,10 +68,10 @@ public class ApplicationService implements ApplicationServiceInterface {
     }
 
     private void createApplication(String email, ApplicationType applicationType, UserData userData) {
-        Application application = new Application()
-                .setApplicationType(applicationType)
-                .setEmail(email)
-                .setUserData(userData);
+        Application application = new Application();
+        application.setApplicationType(applicationType);
+        application.setEmail(email);
+        application.setUserData(userData);
         applicationDAOService.createApplication(application);
     }
 

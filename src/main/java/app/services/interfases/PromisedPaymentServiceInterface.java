@@ -1,6 +1,6 @@
 package app.services.interfases;
 
-import app.dto.PromisedPaymentDataResponse;
+import app.dto.responses.PromisedPaymentDataResponse;
 
 import java.math.BigDecimal;
 import java.util.List;

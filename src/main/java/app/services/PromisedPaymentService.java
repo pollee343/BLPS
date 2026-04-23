@@ -4,7 +4,7 @@ import app.dao.MoneyOperationDAOService;
 import app.dao.PromisedPaymentDAOService;
 import app.dao.ServiceUsageDAOService;
 import app.dao.UserDataDAOService;
-import app.dto.PromisedPaymentDataResponse;
+import app.dto.responses.PromisedPaymentDataResponse;
 import app.model.enams.PromisedPaymentStatus;
 import app.model.enams.OperationType;
 import app.model.enams.UsageDirection;

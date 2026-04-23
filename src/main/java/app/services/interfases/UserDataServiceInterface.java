@@ -1,6 +1,6 @@
 package app.services.interfases;
 
-import app.dto.IncreaseRemainingResponse;
+import app.dto.responses.IncreaseRemainingResponse;
 import app.model.entities.UserData;
 
 import java.util.List;

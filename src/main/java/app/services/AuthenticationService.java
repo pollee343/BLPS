@@ -1,18 +1,23 @@
 package app.services;
 
+import app.auth.JwtService;
+import app.auth.principals.UserPrincipal;
 import app.dao.RoleDAOService;
 import app.dao.UserAuthDAOService;
 import app.dao.UserDAOService;
 import app.dao.UserDataDAOService;
-import app.dto.RegistrationRequest;
-import app.model.auth.Role;
+import app.dto.requests.RegistrationRequest;
 import app.model.auth.UserAuth;
 import app.model.entities.User;
 import app.model.entities.UserData;
 import app.services.interfases.AuthenticationServiceInterface;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 
@@ -26,7 +31,11 @@ public class AuthenticationService implements AuthenticationServiceInterface {
     private final UserDAOService userDAOService;
     private final PasswordEncoder passwordEncoder;
 
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
+
     @Override
+    @Transactional
     public void registration(RegistrationRequest request) {
 
         if (userAuthDAOService.findByUsername(request.getUsername()).isPresent()) {
@@ -49,8 +58,9 @@ public class AuthenticationService implements AuthenticationServiceInterface {
             throw new IllegalArgumentException("Серия паспорта уже занят");
         }
 
-        Role userRole = roleDAOService.findByName(request.getRoleName())
-                .orElseThrow(() -> new IllegalStateException("Роль не найдена"));
+        for (String role: request.getRoleNames()){
+            roleDAOService.findByName(role).orElseThrow(() -> new IllegalStateException("Роль не найдена"));
+        }
 
         User user = new User();
         user.setFirstName(request.getFirstName());
@@ -78,6 +88,7 @@ public class AuthenticationService implements AuthenticationServiceInterface {
         }
 
         user.getUserData().add(userData);
+        userData.setUser(user);
 
         user = userDAOService.save(user);
 
@@ -89,8 +100,31 @@ public class AuthenticationService implements AuthenticationServiceInterface {
 
         auth = userAuthDAOService.save(auth);
 
-        auth.getRoles().add(userRole);
+        for (String role: request.getRoleNames()){
+            auth.getRoles().add(roleDAOService.findByName(role)
+                    .orElseThrow(() -> new IllegalStateException("Роль не найдена")));
+        }
 
         userAuthDAOService.save(auth);
+    }
+
+    public String login(String login, String password) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(login, password)
+        );
+
+        UserAuth auth = userAuthDAOService.findByUsername(login).orElseThrow();
+        UserPrincipal principal = new UserPrincipal(
+                auth.getUsername(),
+                auth.getUser().getId()
+        );
+
+        Authentication appAuth = new UsernamePasswordAuthenticationToken(
+                principal,
+                null,
+                authentication.getAuthorities()
+        );
+
+        return jwtService.generateToken(appAuth);
     }
 }

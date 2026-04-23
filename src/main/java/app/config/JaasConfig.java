@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.jaas.AuthorityGranter;
 import org.springframework.security.authentication.jaas.DefaultJaasAuthenticationProvider;
-import org.springframework.security.authentication.jaas.JaasAuthenticationProvider;
 
 import javax.security.auth.login.AppConfigurationEntry;
 import java.util.Map;

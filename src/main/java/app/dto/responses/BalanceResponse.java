@@ -1,8 +1,7 @@
-package app.dto;
+package app.dto.responses;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 
 import java.math.BigDecimal;
 

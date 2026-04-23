@@ -60,14 +60,14 @@ public class DbLoginModule implements LoginModule {
         String rawPassword = new String(passwordCallback.getPassword());
 
         UserAuth user = userAuthDAOService.findByUsername(username)
-                .orElseThrow(() -> new FailedLoginException("User not found"));
+                .orElseThrow(() -> new FailedLoginException("Пользователь не найден"));
 
         if (!user.isEnabled()) {
-            throw new FailedLoginException("User disabled");
+            throw new FailedLoginException("Пользователь заблокирован");
         }
 
         if (!passwordEncoder.matches(rawPassword, user.getPasswordHash())) {
-            throw new FailedLoginException("Bad credentials");
+            throw new FailedLoginException("Неверные данные");
         }
 
         principals.add(new UserPrincipal(user.getUsername(), user.getUserId()));
