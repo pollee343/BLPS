@@ -139,3 +139,11 @@ INSERT INTO promised_payments (
     NULL,
     (SELECT id FROM user_data WHERE phone_number = '79161234567')
 );
+
+INSERT INTO roles (
+    name
+) VALUES
+(
+'USER'),
+    ('ADMIN'),
+ ('MODERATOR');

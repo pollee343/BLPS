@@ -18,11 +18,19 @@ public class UserDAOService {
         return userRepository.findById(userId);
     }
 
-    public void save(User user) {
-        userRepository.save(user);
+    public User save(User user) {
+        return userRepository.save(user);
     }
 
     public List<User> findAll(){
         return userRepository.findAll();
+    }
+
+    public Optional<User> findByPassportSeries(String passportSeries) {
+        return userRepository.findByPassportSeries(passportSeries);
+    }
+
+    public Optional<User> findByPassportNumber(String passportNumber) {
+        return userRepository.findByPassportNumber(passportNumber);
     }
 }

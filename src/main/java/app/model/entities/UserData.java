@@ -51,4 +51,7 @@ public class UserData {
 
     @OneToMany(mappedBy = "userData")
     private List<PromisedPayment> promisedPayments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "userData")
+    private List<Application> applications = new ArrayList<>();
 }

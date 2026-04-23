@@ -4,7 +4,6 @@ import app.dao.MoneyOperationDAOService;
 import app.dao.UserDataDAOService;
 import app.services.interfases.BalanceServiceInterface;
 import app.services.interfases.BankServiceInterface;
-import app.services.interfases.PromisedPaymentServiceInterface;
 import app.dto.BalanceResponse;
 import app.dto.PaymentRequest;
 import app.model.enams.BankOperationStatus;

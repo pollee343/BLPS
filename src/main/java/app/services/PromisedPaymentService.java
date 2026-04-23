@@ -4,6 +4,7 @@ import app.dao.MoneyOperationDAOService;
 import app.dao.PromisedPaymentDAOService;
 import app.dao.ServiceUsageDAOService;
 import app.dao.UserDataDAOService;
+import app.dto.responses.PromisedPaymentDataResponse;
 import app.model.enams.PromisedPaymentStatus;
 import app.model.enams.OperationType;
 import app.model.enams.UsageDirection;
@@ -22,6 +23,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -127,6 +129,27 @@ public class PromisedPaymentService implements PromisedPaymentServiceInterface {
             sendSms(userData, "Все просроченные обещанные платежи погашены. Номер разблокирован.");
         }
     }
+
+    @Override
+    public List<PromisedPaymentDataResponse> getPromisedPaymentRejectData(String accountNumber){
+        UserData userData = userDataDAOService.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+        return promisedPaymentDAOService.getByUserData(userData)
+                .stream()
+                .map(this::buildPromisedPaymentDataResponse)
+                .collect(Collectors.toList());
+    }
+
+    private PromisedPaymentDataResponse buildPromisedPaymentDataResponse(PromisedPayment promisedPayment) {
+        return new PromisedPaymentDataResponse()
+                .setAmount(promisedPayment.getAmount())
+                .setStatus(promisedPayment.getStatus())
+                .setAmountToRepay(promisedPayment.getAmountToRepay())
+                .setDueDate(promisedPayment.getDueDate())
+                .setCreatedAt(promisedPayment.getCreatedAt())
+                .setRepaidAt(promisedPayment.getRepaidAt());
+    }
+
 
     private void repayPromisedPayment(UserData userData, PromisedPayment payment, LocalDateTime now) {
         userData.setBalance(userData.getBalance().subtract(payment.getAmountToRepay()));

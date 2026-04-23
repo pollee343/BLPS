@@ -1,16 +1,20 @@
 package app.services;
 
 import app.PDFUtils.ReportBuilder;
+import app.dao.ApplicationDAOService;
 import app.dao.MoneyOperationDAOService;
 import app.dao.ServiceUsageDAOService;
 import app.dao.UserDataDAOService;
+import app.model.enams.ApplicationType;
 import app.model.enams.OperationType;
 import app.model.enams.UsageDirection;
 import app.model.enams.UsageType;
+import app.model.entities.Application;
 import app.model.entities.MoneyOperation;
 import app.model.entities.ServiceUsage;
 import app.model.entities.UserData;
 import app.model.utils.OperationInformation;
+import app.services.interfases.ApplicationServiceInterface;
 import app.services.interfases.ReportServiceInterface;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -22,6 +26,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -43,6 +48,9 @@ public class ReportService implements ReportServiceInterface {
     private final UserDataDAOService userDataDAOService;
     private final MoneyOperationDAOService moneyOperationDAOService;
     private final ServiceUsageDAOService serviceUsageDAOService;
+    private final ApplicationDAOService applicationDAOService;
+
+    private final ApplicationServiceInterface applicationService;
 
     @Override
     public byte[] getBill(String accountNumber, LocalDate date, String email) throws IOException {
@@ -214,5 +222,27 @@ public class ReportService implements ReportServiceInterface {
         messageHelper.addAttachment("report.pdf", new ByteArrayResource(content));
         emailSender.send(mimeMessage);
         log.info("Send message success on email: {}", email);
+    }
+
+    @Override
+    public void sendReportOnEmail(String accountNumber, ApplicationType applicationType, MultipartFile file) throws IOException, MessagingException {
+        UserData userData = userDataDAOService.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+
+        Application application = applicationDAOService.findWaitingApplications(userData, applicationType)
+                .orElseThrow(() -> new EntityNotFoundException("Заявка не найдена"));
+
+        if (applicationType.equals(ApplicationType.PROMISED_PAYMENT_REJECTION)){
+            sendEmail(application.getEmail(),
+                    "Ответ по заявке на получение информации об отказе в получении обещанного платежа",
+                    "",
+                    file.getBytes());
+        } else {
+            sendEmail(application.getEmail(),
+                    "Ответ по заявке на получение юридически достоверного отчета",
+                    "",
+                    file.getBytes());
+        }
+        applicationService.makeApplicationProcessed(userData, applicationType);
     }
 }

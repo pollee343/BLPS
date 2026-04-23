@@ -2,7 +2,7 @@ package app.services;
 
 import app.dao.UserDAOService;
 import app.dao.UserDataDAOService;
-import app.dto.IncreaseRemainingResponse;
+import app.dto.responses.IncreaseRemainingResponse;
 import app.model.entities.User;
 import app.model.entities.UserData;
 import app.services.interfases.UserDataServiceInterface;

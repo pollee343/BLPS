@@ -13,7 +13,7 @@ import java.util.Optional;
 public class UserDataDAOService {
 
     private final UserDataRepository userDataRepository;
-
+    
     public Optional<UserData> findByPhoneNumber(String phoneNumber) {
         return userDataRepository.findByPhoneNumber(phoneNumber);
     }

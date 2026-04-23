@@ -2,6 +2,7 @@ package app.dao;
 
 import app.model.enams.PromisedPaymentStatus;
 import app.model.entities.PromisedPayment;
+import app.model.entities.UserData;
 import app.repositories.PromisedPaymentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -42,5 +43,9 @@ public class PromisedPaymentDAOService {
 
     public void save(PromisedPayment payment) {
         paymentRepository.save(payment);
+    }
+
+    public List<PromisedPayment> getByUserData(UserData userData){
+        return paymentRepository.getByUserData(userData);
     }
 }

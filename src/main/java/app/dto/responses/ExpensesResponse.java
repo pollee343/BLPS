@@ -1,4 +1,4 @@
-package app.dto;
+package app.dto.responses;
 
 import lombok.Data;
 import lombok.experimental.Accessors;

@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +19,8 @@ public class ServiceUsageController {
 
     private final ServiceUsageServiceInterface serviceUsageService;
 
+    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')" +
+            "&& @securityService.canAccessUserData(authentication, #serviceUsage.userData.getId())")
     @PostMapping("/createServiceUsage")
     public ResponseEntity<String> createServiceUsage(@Valid @RequestBody ServiceUsage serviceUsage) {
         serviceUsageService.createServiceUsage(serviceUsage);

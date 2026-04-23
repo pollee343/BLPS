@@ -5,6 +5,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -39,6 +40,13 @@ public class ExceptionController {
         log.error(e.getMessage());
         e.printStackTrace();
         return "Ошибка при отправке отчета на почту";
+    }
+
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public String handleAuthorizationDeniedException(AuthorizationDeniedException e) {
+        log.error(e.getMessage());
+        return "Доступ запрещен";
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
