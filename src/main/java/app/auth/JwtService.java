@@ -30,7 +30,7 @@ public class JwtService {
 
         assert principal != null;
         JwtClaimsSet claims = JwtClaimsSet.builder()
-                .issuer("my-app")
+                .issuer("mapp")
                 .issuedAt(now)
                 .expiresAt(now.plusSeconds(3600))
                 .subject(authentication.getName())
