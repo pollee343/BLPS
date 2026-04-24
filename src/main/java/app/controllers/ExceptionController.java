@@ -4,6 +4,7 @@ import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
+import org.springframework.mail.MailSendException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -33,7 +34,7 @@ public class ExceptionController {
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler({MessagingException.class, IOException.class})
+    @ExceptionHandler({MessagingException.class, IOException.class, MailSendException.class})
     public String handleExceptionForEmailSending(Exception e) {
         log.error(e.getMessage());
         e.printStackTrace();

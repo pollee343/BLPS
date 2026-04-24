@@ -81,7 +81,8 @@ public class ReportController {
 //                .body(data);
     }
 
-    @PreAuthorize("hasRole('MODERATOR') || hasRole('ADMIN')")
+    @PreAuthorize("(hasRole('MODERATOR') || hasRole('ADMIN')) &&" +
+            "@securityService.emailSendRightsCheck(authentication, #applicationType)")
     @PostMapping(path = "/sendReportOnEmail", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> sendReportOnEmail(@RequestParam String accountNumber,
                                                     @RequestParam ApplicationType applicationType,
@@ -103,7 +104,7 @@ public class ReportController {
         }
 
         reportService.sendReportOnEmail(accountNumber, applicationType, file);
-        return ResponseEntity.ok("sendReportOnEmail");
+        return ResponseEntity.ok("Отчет успешно отправлен на почту");
     }
 
     private Pair<LocalDate, LocalDate> checkDates(LocalDate from, LocalDate to) {

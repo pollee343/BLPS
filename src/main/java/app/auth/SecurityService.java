@@ -1,14 +1,14 @@
 package app.auth;
 
 import app.dao.UserDataDAOService;
+import app.model.enams.ApplicationType;
 import app.model.entities.UserData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -19,10 +19,7 @@ public class SecurityService {
     public boolean canAccessAccountNumber(Authentication authentication, String accountNumber) {
         Jwt jwt = ((JwtAuthenticationToken) authentication).getToken();
 
-        List<String> roles = jwt.getClaim("authorities");
-        if (roles.contains("ADMIN") || roles.contains("MODERATOR")) {
-            return true;
-        }
+        if (isAdminOrModerator(authentication)) return true;
 
         Long userId = jwt.getClaim("user_id");
 
@@ -33,12 +30,10 @@ public class SecurityService {
     }
 
     public boolean canAccessUserData(Authentication authentication, Long userDataId) {
+
         Jwt jwt = ((JwtAuthenticationToken) authentication).getToken();
 
-        List<String> roles = jwt.getClaim("authorities");
-        if (roles.contains("ADMIN") || roles.contains("MODERATOR")) {
-            return true;
-        }
+        if (isAdminOrModerator(authentication)) return true;
 
         Long userId = jwt.getClaim("user_id");
 
@@ -46,5 +41,30 @@ public class SecurityService {
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
 
         return userId.equals(userData.getUser().getId());
+    }
+
+    public boolean emailSendRightsCheck(Authentication authentication, ApplicationType applicationType) {
+
+        if (authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(a -> a.equals("ROLE_ADMIN"))
+                && applicationType.equals(ApplicationType.PROMISED_PAYMENT_REJECTION)) {
+            return false;
+        }
+
+        if (authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(a -> a.equals("ROLE_MODERATOR"))
+                && applicationType.equals(ApplicationType.LEGALLY_RELIABLE_REPORT)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean isAdminOrModerator(Authentication authentication) {
+        return authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(a -> a.equals("ROLE_ADMIN") || a.equals("ROLE_MODERATOR"));
     }
 }

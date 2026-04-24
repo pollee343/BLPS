@@ -242,68 +242,70 @@ public class ReportBuilder {
 
         document.add(new Paragraph("История транзакций").setBold().setFontSize(16));
 
-        LocalDate now_day = serviceUsages.get(0).getTime().toLocalDate();
-        document.add(new Paragraph(new Text(now_day.format(formatter)).setBold()));
-        table = new Table(UnitValue.createPercentArray(new float[]{12, 68, 20}))
-                .useAllAvailableWidth()
-                .setBorder(Border.NO_BORDER);
+        if (serviceUsages.size() > 0) {
+            LocalDate now_day = serviceUsages.get(0).getTime().toLocalDate();
+            document.add(new Paragraph(new Text(now_day.format(formatter)).setBold()));
+            table = new Table(UnitValue.createPercentArray(new float[]{12, 68, 20}))
+                    .useAllAvailableWidth()
+                    .setBorder(Border.NO_BORDER);
 
-        for (OperationInformation serviceUsage: serviceUsages) {
-            if (now_day.isBefore(serviceUsage.getTime().toLocalDate())) {
-                now_day = serviceUsage.getTime().toLocalDate();
-                document.add(table);
-                document.add(new Paragraph(new Text(now_day.format(formatter)).setBold()));
-                table = new Table(UnitValue.createPercentArray(new float[]{12, 68, 20}))
-                        .useAllAvailableWidth()
-                        .setBorder(Border.NO_BORDER);
+            for (OperationInformation serviceUsage: serviceUsages) {
+                if (now_day.isBefore(serviceUsage.getTime().toLocalDate())) {
+                    now_day = serviceUsage.getTime().toLocalDate();
+                    document.add(table);
+                    document.add(new Paragraph(new Text(now_day.format(formatter)).setBold()));
+                    table = new Table(UnitValue.createPercentArray(new float[]{12, 68, 20}))
+                            .useAllAvailableWidth()
+                            .setBorder(Border.NO_BORDER);
+                }
+
+                Cell timeCell = new Cell()
+                        .add(new Paragraph(formatTime(LocalTime.from(serviceUsage.getTime()))))
+                        .setBorder(Border.NO_BORDER)
+                        .setPaddingRight(10)
+                        .setVerticalAlignment(VerticalAlignment.TOP)
+                        .setTextAlignment(TextAlignment.LEFT);
+
+                Cell contentCell = new Cell()
+                        .add(new Paragraph(serviceUsage.getName())
+                                .setBold()
+                                .setFontSize(13)
+                                .setMarginTop(0)
+                                .setMarginBottom(6))
+                        .add(new Paragraph(serviceUsage.getDescription())
+                                .setFontSize(12)
+                                .setFontColor(com.itextpdf.kernel.colors.ColorConstants.GRAY)
+                                .setMultipliedLeading(1.25f))
+                        .setBorder(Border.NO_BORDER)
+                        .setPaddingRight(10)
+                        .setVerticalAlignment(VerticalAlignment.TOP);
+
+                Cell amountCell = new Cell()
+                        .add(new Paragraph(new Text("0 P"))
+                                .setBold()
+                                .setFontSize(13)
+                                .setFontColor(com.itextpdf.kernel.colors.ColorConstants.GRAY))
+                        .setBorder(Border.NO_BORDER)
+                        .setPaddingTop(0)
+                        .setPaddingBottom(0)
+                        .setPaddingLeft(0)
+                        .setPaddingRight(0)
+                        .setVerticalAlignment(VerticalAlignment.TOP)
+                        .setTextAlignment(TextAlignment.RIGHT);
+
+                table.addCell(timeCell);
+                table.addCell(contentCell);
+                table.addCell(amountCell);
+                table.addCell(new Cell(1, 3)
+                        .add(new Paragraph(""))
+                        .setBorder(Border.NO_BORDER)
+                        .setHeight(14)
+                        .setPadding(0)
+                        .setMargin(0));
             }
-
-            Cell timeCell = new Cell()
-                    .add(new Paragraph(formatTime(LocalTime.from(serviceUsage.getTime()))))
-                    .setBorder(Border.NO_BORDER)
-                    .setPaddingRight(10)
-                    .setVerticalAlignment(VerticalAlignment.TOP)
-                    .setTextAlignment(TextAlignment.LEFT);
-
-            Cell contentCell = new Cell()
-                    .add(new Paragraph(serviceUsage.getName())
-                            .setBold()
-                            .setFontSize(13)
-                            .setMarginTop(0)
-                            .setMarginBottom(6))
-                    .add(new Paragraph(serviceUsage.getDescription())
-                            .setFontSize(12)
-                            .setFontColor(com.itextpdf.kernel.colors.ColorConstants.GRAY)
-                            .setMultipliedLeading(1.25f))
-                    .setBorder(Border.NO_BORDER)
-                    .setPaddingRight(10)
-                    .setVerticalAlignment(VerticalAlignment.TOP);
-
-            Cell amountCell = new Cell()
-                    .add(new Paragraph(new Text("0 P"))
-                            .setBold()
-                            .setFontSize(13)
-                            .setFontColor(com.itextpdf.kernel.colors.ColorConstants.GRAY))
-                    .setBorder(Border.NO_BORDER)
-                    .setPaddingTop(0)
-                    .setPaddingBottom(0)
-                    .setPaddingLeft(0)
-                    .setPaddingRight(0)
-                    .setVerticalAlignment(VerticalAlignment.TOP)
-                    .setTextAlignment(TextAlignment.RIGHT);
-
-            table.addCell(timeCell);
-            table.addCell(contentCell);
-            table.addCell(amountCell);
-            table.addCell(new Cell(1, 3)
-                    .add(new Paragraph(""))
-                    .setBorder(Border.NO_BORDER)
-                    .setHeight(14)
-                    .setPadding(0)
-                    .setMargin(0));
+            document.add(table);
+            document.close();
         }
-        document.add(table);
-        document.close();
 
         return out.toByteArray();
     }
