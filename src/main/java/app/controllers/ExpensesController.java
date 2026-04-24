@@ -28,7 +28,7 @@ public class ExpensesController {
 
     private final ExpensesServiceInterface expensesService;
 
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')" +
+    @PreAuthorize("(hasRole('USER') || hasRole('ADMIN')) " +
             "&& @securityService.canAccessAccountNumber(authentication, #accountNumber)")
     @GetMapping(value = "/forPeriod", produces = APPLICATION_JSON_VALUE)
     public List<ExpensesResponse> getExpensesForPeriod(@RequestParam("accountNumber") String accountNumber,
@@ -40,7 +40,7 @@ public class ExpensesController {
         return expensesService.getExpensesForPeriod(accountNumber, data.getFirst(), data.getSecond());
     }
 
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')" +
+    @PreAuthorize("(hasRole('USER') || hasRole('ADMIN')) " +
             "&& @securityService.canAccessAccountNumber(authentication, #accountNumber)")
     @GetMapping(value = "/forPeriodAndOperationType", produces = APPLICATION_JSON_VALUE)
     public List<ExpensesResponse> getExpensesForPeriodAndOperation(@RequestParam("accountNumber") String accountNumber,
@@ -53,7 +53,7 @@ public class ExpensesController {
         return expensesService.getExpensesForPeriodAndOperationType(accountNumber, data.getFirst(), data.getSecond(), operationType);
     }
 
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')" +
+    @PreAuthorize("(hasRole('USER') || hasRole('ADMIN')) " +
             "&& @securityService.canAccessAccountNumber(authentication, #accountNumber)")
     @GetMapping(value = "/forPeriodAndOperationName", produces = APPLICATION_JSON_VALUE)
     public List<ExpensesResponse> getForPeriodAndOperationName(@RequestParam("accountNumber") String accountNumber,

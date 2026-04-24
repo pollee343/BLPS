@@ -28,7 +28,7 @@ public class ReportController {
 
     private final ReportServiceInterface reportService;
 
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')" +
+    @PreAuthorize("(hasRole('USER') || hasRole('ADMIN')) " +
             "&& @securityService.canAccessAccountNumber(authentication, #accountNumber)")
     @GetMapping("/getInformationAboutExpenses")
     public ResponseEntity<byte[]> getInformationAboutExpenses(@RequestParam("accountNumber") String accountNumber,
@@ -44,7 +44,7 @@ public class ReportController {
                 .body(data);
     }
 
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')" +
+    @PreAuthorize("(hasRole('USER') || hasRole('ADMIN')) " +
             "&& @securityService.canAccessAccountNumber(authentication, #accountNumber)")
     @GetMapping("/getInformationAboutExpensesOnEmail")
     public ResponseEntity<String> getInformationAboutExpensesOnEmail(@RequestParam("accountNumber") String accountNumber,
@@ -62,7 +62,7 @@ public class ReportController {
 
     }
 
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')" +
+    @PreAuthorize("(hasRole('USER') || hasRole('ADMIN')) " +
             "&& @securityService.canAccessAccountNumber(authentication, #accountNumber)")
     @GetMapping("/getBill")
     public ResponseEntity<String> getBill(@RequestParam("accountNumber") String accountNumber,

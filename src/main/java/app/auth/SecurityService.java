@@ -20,7 +20,7 @@ public class SecurityService {
         Jwt jwt = ((JwtAuthenticationToken) authentication).getToken();
 
         List<String> roles = jwt.getClaim("authorities");
-        if (roles.contains("ADMIN") || roles.contains("MODERATOR")) {
+        if (roles.contains("ROLE_ADMIN") || roles.contains("ROLE_MODERATOR")) {
             return true;
         }
 
@@ -36,7 +36,7 @@ public class SecurityService {
         Jwt jwt = ((JwtAuthenticationToken) authentication).getToken();
 
         List<String> roles = jwt.getClaim("authorities");
-        if (roles.contains("ADMIN") || roles.contains("MODERATOR")) {
+        if (roles.contains("ROLE_ADMIN") || roles.contains("ROLE_MODERATOR")) {
             return true;
         }
 

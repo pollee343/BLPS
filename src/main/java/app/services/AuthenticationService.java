@@ -17,7 +17,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.ArrayList;
 
@@ -30,13 +30,17 @@ public class AuthenticationService implements AuthenticationServiceInterface {
     private final RoleDAOService roleDAOService;
     private final UserDAOService userDAOService;
     private final PasswordEncoder passwordEncoder;
+    private final TransactionTemplate transactionTemplate;
 
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
     @Override
-    @Transactional
     public void registration(RegistrationRequest request) {
+        transactionTemplate.executeWithoutResult(status -> registrationInTransaction(request));
+    }
+
+    private void registrationInTransaction(RegistrationRequest request) {
 
         if (userAuthDAOService.findByUsername(request.getUsername()).isPresent()) {
             throw new IllegalArgumentException("Логин уже занят");

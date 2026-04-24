@@ -2,15 +2,17 @@ package app.services;
 
 import app.dao.MoneyOperationDAOService;
 import app.dao.UserDataDAOService;
+import app.dto.requests.PaymentRequest;
+import app.dto.responses.BalanceResponse;
 import app.services.interfases.BalanceServiceInterface;
 import app.services.interfases.BankServiceInterface;
-import app.dto.BalanceResponse;
-import app.dto.PaymentRequest;
+import app.services.interfases.PromisedPaymentServiceInterface;
 import app.model.enams.BankOperationStatus;
 import app.model.enams.OperationType;
 import app.model.entities.MoneyOperation;
 import app.model.entities.UserData;
 
+import app.services.interfases.PromisedPaymentServiceInterface;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
