@@ -17,7 +17,7 @@ import app.services.interfases.PromisedPaymentServiceInterface;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -33,10 +33,14 @@ public class PromisedPaymentService implements PromisedPaymentServiceInterface {
     private final PromisedPaymentDAOService promisedPaymentDAOService;
     private final MoneyOperationDAOService moneyOperationDAOService;
     private final ServiceUsageDAOService serviceUsageDAOService;
+    private final TransactionTemplate transactionTemplate;
 
     @Override
-    @Transactional
     public void takePromisedPayment(Long userDataId, BigDecimal amount) {
+        transactionTemplate.executeWithoutResult(status -> takePromisedPaymentInTransaction(userDataId, amount));
+    }
+
+    private void takePromisedPaymentInTransaction(Long userDataId, BigDecimal amount) {
         validateRequestedAmount(amount);
 
         UserData userData = userDataDAOService.findById(userDataId)
@@ -79,8 +83,11 @@ public class PromisedPaymentService implements PromisedPaymentServiceInterface {
     }
 
     @Override
-    @Transactional
     public void processPromisedPayment(Long userDataId) {
+        transactionTemplate.executeWithoutResult(status -> processPromisedPaymentInTransaction(userDataId));
+    }
+
+    private void processPromisedPaymentInTransaction(Long userDataId) {
         UserData userData = userDataDAOService.findById(userDataId)
                 .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
 

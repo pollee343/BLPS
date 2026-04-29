@@ -7,33 +7,32 @@ import app.model.enams.BankOperationStatus;
 import app.services.interfases.BalanceServiceInterface;
 import app.services.interfases.PromisedPaymentServiceInterface;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import app.services.BalanceService;
 
 @RestController
 @RequestMapping("/api/balance")
 @RequiredArgsConstructor
 public class BalanceController {
 
-    private final BalanceServiceInterface balanceService;
-    private final PromisedPaymentServiceInterface promisedPaymentService;
+    private final BalanceService balanceService;
 
     @PreAuthorize("hasRole('USER') || hasRole('MODERATOR') || hasRole('ADMIN')")
     @PostMapping("/top-up")
     public ResponseEntity<?> topUp(@RequestBody PaymentRequest request) {
         BankOperationStatus status = balanceService.topUp(request);
-        if (status == BankOperationStatus.SUCCESS) {
-            promisedPaymentService.processPromisedPayment(request.getUserDataId());
-        }
         return switch (status) {
             case SUCCESS -> ResponseEntity.ok("Баланс успешно пополнен");
             case DECLINED -> ResponseEntity.badRequest().body("Банк отклонил операцию (проверьте сумму и данные)");
-            case ERROR -> ResponseEntity.internalServerError().body("Техническая ошибка банка");
+            case ERROR -> ResponseEntity.status(HttpStatus.BAD_GATEWAY)
+                    .body("Техническая ошибка банка");
         };
     }
 
-    @PreAuthorize("hasRole('USER') || hasRole('MODERATOR') || hasRole('ADMIN')" +
+    @PreAuthorize("(hasRole('USER') || hasRole('MODERATOR') || hasRole('ADMIN')) " +
             "&& @securityService.canAccessUserData(authentication, #userDataId)")
     @GetMapping("/{userDataId}")
     public ResponseEntity<?> getBalance(@PathVariable Long userDataId) {

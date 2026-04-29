@@ -6,7 +6,8 @@ import app.services.interfases.ReportServiceInterface;
 import jakarta.mail.MessagingException;
 import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.util.Pair;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -21,12 +22,13 @@ import java.time.LocalDate;
 @RestController
 @RequestMapping("/api/report")
 @RequiredArgsConstructor
-@Log4j2
 public class ReportController {
+
+    private static final Logger log = LoggerFactory.getLogger(ReportController.class);
 
     private final ReportServiceInterface reportService;
 
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')" +
+    @PreAuthorize("(hasRole('USER') || hasRole('ADMIN')) " +
             "&& @securityService.canAccessAccountNumber(authentication, #accountNumber)")
     @GetMapping("/getInformationAboutExpenses")
     public ResponseEntity<byte[]> getInformationAboutExpenses(@RequestParam("accountNumber") String accountNumber,
@@ -42,7 +44,7 @@ public class ReportController {
                 .body(data);
     }
 
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')" +
+    @PreAuthorize("(hasRole('USER') || hasRole('ADMIN')) " +
             "&& @securityService.canAccessAccountNumber(authentication, #accountNumber)")
     @GetMapping("/getInformationAboutExpensesOnEmail")
     public ResponseEntity<String> getInformationAboutExpensesOnEmail(@RequestParam("accountNumber") String accountNumber,
@@ -60,7 +62,7 @@ public class ReportController {
 
     }
 
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')" +
+    @PreAuthorize("(hasRole('USER') || hasRole('ADMIN')) " +
             "&& @securityService.canAccessAccountNumber(authentication, #accountNumber)")
     @GetMapping("/getBill")
     public ResponseEntity<String> getBill(@RequestParam("accountNumber") String accountNumber,

@@ -5,7 +5,8 @@ import app.model.enams.OperationType;
 import app.services.interfases.ExpensesServiceInterface;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.util.Pair;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,12 +22,13 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 @RequestMapping("/api/expenses")
 @RequiredArgsConstructor
-@Log4j2
 public class ExpensesController {
+
+    private static final Logger log = LoggerFactory.getLogger(ExpensesController.class);
 
     private final ExpensesServiceInterface expensesService;
 
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')" +
+    @PreAuthorize("(hasRole('USER') || hasRole('ADMIN')) " +
             "&& @securityService.canAccessAccountNumber(authentication, #accountNumber)")
     @GetMapping(value = "/forPeriod", produces = APPLICATION_JSON_VALUE)
     public List<ExpensesResponse> getExpensesForPeriod(@RequestParam("accountNumber") String accountNumber,
@@ -38,7 +40,7 @@ public class ExpensesController {
         return expensesService.getExpensesForPeriod(accountNumber, data.getFirst(), data.getSecond());
     }
 
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')" +
+    @PreAuthorize("(hasRole('USER') || hasRole('ADMIN')) " +
             "&& @securityService.canAccessAccountNumber(authentication, #accountNumber)")
     @GetMapping(value = "/forPeriodAndOperationType", produces = APPLICATION_JSON_VALUE)
     public List<ExpensesResponse> getExpensesForPeriodAndOperation(@RequestParam("accountNumber") String accountNumber,
@@ -51,7 +53,7 @@ public class ExpensesController {
         return expensesService.getExpensesForPeriodAndOperationType(accountNumber, data.getFirst(), data.getSecond(), operationType);
     }
 
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')" +
+    @PreAuthorize("(hasRole('USER') || hasRole('ADMIN')) " +
             "&& @securityService.canAccessAccountNumber(authentication, #accountNumber)")
     @GetMapping(value = "/forPeriodAndOperationName", produces = APPLICATION_JSON_VALUE)
     public List<ExpensesResponse> getForPeriodAndOperationName(@RequestParam("accountNumber") String accountNumber,

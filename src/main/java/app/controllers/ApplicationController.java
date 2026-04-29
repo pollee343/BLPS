@@ -32,7 +32,7 @@ public class ApplicationController {
         return applicationService.getAllPromisedPaymentRejectionApps();
     }
 
-    @PreAuthorize("hasRole('USER') || hasRole('ADMIN')" +
+    @PreAuthorize("(hasRole('USER') || hasRole('ADMIN')) " +
             "&& @securityService.canAccessAccountNumber(authentication, #applicationRequest.getAccountNumber)")
     @PostMapping("/legallyReliableReport")
     public ResponseEntity<String> legallyReliableReport(@Valid @RequestBody ApplicationRequest applicationRequest){

@@ -4,7 +4,6 @@ import app.model.entities.User;
 import app.services.interfases.UserServiceInterface;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,7 +16,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
-@Log4j2
 public class UserController {
 
     private final UserServiceInterface userService;
