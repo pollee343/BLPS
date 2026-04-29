@@ -1,5 +1,6 @@
 package app.dao;
 
+import app.model.enams.ApplicationStatus;
 import app.model.enams.ApplicationType;
 import app.model.entities.Application;
 import app.model.entities.UserData;
@@ -19,11 +20,11 @@ public class ApplicationDAOService {
         applicationRepository.save(application);
     }
 
-    public Optional<Application> findWaitingApplications(UserData userData, ApplicationType applicationType) {
-        return applicationRepository.findByUserDataAndApplicationTypeAndIsWaitingTrue(userData, applicationType);
+    public Optional<Application> findWaitingApplications(UserData userData, ApplicationType applicationType, ApplicationStatus applicationStatus) {
+        return applicationRepository.findByUserDataAndApplicationTypeAndApplicationStatus(userData, applicationType, applicationStatus);
     }
 
-    public List<Application> findAllWaitingApplicationsByApplicationType(ApplicationType applicationType) {
-        return applicationRepository.findByApplicationTypeAndIsWaitingTrue(applicationType);
+    public List<Application> findAllWaitingApplicationsByApplicationType(ApplicationType applicationType, ApplicationStatus applicationStatus) {
+        return applicationRepository.findByApplicationTypeAndApplicationStatus(applicationType, applicationStatus);
     }
 }

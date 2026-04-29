@@ -14,3 +14,4 @@ DROP TYPE IF EXISTS usage_direction CASCADE;
 DROP TYPE IF EXISTS usage_type CASCADE;
 DROP TYPE IF EXISTS operation_type CASCADE;
 DROP TYPE IF EXISTS application_type CASCADE;
+DROP TYPE IF EXISTS application_status CASCADE;

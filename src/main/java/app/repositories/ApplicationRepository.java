@@ -1,5 +1,6 @@
 package app.repositories;
 
+import app.model.enams.ApplicationStatus;
 import app.model.enams.ApplicationType;
 import app.model.entities.Application;
 import app.model.entities.UserData;
@@ -11,6 +12,6 @@ import java.util.Optional;
 
 @Repository
 public interface ApplicationRepository extends JpaRepository<Application, Long>  {
-    Optional<Application> findByUserDataAndApplicationTypeAndIsWaitingTrue(UserData userData, ApplicationType applicationType);
-    List<Application> findByApplicationTypeAndIsWaitingTrue(ApplicationType applicationType);
+    Optional<Application> findByUserDataAndApplicationTypeAndApplicationStatus(UserData userData, ApplicationType applicationType, ApplicationStatus status);
+    List<Application> findByApplicationTypeAndApplicationStatus(ApplicationType applicationType, ApplicationStatus status);
 }

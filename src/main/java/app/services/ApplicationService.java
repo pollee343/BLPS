@@ -3,6 +3,7 @@ package app.services;
 import app.dao.ApplicationDAOService;
 import app.dao.UserDataDAOService;
 import app.dto.responses.ApplicationResponse;
+import app.model.enams.ApplicationStatus;
 import app.model.enams.ApplicationType;
 import app.model.entities.Application;
 import app.model.entities.UserData;
@@ -25,7 +26,7 @@ public class ApplicationService implements ApplicationServiceInterface {
     public void promisedPaymentRejection(String accountNumber, String email) {
         UserData userData = userDataDAOService.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
-        if (applicationDAOService.findWaitingApplications(userData, ApplicationType.PROMISED_PAYMENT_REJECTION)
+        if (applicationDAOService.findWaitingApplications(userData, ApplicationType.PROMISED_PAYMENT_REJECTION, ApplicationStatus.CREATED)
                 .isPresent()) {
             throw new IllegalArgumentException("Заявка на получение информации об отказе в получении обещанного платежа уже создана");
         }
@@ -36,7 +37,7 @@ public class ApplicationService implements ApplicationServiceInterface {
     public void legallyReliableReport(String accountNumber, String email) {
         UserData userData = userDataDAOService.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
-        if (applicationDAOService.findWaitingApplications(userData, ApplicationType.LEGALLY_RELIABLE_REPORT)
+        if (applicationDAOService.findWaitingApplications(userData, ApplicationType.LEGALLY_RELIABLE_REPORT, ApplicationStatus.CREATED)
                 .isPresent()) {
             throw new IllegalArgumentException("Заявка на получение юридически достоверного отчета уже создана");
         }
@@ -45,7 +46,7 @@ public class ApplicationService implements ApplicationServiceInterface {
 
     @Override
     public List<ApplicationResponse> getAllPromisedPaymentRejectionApps() {
-        return applicationDAOService.findAllWaitingApplicationsByApplicationType(ApplicationType.PROMISED_PAYMENT_REJECTION)
+        return applicationDAOService.findAllWaitingApplicationsByApplicationType(ApplicationType.PROMISED_PAYMENT_REJECTION, ApplicationStatus.CREATED)
                 .stream()
                 .map(this::buildApplicationResponse)
                 .collect(Collectors.toList());
@@ -53,7 +54,7 @@ public class ApplicationService implements ApplicationServiceInterface {
 
     @Override
     public List<ApplicationResponse> getAllLegallyReliableRetortApps() {
-        return applicationDAOService.findAllWaitingApplicationsByApplicationType(ApplicationType.LEGALLY_RELIABLE_REPORT)
+        return applicationDAOService.findAllWaitingApplicationsByApplicationType(ApplicationType.LEGALLY_RELIABLE_REPORT, ApplicationStatus.CREATED)
                 .stream()
                 .map(this::buildApplicationResponse)
                 .collect(Collectors.toList());
@@ -61,9 +62,9 @@ public class ApplicationService implements ApplicationServiceInterface {
 
     @Override
     public void makeApplicationProcessed(UserData userData, ApplicationType applicationType) {
-        Application application = applicationDAOService.findWaitingApplications(userData, applicationType)
+        Application application = applicationDAOService.findWaitingApplications(userData, applicationType, ApplicationStatus.CREATED)
                 .orElseThrow(() -> new EntityNotFoundException("Не найдены необработанные заявки"));
-        application.setIsWaiting(false);
+        application.setApplicationStatus(ApplicationStatus.PROCESSED);
         applicationDAOService.createApplication(application);
     }
 

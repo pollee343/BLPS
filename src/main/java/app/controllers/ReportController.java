@@ -88,7 +88,7 @@ public class ReportController {
     @PostMapping(path = "/sendReportOnEmail", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> sendReportOnEmail(@RequestParam String accountNumber,
                                                     @RequestParam ApplicationType applicationType,
-                                                    @RequestPart("file") MultipartFile file) throws MessagingException, IOException {
+                                                    @RequestParam MultipartFile file) throws MessagingException, IOException {
 
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().body("Файл не загружен");

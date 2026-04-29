@@ -8,6 +8,7 @@ CREATE TYPE usage_type AS ENUM ('CALL', 'SMS', 'INTERNET');
 CREATE TYPE usage_direction AS ENUM ('INCOMING', 'OUTGOING');
 CREATE TYPE promised_payment_status AS ENUM ('ACTIVE', 'OVERDUE', 'PAID');
 CREATE TYPE application_type AS ENUM ('PROMISED_PAYMENT_REJECTION', 'LEGALLY_RELIABLE_REPORT');
+CREATE TYPE application_status AS ENUM ('CREATED', 'WAITING_EMPLOYEE', 'PROCESSED');
 
 DO $$
 BEGIN
@@ -100,7 +101,7 @@ CREATE TABLE IF NOT EXISTS applications (
     user_data_id BIGINT NOT NULL REFERENCES user_data(id) ON DELETE CASCADE,
     app_type application_type NOT NULL,
     email VARCHAR(255) NOT NULL,
-    is_waiting BOOLEAN NOT NULL DEFAULT true
+    app_status application_status NOT NULL DEFAULT 'CREATED'
 );
 
 create table users_auth (

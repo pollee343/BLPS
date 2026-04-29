@@ -5,10 +5,7 @@ import app.dao.ApplicationDAOService;
 import app.dao.MoneyOperationDAOService;
 import app.dao.ServiceUsageDAOService;
 import app.dao.UserDataDAOService;
-import app.model.enams.ApplicationType;
-import app.model.enams.OperationType;
-import app.model.enams.UsageDirection;
-import app.model.enams.UsageType;
+import app.model.enams.*;
 import app.model.entities.Application;
 import app.model.entities.MoneyOperation;
 import app.model.entities.ServiceUsage;
@@ -229,7 +226,7 @@ public class ReportService implements ReportServiceInterface {
         UserData userData = userDataDAOService.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
 
-        Application application = applicationDAOService.findWaitingApplications(userData, applicationType)
+        Application application = applicationDAOService.findWaitingApplications(userData, applicationType, ApplicationStatus.CREATED)
                 .orElseThrow(() -> new EntityNotFoundException("Заявка не найдена"));
 
         if (applicationType.equals(ApplicationType.PROMISED_PAYMENT_REJECTION)){

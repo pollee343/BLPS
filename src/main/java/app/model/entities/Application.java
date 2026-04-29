@@ -1,5 +1,6 @@
 package app.model.entities;
 
+import app.model.enams.ApplicationStatus;
 import app.model.enams.ApplicationType;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -23,8 +24,9 @@ public class Application {
     @Column(name = "email", length = 255, nullable = false)
     private String email;
 
-    @Column(name = "is_waiting", nullable = false)
-    private Boolean isWaiting = true;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "app_status")
+    private ApplicationStatus applicationStatus = ApplicationStatus.CREATED;
 
     @ManyToOne
     @JoinColumn(name = "user_data_id")
