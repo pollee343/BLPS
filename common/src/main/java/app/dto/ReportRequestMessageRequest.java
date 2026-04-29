@@ -1,0 +1,12 @@
+package app.dto.requests;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class ReportRequestMessageRequest {
+    private Long applicationId;
+}
