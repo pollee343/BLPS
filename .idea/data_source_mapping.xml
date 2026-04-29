@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="DataSourcePerFileMappings">
-    <file url="file://$PROJECT_DIR$/helper/db_creation_script.sql" value="169ffd21-989d-4a94-8314-bf9b9683e689" />
-    <file url="file://$PROJECT_DIR$/helper/db_delete_script.sql" value="169ffd21-989d-4a94-8314-bf9b9683e689" />
-    <file url="file://$PROJECT_DIR$/helper/db_insert_script.sql" value="169ffd21-989d-4a94-8314-bf9b9683e689" />
-  </component>
-</project>

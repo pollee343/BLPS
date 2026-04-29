@@ -1,0 +1,6 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="blps">
+    <output-path>$PROJECT_DIR$/out/artifacts/blps</output-path>
+    <root id="root" />
+  </artifact>
+</component>
