@@ -5,6 +5,7 @@ import app.services.interfases.PromisedPaymentServiceInterface;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,9 +16,9 @@ public class PromisedPaymentController {
     private final PromisedPaymentServiceInterface promisedPaymentService;
 
     @PreAuthorize("hasRole('USER')" +
-            "&& @securityService.canAccessUserData(authentication, #request.getUserDataId())")
+            "&& @securityService.canAccessUserData(authentication, #req.userDataId)")
     @PostMapping("/take")
-    public ResponseEntity<?> takePromisedPayment(@RequestBody PromisedPaymentRequest request) {
+    public ResponseEntity<?> takePromisedPayment(@RequestBody @P("req") PromisedPaymentRequest request) {
         promisedPaymentService.takePromisedPayment(
                 request.getUserDataId(),
                 request.getAmount()
