@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,9 +20,9 @@ public class ApplicationController {
     private final ApplicationServiceInterface applicationService;
 
     @PreAuthorize("hasRole('USER') " +
-            "&& @securityService.canAccessAccountNumber(authentication, #applicationRequest.getAccountNumber)")
+            "&& @securityService.canAccessAccountNumber(authentication, #request.accountNumber)")
     @PostMapping("/promisedPaymentRejection")
-    public ResponseEntity<String> promisedPaymentRejection(@Valid @RequestBody ApplicationRequest applicationRequest) {
+    public ResponseEntity<String> promisedPaymentRejection(@Valid @RequestBody @P("request") ApplicationRequest applicationRequest) {
         applicationService.promisedPaymentRejection(applicationRequest.getAccountNumber(), applicationRequest.getEmail());
         return ResponseEntity.ok("Заявка на получение информации об отказе в получении обещанного платежа успешно получена");
     }
@@ -33,9 +34,9 @@ public class ApplicationController {
     }
 
     @PreAuthorize("(hasRole('USER') || hasRole('ADMIN')) " +
-            "&& @securityService.canAccessAccountNumber(authentication, #applicationRequest.getAccountNumber)")
+            "&& @securityService.canAccessAccountNumber(authentication, #request.accountNumber)")
     @PostMapping("/legallyReliableReport")
-    public ResponseEntity<String> legallyReliableReport(@Valid @RequestBody ApplicationRequest applicationRequest){
+    public ResponseEntity<String> legallyReliableReport(@Valid @RequestBody @P("request") ApplicationRequest applicationRequest){
         applicationService.legallyReliableReport(applicationRequest.getAccountNumber(), applicationRequest.getEmail());
         return ResponseEntity.ok("Заявка на получение юридически достоверного отчета успешно получена");
     }

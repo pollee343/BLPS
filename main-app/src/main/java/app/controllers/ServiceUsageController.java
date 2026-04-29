@@ -19,6 +19,7 @@ public class ServiceUsageController {
 
     private final ServiceUsageServiceInterface serviceUsageService;
 
+    // может кидать ошибку из-за #serviceUsage.userData.getId()
     @PreAuthorize("hasRole('USER') || hasRole('ADMIN')" +
             "&& @securityService.canAccessUserData(authentication, #serviceUsage.userData.getId())")
     @PostMapping("/createServiceUsage")
