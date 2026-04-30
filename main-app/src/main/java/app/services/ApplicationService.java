@@ -62,7 +62,7 @@ public class ApplicationService implements ApplicationServiceInterface {
 
     @Override
     public void makeApplicationProcessed(UserData userData, ApplicationType applicationType) {
-        Application application = applicationDAOService.findWaitingApplications(userData, applicationType, ApplicationStatus.CREATED)
+        Application application = applicationDAOService.findWaitingApplications(userData, applicationType, ApplicationStatus.WAITING_EMPLOYEE)
                 .orElseThrow(() -> new EntityNotFoundException("Не найдены необработанные заявки"));
         application.setApplicationStatus(ApplicationStatus.PROCESSED);
         applicationDAOService.createApplication(application);

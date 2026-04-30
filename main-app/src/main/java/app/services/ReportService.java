@@ -226,7 +226,7 @@ public class ReportService implements ReportServiceInterface {
         UserData userData = userDataDAOService.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
 
-        Application application = applicationDAOService.findWaitingApplications(userData, applicationType, ApplicationStatus.CREATED)
+        Application application = applicationDAOService.findWaitingApplications(userData, applicationType, ApplicationStatus.WAITING_EMPLOYEE)
                 .orElseThrow(() -> new EntityNotFoundException("Заявка не найдена"));
 
         if (applicationType.equals(ApplicationType.PROMISED_PAYMENT_REJECTION)){

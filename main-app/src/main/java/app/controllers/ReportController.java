@@ -1,6 +1,5 @@
 package app.controllers;
 
-import app.dao.ReportSendingBodyRequest;
 import app.model.enams.ApplicationType;
 import app.services.interfases.ReportServiceInterface;
 import jakarta.mail.MessagingException;
