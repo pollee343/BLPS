@@ -1,3 +1,5 @@
+package jira;
+
 import jakarta.resource.spi.*;
 
 import javax.security.auth.Subject;
@@ -15,39 +17,47 @@ public class JiraManagedConnection implements ManagedConnection{
         this.mcf = mcf;
     }
 
-    public Object getConnection(
-            Subject subject,
-            ConnectionRequestInfo cxRequestInfo
-    ) {
+    @Override
+    public Object getConnection(Subject subject, ConnectionRequestInfo connectionRequestInfo) {
         return new JiraConnection(this, mcf);
     }
 
+    @Override
     public void destroy() {}
 
+    @Override
     public void cleanup() {}
 
+    @Override
     public void associateConnection(Object connection) {}
 
+    @Override
     public void addConnectionEventListener(ConnectionEventListener listener) {
         listeners.add(listener);
     }
 
+    @Override
     public void removeConnectionEventListener(ConnectionEventListener listener) {
         listeners.remove(listener);
     }
 
+    @Override
     public XAResource getXAResource() {
         return null;
     }
 
+    @Override
     public LocalTransaction getLocalTransaction() {
         return null;
     }
 
+    @Override
     public ManagedConnectionMetaData getMetaData() {
         return null;
     }
 
+    @Override
     public void setLogWriter(PrintWriter out) {}
+    @Override
     public PrintWriter getLogWriter() { return null; }
 }
