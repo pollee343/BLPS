@@ -1,20 +1,25 @@
 package app.services;
 
+import app.interfaces.ConnectionInterface;
 import jakarta.annotation.Resource;
+import jakarta.resource.cci.Connection;
+import jakarta.resource.cci.ConnectionFactory;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class ResourceAccessService {
 
     @Resource(lookup = "java:/eis/JiraCF")
-    private jakarta.resource.cci.ConnectionFactory connectionFactory;
+    private ConnectionFactory connectionFactory;
 
     public String createTask() throws jakarta.resource.ResourceException {
-        jakarta.resource.cci.Connection connection = null;
+        Connection connection = null;
         try {
             connection = connectionFactory.getConnection();
 
-            return ((jira.JiraConnection) connection).createTask("t", "d");
+            return ((ConnectionInterface) connection).createTask("t", "d");
             // ...
         } finally {
             if (connection != null) {

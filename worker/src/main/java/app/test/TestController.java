@@ -1,4 +1,4 @@
-package app;
+package app.test;
 
 import app.services.ResourceAccessService;
 import jakarta.resource.ResourceException;
