@@ -16,8 +16,13 @@ import java.util.Optional;
 public class ApplicationDAOService {
     private final ApplicationRepository applicationRepository;
 
-    public void createApplication(Application application) {
+    public Application createApplication(Application application) {
         applicationRepository.save(application);
+        return application;
+    }
+
+    public Optional<Application> findById(Long id) {
+        return applicationRepository.findById(id);
     }
 
     public Optional<Application> findWaitingApplications(UserData userData, ApplicationType applicationType, ApplicationStatus applicationStatus) {

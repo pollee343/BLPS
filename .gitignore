@@ -42,3 +42,12 @@ target/
 out/
 artifact/
 keys/
+
+### Local configuration and secrets ###
+*.properties
+*.key
+*.pem
+*.p12
+*.jks
+*.keystore
+**/keys/
