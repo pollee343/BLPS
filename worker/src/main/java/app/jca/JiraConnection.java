@@ -1,4 +1,4 @@
-package jira;
+package app.jca;
 
 import app.interfaces.ConnectionInterface;
 import jakarta.resource.ResourceException;
@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.io.Serializable;
 import java.util.Base64;
 
-public class JiraConnection implements Connection, Serializable {
+public class JiraConnection implements ConnectionInterface, Serializable {
 
     private static final long serialVersionUID = 1L;
 

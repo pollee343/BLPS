@@ -1,4 +1,4 @@
-package jira;
+package app.jca;
 
 import jakarta.resource.spi.ActivationSpec;
 import jakarta.resource.spi.BootstrapContext;

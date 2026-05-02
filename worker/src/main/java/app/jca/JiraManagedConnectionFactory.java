@@ -1,4 +1,4 @@
-package jira;
+package app.jca;
 
 import jakarta.resource.spi.ConnectionManager;
 import jakarta.resource.spi.ConnectionRequestInfo;

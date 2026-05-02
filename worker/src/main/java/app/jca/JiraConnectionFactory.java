@@ -1,4 +1,4 @@
-package jira;
+package app.jca;
 
 import jakarta.resource.cci.*;
 import jakarta.resource.ResourceException;

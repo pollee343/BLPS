@@ -2,6 +2,7 @@ package app.services;
 
 import app.interfaces.ConnectionInterface;
 import jakarta.annotation.Resource;
+import jakarta.resource.ResourceException;
 import jakarta.resource.cci.Connection;
 import jakarta.resource.cci.ConnectionFactory;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,7 @@ public class ResourceAccessService {
     @Resource(lookup = "java:/eis/JiraCF")
     private ConnectionFactory connectionFactory;
 
-    public String createTask() throws jakarta.resource.ResourceException {
+    public String createTask() throws ResourceException {
         Connection connection = null;
         try {
             connection = connectionFactory.getConnection();

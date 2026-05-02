@@ -11,7 +11,7 @@
 
     <resourceadapter>
         <resourceadapter-class>
-            jira.JiraResourceAdapterImpl
+            app.jca.JiraResourceAdapterImpl
         </resourceadapter-class>
 
         <config-property>
@@ -34,7 +34,7 @@
             <connection-definition>
 
                 <managedconnectionfactory-class>
-                    jira.JiraManagedConnectionFactory
+                    app.jca.JiraManagedConnectionFactory
                 </managedconnectionfactory-class>
 
                 <connectionfactory-interface>
@@ -42,7 +42,7 @@
                 </connectionfactory-interface>
 
                 <connectionfactory-impl-class>
-                    jira.JiraConnectionFactory
+                    app.jca.JiraConnectionFactory
                 </connectionfactory-impl-class>
 
                 <connection-interface>
@@ -50,7 +50,7 @@
                 </connection-interface>
 
                 <connection-impl-class>
-                    jira.JiraConnection
+                    app.jca.JiraConnection
                 </connection-impl-class>
 
             </connection-definition>
