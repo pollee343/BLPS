@@ -1,10 +1,10 @@
 package app.jca;
 
-import jakarta.resource.spi.ConnectionManager;
-import jakarta.resource.spi.ConnectionRequestInfo;
-import jakarta.resource.spi.ManagedConnection;
-import jakarta.resource.spi.ManagedConnectionFactory;
+import app.jca.interfaces.ConnectionInterface;
+import jakarta.resource.cci.ConnectionFactory;
+import jakarta.resource.spi.*;
 import jakarta.resource.ResourceException;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.security.auth.Subject;
 import java.io.Serializable;
@@ -12,6 +12,12 @@ import java.io.PrintWriter;
 import java.util.Objects;
 import java.util.Set;
 
+@ConnectionDefinition(
+        connectionFactory = ConnectionFactory.class,
+        connectionFactoryImpl = JiraConnectionFactory.class,
+        connection = ConnectionInterface.class,
+        connectionImpl = JiraConnection.class
+)
 public class JiraManagedConnectionFactory implements ManagedConnectionFactory, Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -19,8 +25,11 @@ public class JiraManagedConnectionFactory implements ManagedConnectionFactory, S
     public JiraManagedConnectionFactory() {
     }
 
+    @Value("${jira.baseUrl}")
     private String baseUrl;
+    @Value("${jira.apiToken}")
     private String apiToken;
+    @Value("${jira.userEmail}")
     private String userEmail; // todo мб нужно заменить на email
 
     public String getBaseUrl() { return baseUrl; }

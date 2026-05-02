@@ -1,8 +1,9 @@
 package app.jca;
 
-import app.interfaces.ConnectionInterface;
+import app.jca.interfaces.ConnectionInterface;
 import jakarta.resource.ResourceException;
 import jakarta.resource.cci.*;
+import org.springframework.stereotype.Service;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -12,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.io.Serializable;
 import java.util.Base64;
 
+@Service
 public class JiraConnection implements ConnectionInterface, Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -31,17 +33,7 @@ public class JiraConnection implements ConnectionInterface, Serializable {
         this.mcf = mcf;
     }
 
-    private void ensureOpenAndInitialized() throws ResourceException {
-        if (closed) {
-            throw new ResourceException("Connection is closed");
-        }
-        if (mcf == null) {
-            throw new ResourceException("Connection is not initialized by container");
-        }
-    }
-
     public String createTask(String title, String description) throws ResourceException {
-        ensureOpenAndInitialized();
         try {
             String auth = mcf.getUserEmail() + ":" + mcf.getApiToken();
             String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes(StandardCharsets.UTF_8));

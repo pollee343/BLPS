@@ -2,12 +2,19 @@ package app.jca;
 
 import jakarta.resource.spi.ActivationSpec;
 import jakarta.resource.spi.BootstrapContext;
+import jakarta.resource.spi.Connector;
 import jakarta.resource.spi.ResourceAdapter;
 import jakarta.resource.spi.endpoint.MessageEndpointFactory;
 
 import javax.transaction.xa.XAResource;
 import java.io.Serializable;
 
+@Connector(
+        displayName = "Jira Resource Adapter",
+        vendorName = "BLPS",
+        eisType = "Jira",
+        version = "1.0"
+)
 public class JiraResourceAdapterImpl implements ResourceAdapter, Serializable {
 
     private static final long serialVersionUID = 1L;

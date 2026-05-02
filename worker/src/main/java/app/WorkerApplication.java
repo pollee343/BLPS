@@ -6,12 +6,14 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.annotation.EnableJms;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableJms
 @SpringBootApplication(scanBasePackages = "app")
-public class WorkerApplication extends SpringBootServletInitializer {
-    @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
-        return builder.sources(WorkerApplication.class);
+public class WorkerApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(WorkerApplication.class, args);
     }
+
 }

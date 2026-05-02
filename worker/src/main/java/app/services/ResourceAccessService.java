@@ -1,6 +1,6 @@
 package app.services;
 
-import app.interfaces.ConnectionInterface;
+import app.jca.interfaces.ConnectionInterface;
 import jakarta.annotation.Resource;
 import jakarta.resource.ResourceException;
 import jakarta.resource.cci.Connection;
