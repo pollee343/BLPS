@@ -33,7 +33,8 @@ public class ApplicationService implements ApplicationServiceInterface {
                 .isPresent()) {
             throw new IllegalArgumentException("Заявка на получение информации об отказе в получении обещанного платежа уже создана");
         }
-        createApplication(email, ApplicationType.PROMISED_PAYMENT_REJECTION, userData);
+        Application application = createApplication(email, ApplicationType.PROMISED_PAYMENT_REJECTION, userData);
+        reportRequestSender.send(application.getId());
     }
 
     @Override

@@ -11,6 +11,7 @@ public class SchedulerConfig {
     public JobDetail promisedPaymentJobDetail() {
         return JobBuilder.newJob(PromisedPaymentJob.class)
                 .withIdentity("promisedPaymentJob")
+                .storeDurably()
                 .build();
     }
 

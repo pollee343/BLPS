@@ -25,10 +25,6 @@ public class ApplicationDAOService {
         return applicationRepository.findById(id);
     }
 
-    public Optional<Application> findById(Long id) {
-        return applicationRepository.findById(id);
-    }
-
     public Optional<Application> findWaitingApplications(UserData userData, ApplicationType applicationType, ApplicationStatus applicationStatus) {
         return applicationRepository.findByUserDataAndApplicationTypeAndApplicationStatus(userData, applicationType, applicationStatus);
     }
