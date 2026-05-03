@@ -1,9 +1,11 @@
 package app.test;
 
-import app.services.ResourceAccessService;
+import app.dao.ApplicationDAOService;
+import app.services.JiraAccessService;
 import jakarta.resource.ResourceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -12,10 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class TestController {
 
-    private final ResourceAccessService resourceAccessService;
+    private final JiraAccessService jiraAccessService;
+    private final ApplicationDAOService applicationDAOService;
 
     @PostMapping("/createTask")
-    public String createTask() throws ResourceException {
-        return resourceAccessService.createTask();
+    public String createTask(@RequestBody Long applicationId) throws ResourceException {
+        return jiraAccessService.createTask(applicationDAOService.findById(applicationId).get());
     }
 }

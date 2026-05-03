@@ -41,7 +41,7 @@ public class JiraConnection implements ConnectionInterface, Serializable {
             String jsonBody = String.format("""
                 {
                   "fields": {
-                    "project": { "key": "SCRUM" },
+                    "project": { "key": "KAN" },
                     "summary": "%s",
                     "description": "%s",
                     "issuetype": { "name": "Task" }

@@ -37,9 +37,10 @@ build/
 
 ### Mac OS ###
 .DS_Store
-main-app/src/resources/application.properties
+main-app/src/main/resources/application.properties
 target/
 out/
 artifact/
 keys/
 resources/
+worker/src/main/resources/application.properties
