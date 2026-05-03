@@ -51,3 +51,6 @@ keys/
 *.jks
 *.keystore
 **/keys/
+
+resources/
+worker/src/main/resources/application.properties
