@@ -42,11 +42,15 @@ public class StompReportRequestSender implements ReportRequestSender {
             connection.open(host, port);
             connection.connect(login, passcode);
             connection.send(destination, body, null, messageHeaders());
-            connection.disconnect();
         } catch (IOException e) {
             throw new IllegalStateException("Не удалось отправить заявку на отчет в ActiveMQ через STOMP", e);
         } catch (Exception e) {
             throw new IllegalStateException("Ошибка при отправке STOMP-сообщения в ActiveMQ", e);
+        } finally {
+            try {
+                connection.disconnect();
+            } catch (Exception ignored) {
+            }
         }
     }
 

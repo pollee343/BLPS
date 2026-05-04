@@ -17,7 +17,7 @@ public class ReportRequestConsumer {
     private final ObjectMapper objectMapper;
     private final ApplicationProcessingService applicationProcessingService;
 
-    @JmsListener(destination = "${app.queues.legal-report}")
+    @JmsListener(destination = "${app.queues.report-requests}")
     public void receive(String body) throws Exception {
         ReportRequestMessage message = objectMapper.readValue(body, ReportRequestMessage.class);
         applicationProcessingService.process(message.getApplicationId());
