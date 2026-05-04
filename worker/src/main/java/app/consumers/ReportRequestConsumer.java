@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
-//cлушает очередь legal-report.requests получает JSON-сообщение переаодит его в ReportRequestMessage запускает обработку заявки
+//cлушает очередь report.requests получает JSON-сообщение переаодит его в ReportRequestMessage запускает обработку заявки
 
 @Component
 @RequiredArgsConstructor
