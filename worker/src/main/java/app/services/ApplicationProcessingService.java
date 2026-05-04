@@ -33,6 +33,7 @@ public class ApplicationProcessingService {
             jiraAccessService.createTask(application);
 
             application.setApplicationStatus(ApplicationStatus.WAITING_EMPLOYEE);
+
             applicationDAOService.createApplication(application);
         } catch (ResourceException e) {
             throw new RuntimeException(e);

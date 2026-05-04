@@ -4,6 +4,7 @@ import app.dto.messages.ReportRequestMessage;
 import app.services.ApplicationProcessingService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 

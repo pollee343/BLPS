@@ -27,8 +27,18 @@ public class JiraConnectionFactory implements ConnectionFactory {
 
     @Override
     public Connection getConnection() {
+        if (mcf == null) {
+            throw new IllegalStateException("ManagedConnectionFactory is not set");
+        }
+
         try {
-            return (Connection) connectionManager.allocateConnection(mcf, null);
+            if (connectionManager != null) {
+                return (Connection) connectionManager.allocateConnection(mcf, null);
+            }
+
+            JiraManagedConnection managedConnection =
+                    (JiraManagedConnection) mcf.createManagedConnection(null, null);
+            return (Connection) managedConnection.getConnection(null, null);
         } catch (ResourceException e) {
             throw new RuntimeException(e);
         }

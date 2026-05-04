@@ -3,7 +3,6 @@ package app.jca;
 import app.jca.interfaces.ConnectionInterface;
 import jakarta.resource.cci.ConnectionFactory;
 import jakarta.resource.spi.*;
-import jakarta.resource.ResourceException;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.security.auth.Subject;
@@ -30,7 +29,7 @@ public class JiraManagedConnectionFactory implements ManagedConnectionFactory, S
     @Value("${jira.apiToken}")
     private String apiToken;
     @Value("${jira.userEmail}")
-    private String userEmail; // todo мб нужно заменить на email
+    private String userEmail;
 
     public String getBaseUrl() { return baseUrl; }
     public void setBaseUrl(String baseUrl) { this.baseUrl = baseUrl; }
@@ -48,18 +47,7 @@ public class JiraManagedConnectionFactory implements ManagedConnectionFactory, S
 
     @Override
     public Object createConnectionFactory() {
-        return new JiraConnectionFactory(this, new StandaloneConnectionManager());
-    }
-
-    private final class StandaloneConnectionManager implements ConnectionManager, Serializable {
-        private static final long serialVersionUID = 1L;
-
-        @Override
-        public Object allocateConnection(ManagedConnectionFactory managedConnectionFactory, ConnectionRequestInfo connectionRequestInfo)
-                throws ResourceException {
-            ManagedConnection managedConnection = managedConnectionFactory.createManagedConnection(null, connectionRequestInfo);
-            return managedConnection.getConnection(null, connectionRequestInfo);
-        }
+        return new JiraConnectionFactory(this, null);
     }
 
     @Override
