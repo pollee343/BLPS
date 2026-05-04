@@ -1,0 +1,55 @@
+package app.controllers;
+
+import app.dto.responses.BalanceResponse;
+import app.dto.requests.PaymentRequest;
+import app.dto.requests.SpendRequest;
+import app.model.enams.BankOperationStatus;
+import app.services.interfases.BalanceServiceInterface;
+import app.services.interfases.PromisedPaymentServiceInterface;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
+import org.springframework.web.bind.annotation.*;
+import app.services.BalanceService;
+
+@RestController
+@RequestMapping("/api/balance")
+@RequiredArgsConstructor
+public class BalanceController {
+
+    private final BalanceService balanceService;
+
+    @PreAuthorize("hasRole('USER') || hasRole('MODERATOR') || hasRole('ADMIN')")
+    @PostMapping("/top-up")
+    public ResponseEntity<?> topUp(@RequestBody PaymentRequest request) {
+        BankOperationStatus status = balanceService.topUp(request);
+        return switch (status) {
+            case SUCCESS -> ResponseEntity.ok("Баланс успешно пополнен");
+            case DECLINED -> ResponseEntity.badRequest().body("Банк отклонил операцию (проверьте сумму и данные)");
+            case ERROR -> ResponseEntity.status(HttpStatus.BAD_GATEWAY)
+                    .body("Техническая ошибка банка");
+        };
+    }
+
+    @PreAuthorize("(hasRole('USER') || hasRole('MODERATOR') || hasRole('ADMIN')) " +
+            "&& @securityService.canAccessUserData(authentication, #userDataId)")
+    @GetMapping("/{userDataId}")
+    public ResponseEntity<?> getBalance(@PathVariable Long userDataId) {
+        BalanceResponse response = balanceService.getBalance(userDataId);
+        return ResponseEntity.ok(response);
+    }
+
+    //для заполнения бд операциями
+    @PostMapping("/spend")
+    public ResponseEntity<?> spend(@RequestBody SpendRequest request) {
+        balanceService.spend(
+                request.getUserDataId(),
+                request.getAmount(),
+                request.getName()
+        );
+        return ResponseEntity.ok("Баланс успешно уменьшен");
+    }
+
+}

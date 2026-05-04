@@ -37,8 +37,20 @@ build/
 
 ### Mac OS ###
 .DS_Store
-src/main/resources/application.properties
+main-app/src/resources/application.properties
 target/
 out/
 artifact/
 keys/
+
+### Local configuration and secrets ###
+*.properties
+*.key
+*.pem
+*.p12
+*.jks
+*.keystore
+**/keys/
+
+resources/
+worker/src/main/resources/application.properties
