@@ -30,7 +30,6 @@ public class ApplicationProcessingService {
 
             application.setApplicationStatus(ApplicationStatus.WAITING_EMPLOYEE);
 
-            // Later this is where the worker will create a task in the external EIS through JCA.
             applicationDAOService.createApplication(application);
         } catch (ResourceException e) {
             throw new RuntimeException(e);
