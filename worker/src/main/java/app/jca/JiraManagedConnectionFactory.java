@@ -11,6 +11,9 @@ import java.io.PrintWriter;
 import java.util.Objects;
 import java.util.Set;
 
+//Определяет фабрику соединений, которую менеджер соединений с сервера приложений использует для получения
+// физических соединений с EIS.
+
 @ConnectionDefinition(
         connectionFactory = ConnectionFactory.class,
         connectionFactoryImpl = JiraConnectionFactory.class,
@@ -24,11 +27,11 @@ public class JiraManagedConnectionFactory implements ManagedConnectionFactory, S
     public JiraManagedConnectionFactory() {
     }
 
-    @Value("${jira.baseUrl}")
+    // @Value("${jira.baseUrl}")
     private String baseUrl;
-    @Value("${jira.apiToken}")
+    // @Value("${jira.apiToken}")
     private String apiToken;
-    @Value("${jira.userEmail}")
+    // @Value("${jira.userEmail}")
     private String userEmail;
 
     public String getBaseUrl() { return baseUrl; }

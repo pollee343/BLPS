@@ -7,6 +7,8 @@ import jakarta.resource.spi.ConnectionManager;
 import javax.naming.NamingException;
 import javax.naming.Reference;
 
+// Определяет фабрику соединений, которую приложения используют для получения дескрипторов соединений.
+
 public class JiraConnectionFactory implements ConnectionFactory {
 
     private final ConnectionManager connectionManager;
