@@ -9,6 +9,7 @@ import jakarta.resource.spi.endpoint.MessageEndpointFactory;
 import javax.transaction.xa.XAResource;
 import java.io.Serializable;
 
+// Определяет методы жизненного цикла адаптера ресурсов.
 @Connector(
         displayName = "Jira Resource Adapter",
         vendorName = "BLPS",

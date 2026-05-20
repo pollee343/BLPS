@@ -8,6 +8,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+//Определяет физическое соединение с EIS, которым может управлять менеджер соединений.
+
 public class JiraManagedConnection implements ManagedConnection{
 
     private final JiraManagedConnectionFactory mcf;

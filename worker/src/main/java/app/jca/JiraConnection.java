@@ -13,6 +13,9 @@ import java.nio.charset.StandardCharsets;
 import java.io.Serializable;
 import java.util.Base64;
 
+
+// Определяет дескриптор соединения, который приложения используют для взаимодействия с EIS.
+
 @Service
 public class JiraConnection implements ConnectionInterface, Serializable {
 
@@ -63,7 +66,6 @@ public class JiraConnection implements ConnectionInterface, Serializable {
                 throw new ResourceException("Jira error: " + response.body());
             }
 
-            // Извлекаем ключ
             String responseBody = response.body();
             String key = responseBody.split("\"key\":\"")[1].split("\"")[0];
 
