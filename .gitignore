@@ -42,5 +42,4 @@ target/
 out/
 artifact/
 keys/
-resources/
 worker/src/main/resources/application.properties
