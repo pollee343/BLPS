@@ -1,14 +1,13 @@
 package app.consumers;
 
-import app.dto.messages.ReportRequestMessage;
+import app.dto.messages.ApplicationJiraExportMessage;
 import app.services.ApplicationProcessingService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
-//cлушает очередь legal-report.requests получает JSON-сообщение переаодит его в ReportRequestMessage запускает обработку заявки
+// Слушает очередь выгрузки в Jira, получает applicationId и запускает обработку заявки.
 
 @Component
 @RequiredArgsConstructor
@@ -19,7 +18,7 @@ public class ReportRequestConsumer {
 
     @JmsListener(destination = "${app.queues.legal-report}")
     public void receive(String body) throws Exception {
-        ReportRequestMessage message = objectMapper.readValue(body, ReportRequestMessage.class);
+        ApplicationJiraExportMessage message = objectMapper.readValue(body, ApplicationJiraExportMessage.class);
         applicationProcessingService.process(message.getApplicationId());
     }
 }

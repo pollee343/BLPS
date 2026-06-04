@@ -11,6 +11,7 @@ public class SchedulerConfig {
     public JobDetail promisedPaymentJobDetail() {
         return JobBuilder.newJob(PromisedPaymentJob.class)
                 .withIdentity("promisedPaymentJob")
+                .storeDurably()
                 .build();
     }
 
@@ -19,7 +20,7 @@ public class SchedulerConfig {
         return TriggerBuilder.newTrigger()
                 .forJob(promisedPaymentJobDetail())
                 .withIdentity("promisedPaymentTrigger")
-                .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(20).repeatForever())
+                .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInHours(1).repeatForever())
                 .build();
     }
 }

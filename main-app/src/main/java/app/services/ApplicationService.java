@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -61,6 +62,31 @@ public class ApplicationService implements ApplicationServiceInterface {
     }
 
     @Override
+    public boolean hasCreatedPromisedPaymentRejectionApplication(String accountNumber) {
+        UserData userData = getUserDataByAccountNumber(accountNumber);
+        return applicationDAOService.findWaitingApplications(
+                userData,
+                ApplicationType.PROMISED_PAYMENT_REJECTION,
+                ApplicationStatus.WAITING_EMPLOYEE
+        ).isPresent();
+    }
+
+    @Override
+    public Optional<String> findWaitingEmployeeApplicationEmail(String accountNumber, ApplicationType applicationType) {
+        UserData userData = getUserDataByAccountNumber(accountNumber);
+        return applicationDAOService.findWaitingApplications(
+                userData,
+                applicationType,
+                ApplicationStatus.WAITING_EMPLOYEE
+        ).map(Application::getEmail);
+    }
+
+    @Override
+    public void makeApplicationProcessed(String accountNumber, ApplicationType applicationType) {
+        makeApplicationProcessed(getUserDataByAccountNumber(accountNumber), applicationType);
+    }
+
+    @Override
     public void makeApplicationProcessed(UserData userData, ApplicationType applicationType) {
         Application application = applicationDAOService.findWaitingApplications(userData, applicationType, ApplicationStatus.WAITING_EMPLOYEE)
                 .orElseThrow(() -> new EntityNotFoundException("Не найдены необработанные заявки"));
@@ -74,6 +100,11 @@ public class ApplicationService implements ApplicationServiceInterface {
         application.setEmail(email);
         application.setUserData(userData);
         applicationDAOService.createApplication(application);
+    }
+
+    private UserData getUserDataByAccountNumber(String accountNumber) {
+        return userDataDAOService.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
     }
 
     private ApplicationResponse buildApplicationResponse(Application application) {

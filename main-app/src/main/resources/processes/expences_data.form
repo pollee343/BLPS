@@ -1,0 +1,83 @@
+{
+  "components": [
+    {
+      "label": "Номер счета",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_0upbq05",
+        "columns": null
+      },
+      "id": "Field_1xl5zyt",
+      "key": "accountNumber",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "subtype": "date",
+      "dateLabel": "Дата начала",
+      "type": "datetime",
+      "layout": {
+        "row": "Row_1mt4ecc",
+        "columns": null
+      },
+      "id": "Field_0wtkikq",
+      "key": "from"
+    },
+    {
+      "subtype": "date",
+      "dateLabel": "Дата окончания",
+      "type": "datetime",
+      "layout": {
+        "row": "Row_13psamz",
+        "columns": null
+      },
+      "id": "Field_16n677j",
+      "key": "to"
+    },
+    {
+      "label": "Тип операции",
+      "values": [
+        {
+          "label": "Не выбрано",
+          "value": "ANY"
+        },
+        {
+          "label": "Пополнение",
+          "value": "INCOME"
+        },
+        {
+          "label": "Списание",
+          "value": "EXPENSE"
+        }
+      ],
+      "type": "select",
+      "layout": {
+        "row": "Row_17swgn3",
+        "columns": null
+      },
+      "id": "Field_1055dh9",
+      "key": "operationType",
+      "defaultValue": "ANY"
+    },
+    {
+      "label": "Название операции",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_1l17mml",
+        "columns": null
+      },
+      "id": "Field_1fyxzbj",
+      "key": "operationName"
+    }
+  ],
+  "type": "default",
+  "id": "expences_data",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.46.1"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.24.0",
+  "schemaVersion": 19
+}

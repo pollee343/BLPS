@@ -1,0 +1,53 @@
+{
+  "components": [
+    {
+      "label": "Номер счета",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_1ok5f7i",
+        "columns": null
+      },
+      "id": "Field_0b2x25k",
+      "key": "accountNumber",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "subtype": "date",
+      "dateLabel": "Дата расчетного периода",
+      "type": "datetime",
+      "layout": {
+        "row": "Row_05715j1",
+        "columns": null
+      },
+      "id": "Field_1381pfs",
+      "key": "date",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Email для отправки счета",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_1lhbefv",
+        "columns": null
+      },
+      "id": "Field_1elnrli",
+      "key": "email",
+      "validate": {
+        "required": true
+      }
+    }
+  ],
+  "type": "default",
+  "id": "Form_1oiy5j3",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.46.1"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.24.0",
+  "schemaVersion": 19
+}
