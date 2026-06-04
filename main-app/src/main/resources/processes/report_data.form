@@ -1,0 +1,39 @@
+{
+  "components": [
+    {
+      "label": "Номер счета",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_0jytsia",
+        "columns": null
+      },
+      "id": "Field_0kfxbcz",
+      "key": "accountNumber",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Email для отправки отчета",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_1xx1hyo",
+        "columns": null
+      },
+      "id": "Field_1o65vi8",
+      "key": "email",
+      "validate": {
+        "required": true
+      }
+    }
+  ],
+  "type": "default",
+  "id": "Form_1l537io",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.46.1"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.24.0",
+  "schemaVersion": 19
+}

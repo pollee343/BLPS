@@ -20,7 +20,7 @@ public class SchedulerConfig {
         return TriggerBuilder.newTrigger()
                 .forJob(promisedPaymentJobDetail())
                 .withIdentity("promisedPaymentTrigger")
-                .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(20).repeatForever())
+                .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInHours(1).repeatForever())
                 .build();
     }
 }

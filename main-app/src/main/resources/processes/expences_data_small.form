@@ -1,0 +1,48 @@
+{
+  "components": [
+    {
+      "label": "Номер счета",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_0xk16g7",
+        "columns": null
+      },
+      "id": "Field_0gufj9b",
+      "key": "accountNumber",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "subtype": "date",
+      "dateLabel": "Дата начала",
+      "type": "datetime",
+      "layout": {
+        "row": "Row_17pqxsy",
+        "columns": null
+      },
+      "id": "Field_09uqz6w",
+      "key": "from"
+    },
+    {
+      "subtype": "date",
+      "dateLabel": "Дата окончания",
+      "type": "datetime",
+      "layout": {
+        "row": "Row_007c6l2",
+        "columns": null
+      },
+      "id": "Field_0egbog0",
+      "key": "to"
+    }
+  ],
+  "type": "default",
+  "id": "Form_183abfr",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.46.1"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.24.0",
+  "schemaVersion": 19
+}

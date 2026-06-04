@@ -5,7 +5,7 @@
     <participant id="Participant_1rd5c09" name="Pool: Платежная система" processRef="Process_1mdd7iv" />
     <messageFlow id="Flow_1x85h79" sourceRef="Event_024n4zl" targetRef="Event_0dpbp8a" />
   </collaboration>
-  <process id="Process_1" isExecutable="false">
+  <process id="Process_1" isExecutable="false" camunda:historyTimeToLive="30">
     <laneSet id="LaneSet_18cpna5">
       <lane id="Lane_0u044b4" name="Клиент">
         <flowNodeRef>Activity_1917ohr</flowNodeRef>
@@ -173,7 +173,7 @@
     <sequenceFlow id="Flow_0n5sqvm" name="услуга одобрена?" sourceRef="Activity_1l8h190" targetRef="Gateway_1muys81" />
     <sequenceFlow id="Flow_0oclq92" sourceRef="Event_0muur2c" targetRef="Activity_18c1ys5" />
   </process>
-  <process id="Process_1mdd7iv" isExecutable="false">
+  <process id="Process_1mdd7iv" isExecutable="false" camunda:historyTimeToLive="30">
     <startEvent id="Event_02459u1">
       <outgoing>Flow_1mat2v2</outgoing>
     </startEvent>

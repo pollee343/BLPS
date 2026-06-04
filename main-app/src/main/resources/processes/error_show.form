@@ -1,0 +1,23 @@
+{
+  "components": [
+    {
+      "label": "Ошибка",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_128j30s",
+        "columns": null
+      },
+      "id": "Field_00lnvpr",
+      "key": "errorMessage"
+    }
+  ],
+  "type": "default",
+  "id": "Form_1jrlus2",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.46.1"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.24.0",
+  "schemaVersion": 19
+}

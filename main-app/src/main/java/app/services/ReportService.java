@@ -17,6 +17,8 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.camunda.bpm.engine.variable.Variables;
+import org.camunda.bpm.engine.variable.value.FileValue;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -142,6 +144,22 @@ public class ReportService implements ReportServiceInterface {
                 userData, forCategory, operations);
     }
 
+    @Override
+    public FileValue createPdfFileValue(String fileName, byte[] content) {
+        if (fileName == null || fileName.isBlank()) {
+            throw new IllegalArgumentException("fileName is required");
+        }
+        if (content == null || content.length == 0) {
+            throw new IllegalArgumentException("content is required");
+        }
+
+        return Variables
+                .fileValue(fileName)
+                .file(content)
+                .mimeType("application/pdf")
+                .create();
+    }
+
     private OperationInformation getOperation(ServiceUsage serviceUsage) {
         OperationInformation operation = new OperationInformation();
         operation.setTime(serviceUsage.getOperationTime());
@@ -222,6 +240,26 @@ public class ReportService implements ReportServiceInterface {
     }
 
     @Override
+    public void sendApplicationReportEmail(String email, ApplicationType applicationType, byte[] content) throws MessagingException {
+        if (applicationType.equals(ApplicationType.PROMISED_PAYMENT_REJECTION)) {
+            sendEmail(
+                    email,
+                    "Ответ по заявке на получение информации об отказе в получении обещанного платежа",
+                    "",
+                    content
+            );
+            return;
+        }
+
+        sendEmail(
+                email,
+                "Ответ по заявке на получение юридически достоверного отчета",
+                "",
+                content
+        );
+    }
+
+    @Override
     public void sendReportOnEmail(String accountNumber, ApplicationType applicationType, MultipartFile file) throws IOException, MessagingException {
         UserData userData = userDataDAOService.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
@@ -229,17 +267,7 @@ public class ReportService implements ReportServiceInterface {
         Application application = applicationDAOService.findWaitingApplications(userData, applicationType, ApplicationStatus.WAITING_EMPLOYEE)
                 .orElseThrow(() -> new EntityNotFoundException("Заявка не найдена"));
 
-        if (applicationType.equals(ApplicationType.PROMISED_PAYMENT_REJECTION)){
-            sendEmail(application.getEmail(),
-                    "Ответ по заявке на получение информации об отказе в получении обещанного платежа",
-                    "",
-                    file.getBytes());
-        } else {
-            sendEmail(application.getEmail(),
-                    "Ответ по заявке на получение юридически достоверного отчета",
-                    "",
-                    file.getBytes());
-        }
+        sendApplicationReportEmail(application.getEmail(), applicationType, file.getBytes());
         applicationService.makeApplicationProcessed(userData, applicationType);
     }
 }

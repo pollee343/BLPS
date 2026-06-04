@@ -8,12 +8,12 @@ import app.model.enams.ApplicationType;
 import app.model.entities.Application;
 import app.model.entities.UserData;
 import app.services.interfases.ApplicationServiceInterface;
-import app.services.interfases.ReportRequestSender;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,8 +22,6 @@ public class ApplicationService implements ApplicationServiceInterface {
 
     private final ApplicationDAOService applicationDAOService;
     private final UserDataDAOService userDataDAOService;
-    private final ReportRequestSender reportRequestSender;
-
 
     @Override
     public void promisedPaymentRejection(String accountNumber, String email) {
@@ -33,20 +31,18 @@ public class ApplicationService implements ApplicationServiceInterface {
                 .isPresent()) {
             throw new IllegalArgumentException("Заявка на получение информации об отказе в получении обещанного платежа уже создана");
         }
-        Application application = createApplication(email, ApplicationType.PROMISED_PAYMENT_REJECTION, userData);
-        reportRequestSender.send(application.getId());
+        createApplication(email, ApplicationType.PROMISED_PAYMENT_REJECTION, userData);
     }
 
     @Override
     public void legallyReliableReport(String accountNumber, String email) {
         UserData userData = userDataDAOService.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
-        if (applicationDAOService.findWaitingApplications(userData, ApplicationType.LEGALLY_RELIABLE_REPORT, ApplicationStatus.CREATED).isPresent()) {
+        if (applicationDAOService.findWaitingApplications(userData, ApplicationType.LEGALLY_RELIABLE_REPORT, ApplicationStatus.CREATED)
+                .isPresent()) {
             throw new IllegalArgumentException("Заявка на получение юридически достоверного отчета уже создана");
         }
-        Application application = createApplication(email, ApplicationType.LEGALLY_RELIABLE_REPORT, userData);
-        reportRequestSender.send(application.getId());
-
+        createApplication(email, ApplicationType.LEGALLY_RELIABLE_REPORT, userData);
     }
 
     @Override
@@ -66,6 +62,31 @@ public class ApplicationService implements ApplicationServiceInterface {
     }
 
     @Override
+    public boolean hasCreatedPromisedPaymentRejectionApplication(String accountNumber) {
+        UserData userData = getUserDataByAccountNumber(accountNumber);
+        return applicationDAOService.findWaitingApplications(
+                userData,
+                ApplicationType.PROMISED_PAYMENT_REJECTION,
+                ApplicationStatus.WAITING_EMPLOYEE
+        ).isPresent();
+    }
+
+    @Override
+    public Optional<String> findWaitingEmployeeApplicationEmail(String accountNumber, ApplicationType applicationType) {
+        UserData userData = getUserDataByAccountNumber(accountNumber);
+        return applicationDAOService.findWaitingApplications(
+                userData,
+                applicationType,
+                ApplicationStatus.WAITING_EMPLOYEE
+        ).map(Application::getEmail);
+    }
+
+    @Override
+    public void makeApplicationProcessed(String accountNumber, ApplicationType applicationType) {
+        makeApplicationProcessed(getUserDataByAccountNumber(accountNumber), applicationType);
+    }
+
+    @Override
     public void makeApplicationProcessed(UserData userData, ApplicationType applicationType) {
         Application application = applicationDAOService.findWaitingApplications(userData, applicationType, ApplicationStatus.WAITING_EMPLOYEE)
                 .orElseThrow(() -> new EntityNotFoundException("Не найдены необработанные заявки"));
@@ -73,14 +94,18 @@ public class ApplicationService implements ApplicationServiceInterface {
         applicationDAOService.createApplication(application);
     }
 
-    private Application createApplication(String email, ApplicationType applicationType, UserData userData) {
+    private void createApplication(String email, ApplicationType applicationType, UserData userData) {
         Application application = new Application();
         application.setApplicationType(applicationType);
         application.setEmail(email);
         application.setUserData(userData);
-        return applicationDAOService.createApplication(application);
+        applicationDAOService.createApplication(application);
     }
 
+    private UserData getUserDataByAccountNumber(String accountNumber) {
+        return userDataDAOService.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+    }
 
     private ApplicationResponse buildApplicationResponse(Application application) {
         return new ApplicationResponse(application.getUserData().getAccountNumber(), application.getEmail());

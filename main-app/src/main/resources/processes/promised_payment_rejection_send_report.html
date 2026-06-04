@@ -1,0 +1,24 @@
+<form role="form" name="promisedPaymentRejectionSendReportForm">
+  <div class="form-group">
+    <label for="accountNumber">Номер счета</label>
+    <input class="form-control"
+           id="accountNumber"
+           name="accountNumber"
+           type="text"
+           cam-variable-name="accountNumber"
+           cam-variable-type="String"
+           required />
+  </div>
+
+  <div class="form-group">
+    <label for="reportPdf">PDF-файл отчета</label>
+    <input class="form-control"
+           id="reportPdf"
+           name="reportPdf"
+           type="file"
+           cam-variable-name="reportPdf"
+           cam-variable-type="File"
+           cam-max-filesize="10000000"
+           accept="application/pdf,.pdf" />
+  </div>
+</form>

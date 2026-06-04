@@ -1,11 +1,13 @@
 package app.config;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 @Configuration
+@ConditionalOnProperty(name = "app.jta.enabled", havingValue = "true")
 public class TransactionConfig {
 
     @Bean
