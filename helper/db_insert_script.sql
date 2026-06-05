@@ -6,11 +6,11 @@ INSERT INTO users (
     passport_series,
     passport_number
 ) VALUES (
-    'Иванов',
+    'ШШШШ',
     'Иван',
     'Иванович',
     DATE '1999-05-14',
-    '1234',
+    '5555',
     '567890'
 );
 
@@ -36,8 +36,8 @@ INSERT INTO user_data (
     is_blocked,
     user_id
 ) VALUES (
-    'ACC1000001',
-    '79161234567',
+    'ACC1000002',
+    '79161266562',
     1200.00,
     500,
     10737418240, -- 10 ГБ
@@ -45,7 +45,7 @@ INSERT INTO user_data (
     FALSE,
     (SELECT id
      FROM users
-     WHERE passport_series = '1234'
+     WHERE passport_series = '5555'
        AND passport_number = '567890')
 );
 

@@ -1,0 +1,31 @@
+{
+  "components": [
+    {
+      "label": "ID абонентских данных",
+      "type": "number",
+      "id": "Field_userDataId",
+      "key": "userDataId",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Сумма обещанного платежа",
+      "type": "number",
+      "id": "Field_amount",
+      "key": "amount",
+      "validate": {
+        "required": true
+      }
+    }
+  ],
+  "type": "default",
+  "id": "promised_payment_form",
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.24.0",
+  "schemaVersion": 19,
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.47.0"
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "components": [
+    {
+      "label": "ID абонентских данных",
+      "type": "number",
+      "id": "Field_topUpUserDataId",
+      "key": "userDataId",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Номер карты",
+      "type": "textfield",
+      "id": "Field_cardNumber",
+      "key": "cardNumber",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "CVC",
+      "type": "textfield",
+      "id": "Field_cvc",
+      "key": "cvc",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "label": "Сумма пополнения",
+      "type": "number",
+      "id": "Field_topUpAmount",
+      "key": "amount",
+      "validate": {
+        "required": true
+      }
+    }
+  ],
+  "type": "default",
+  "id": "balance_top_up_form",
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.24.0",
+  "schemaVersion": 19,
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.47.0"
+  }
+}

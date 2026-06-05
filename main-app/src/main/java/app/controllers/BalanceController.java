@@ -4,15 +4,19 @@ import app.dto.responses.BalanceResponse;
 import app.dto.requests.PaymentRequest;
 import app.dto.requests.SpendRequest;
 import app.model.enams.BankOperationStatus;
-import app.services.interfases.BalanceServiceInterface;
-import app.services.interfases.PromisedPaymentServiceInterface;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.camunda.bpm.engine.HistoryService;
+import org.camunda.bpm.engine.RuntimeService;
+import org.camunda.bpm.engine.TaskService;
+import org.camunda.bpm.engine.history.HistoricVariableInstance;
+import org.camunda.bpm.engine.runtime.ProcessInstance;
+import org.camunda.bpm.engine.task.Task;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import app.services.BalanceService;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/balance")
@@ -20,21 +24,44 @@ import app.services.BalanceService;
 public class BalanceController {
 
     private final BalanceService balanceService;
+    private final RuntimeService runtimeService;
+    private final TaskService taskService;
+    private final HistoryService historyService;
 
-    @PreAuthorize("hasRole('USER') || hasRole('MODERATOR') || hasRole('ADMIN')")
     @PostMapping("/top-up")
     public ResponseEntity<?> topUp(@RequestBody PaymentRequest request) {
-        BankOperationStatus status = balanceService.topUp(request);
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("userDataId", request.getUserDataId());
+        variables.put("cardNumber", request.getCardNumber());
+        variables.put("cvc", request.getCvc());
+        variables.put("amount", request.getAmount());
+
+        ProcessInstance processInstance = runtimeService
+                .createProcessInstanceByKey("balance_top_up_process")
+                .setVariables(variables)
+                .execute();
+
+        Task fillDataTask = taskService.createTaskQuery()
+                .processInstanceId(processInstance.getId())
+                .taskDefinitionKey("fill_balance_top_up_data")
+                .singleResult();
+        if (fillDataTask != null) {
+            taskService.complete(fillDataTask.getId(), variables);
+        }
+
+        Boolean topUpDataValid = (Boolean) readProcessVariable(processInstance.getId(), "topUpDataValid");
+        if (Boolean.FALSE.equals(topUpDataValid)) {
+            return ResponseEntity.badRequest().body("Некорректные данные платежа");
+        }
+
+        BankOperationStatus status = BankOperationStatus.valueOf((String) readProcessVariable(processInstance.getId(), "bankPaymentStatus"));
         return switch (status) {
             case SUCCESS -> ResponseEntity.ok("Баланс успешно пополнен");
             case DECLINED -> ResponseEntity.badRequest().body("Банк отклонил операцию (проверьте сумму и данные)");
-            case ERROR -> ResponseEntity.status(HttpStatus.BAD_GATEWAY)
-                    .body("Техническая ошибка банка");
+            case ERROR -> ResponseEntity.status(502).body("Техническая ошибка банка");
         };
     }
 
-    @PreAuthorize("(hasRole('USER') || hasRole('MODERATOR') || hasRole('ADMIN')) " +
-            "&& @securityService.canAccessUserData(authentication, #userDataId)")
     @GetMapping("/{userDataId}")
     public ResponseEntity<?> getBalance(@PathVariable Long userDataId) {
         BalanceResponse response = balanceService.getBalance(userDataId);
@@ -50,6 +77,21 @@ public class BalanceController {
                 request.getName()
         );
         return ResponseEntity.ok("Баланс успешно уменьшен");
+    }
+
+    private Object readProcessVariable(String processInstanceId, String variableName) {
+        ProcessInstance activeInstance = runtimeService.createProcessInstanceQuery()
+                .processInstanceId(processInstanceId)
+                .singleResult();
+        if (activeInstance != null) {
+            return runtimeService.getVariable(processInstanceId, variableName);
+        }
+
+        HistoricVariableInstance variableInstance = historyService.createHistoricVariableInstanceQuery()
+                .processInstanceId(processInstanceId)
+                .variableName(variableName)
+                .singleResult();
+        return variableInstance != null ? variableInstance.getValue() : null;
     }
 
 }

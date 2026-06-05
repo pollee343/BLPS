@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_balance_top_up" targetNamespace="http://blps/processes" exporter="Camunda Modeler" exporterVersion="5.47.0">
+  <process id="balance_top_up_process" name="Пополнение баланса" isExecutable="true" camunda:historyTimeToLive="30">
+    <laneSet id="LaneSet_balance_top_up">
+      <lane id="Lane_balance_top_up_client" name="Клиент">
+        <flowNodeRef>Start_balance_top_up</flowNodeRef>
+        <flowNodeRef>fill_balance_top_up_data</flowNodeRef>
+        <flowNodeRef>show_balance_top_up_success_message</flowNodeRef>
+        <flowNodeRef>show_balance_top_up_reject_reason</flowNodeRef>
+        <flowNodeRef>End_balance_top_up_success</flowNodeRef>
+        <flowNodeRef>End_balance_top_up_declined</flowNodeRef>
+      </lane>
+      <lane id="Lane_balance_top_up_system" name="Система">
+        <flowNodeRef>validate_balance_top_up_data</flowNodeRef>
+        <flowNodeRef>gateway_top_up_data_valid</flowNodeRef>
+        <flowNodeRef>set_balance_top_up_reject_reason</flowNodeRef>
+        <flowNodeRef>credit_balance_after_top_up</flowNodeRef>
+        <flowNodeRef>save_top_up_income_operation</flowNodeRef>
+        <flowNodeRef>start_promised_payment_processing_after_top_up</flowNodeRef>
+        <flowNodeRef>process_bank_payment</flowNodeRef>
+        <flowNodeRef>gateway_bank_result</flowNodeRef>
+      </lane>
+      <lane id="Lane_balance_top_up_bank" name="Банк" />
+    </laneSet>
+    <sequenceFlow id="Flow_start_fill_top_up_data" sourceRef="Start_balance_top_up" targetRef="fill_balance_top_up_data" />
+    <sequenceFlow id="Flow_fill_top_up_data_validate" sourceRef="fill_balance_top_up_data" targetRef="validate_balance_top_up_data" />
+    <sequenceFlow id="Flow_validate_gateway" sourceRef="validate_balance_top_up_data" targetRef="gateway_top_up_data_valid" />
+    <sequenceFlow id="Flow_data_valid" name="да" sourceRef="gateway_top_up_data_valid" targetRef="process_bank_payment">
+      <conditionExpression xsi:type="tFormalExpression">${topUpDataValid == true}</conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_data_invalid" name="нет" sourceRef="gateway_top_up_data_valid" targetRef="set_balance_top_up_reject_reason">
+      <conditionExpression xsi:type="tFormalExpression">${topUpDataValid == false}</conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_bank_gateway" sourceRef="process_bank_payment" targetRef="gateway_bank_result" />
+    <sequenceFlow id="Flow_bank_success" name="да" sourceRef="gateway_bank_result" targetRef="credit_balance_after_top_up">
+      <conditionExpression xsi:type="tFormalExpression">${bankPaymentStatus == 'SUCCESS'}</conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_bank_error" name="нет, техническая ошибка" sourceRef="gateway_bank_result" targetRef="set_balance_top_up_reject_reason">
+      <conditionExpression xsi:type="tFormalExpression">${bankPaymentStatus == 'ERROR'}</conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_reject_reason_show" sourceRef="set_balance_top_up_reject_reason" targetRef="show_balance_top_up_reject_reason" />
+    <sequenceFlow id="Flow_show_reject_reason_end" sourceRef="show_balance_top_up_reject_reason" targetRef="End_balance_top_up_declined" />
+    <sequenceFlow id="Flow_credit_operation" sourceRef="credit_balance_after_top_up" targetRef="save_top_up_income_operation" />
+    <sequenceFlow id="Flow_operation_promised_payment" sourceRef="save_top_up_income_operation" targetRef="start_promised_payment_processing_after_top_up" />
+    <sequenceFlow id="Flow_success_message" sourceRef="start_promised_payment_processing_after_top_up" targetRef="show_balance_top_up_success_message" />
+    <sequenceFlow id="Flow_success_end" sourceRef="show_balance_top_up_success_message" targetRef="End_balance_top_up_success" />
+    <startEvent id="Start_balance_top_up" name="Запрос на пополнение баланса">
+      <outgoing>Flow_start_fill_top_up_data</outgoing>
+    </startEvent>
+    <userTask id="fill_balance_top_up_data" name="Заполнение необходимых данных платежа" camunda:formRef="balance_top_up_form" camunda:formRefBinding="deployment" camunda:assignee="demo">
+      <incoming>Flow_start_fill_top_up_data</incoming>
+      <outgoing>Flow_fill_top_up_data_validate</outgoing>
+    </userTask>
+    <serviceTask id="validate_balance_top_up_data" name="Проверка корректности данных платежа" camunda:delegateExpression="${validateBalanceTopUpDataDelegate}">
+      <incoming>Flow_fill_top_up_data_validate</incoming>
+      <outgoing>Flow_validate_gateway</outgoing>
+      <property id="Property_validate_top_up_user_data" name="__targetRef_placeholder" />
+      <dataInputAssociation id="DataInputAssociation_validate_top_up_user_data">
+        <sourceRef>DataStoreReference_top_up_user_data</sourceRef>
+        <targetRef>Property_validate_top_up_user_data</targetRef>
+      </dataInputAssociation>
+    </serviceTask>
+    <exclusiveGateway id="gateway_top_up_data_valid" name="Данные корректны?">
+      <incoming>Flow_validate_gateway</incoming>
+      <outgoing>Flow_data_valid</outgoing>
+      <outgoing>Flow_data_invalid</outgoing>
+    </exclusiveGateway>
+    <serviceTask id="process_bank_payment" name="Обработка платежа в банке" camunda:delegateExpression="${processBankPaymentDelegate}">
+      <incoming>Flow_data_valid</incoming>
+      <outgoing>Flow_bank_gateway</outgoing>
+    </serviceTask>
+    <exclusiveGateway id="gateway_bank_result" name="Результат успешен?">
+      <incoming>Flow_bank_gateway</incoming>
+      <outgoing>Flow_bank_success</outgoing>
+      <outgoing>Flow_bank_error</outgoing>
+      <outgoing>Flow_bank_declined</outgoing>
+    </exclusiveGateway>
+    <serviceTask id="set_balance_top_up_reject_reason" name="Формирование причины отказа" camunda:delegateExpression="${setBalanceTopUpRejectReasonDelegate}">
+      <incoming>Flow_data_invalid</incoming>
+      <incoming>Flow_bank_error</incoming>
+      <incoming>Flow_bank_declined</incoming>
+      <outgoing>Flow_reject_reason_show</outgoing>
+    </serviceTask>
+    <userTask id="show_balance_top_up_reject_reason" name="Просмотр причины отказа" camunda:formRef="reject_reason_form" camunda:formRefBinding="deployment" camunda:assignee="demo">
+      <incoming>Flow_reject_reason_show</incoming>
+      <outgoing>Flow_show_reject_reason_end</outgoing>
+    </userTask>
+    <endEvent id="End_balance_top_up_declined" name="Пополнение отклонено">
+      <incoming>Flow_show_reject_reason_end</incoming>
+    </endEvent>
+    <serviceTask id="credit_balance_after_top_up" name="Зачисление средств на счет абонента" camunda:delegateExpression="${creditBalanceAfterTopUpDelegate}">
+      <incoming>Flow_bank_success</incoming>
+      <outgoing>Flow_credit_operation</outgoing>
+      <dataOutputAssociation id="DataOutputAssociation_credit_top_up_user_data">
+        <targetRef>DataStoreReference_0dwv6rh</targetRef>
+      </dataOutputAssociation>
+    </serviceTask>
+    <serviceTask id="save_top_up_income_operation" name="Сохранение операции пополнения “Банковская карта”" camunda:delegateExpression="${saveTopUpIncomeOperationDelegate}">
+      <incoming>Flow_credit_operation</incoming>
+      <outgoing>Flow_operation_promised_payment</outgoing>
+      <dataOutputAssociation id="DataOutputAssociation_save_top_up_operation">
+        <targetRef>DataStoreReference_top_up_operations</targetRef>
+      </dataOutputAssociation>
+    </serviceTask>
+    <serviceTask id="start_promised_payment_processing_after_top_up" name="Запуск обработки обещанных платежей" camunda:delegateExpression="${startPromisedPaymentProcessingAfterTopUpDelegate}">
+      <incoming>Flow_operation_promised_payment</incoming>
+      <outgoing>Flow_success_message</outgoing>
+    </serviceTask>
+    <userTask id="show_balance_top_up_success_message" name="Просмотр сообщения об успешном пополнении" camunda:formRef="success_message_form" camunda:formRefBinding="deployment" camunda:assignee="demo">
+      <incoming>Flow_success_message</incoming>
+      <outgoing>Flow_success_end</outgoing>
+    </userTask>
+    <endEvent id="End_balance_top_up_success" name="Пополнение выполнено">
+      <incoming>Flow_success_end</incoming>
+    </endEvent>
+    <sequenceFlow id="Flow_bank_declined" name="нет, отказ" sourceRef="gateway_bank_result" targetRef="set_balance_top_up_reject_reason">
+      <conditionExpression xsi:type="tFormalExpression">${bankPaymentStatus == 'DECLINED'}</conditionExpression>
+    </sequenceFlow>
+    <dataStoreReference id="DataStoreReference_top_up_user_data" name="user_data" />
+    <dataStoreReference id="DataStoreReference_top_up_operations" name="money_operations" />
+    <dataStoreReference id="DataStoreReference_0dwv6rh" name="user_data" />
+  </process>
+  <bpmndi:BPMNDiagram id="BpmnDiagram_balance_top_up">
+    <bpmndi:BPMNPlane id="BpmnPlane_balance_top_up" bpmnElement="balance_top_up_process">
+      <bpmndi:BPMNShape id="Lane_balance_top_up_bank_di" bpmnElement="Lane_balance_top_up_bank" isHorizontal="true">
+        <dc:Bounds x="120" y="640" width="1720" height="230" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_balance_top_up_system_di" bpmnElement="Lane_balance_top_up_system" isHorizontal="true">
+        <dc:Bounds x="120" y="310" width="1720" height="330" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_balance_top_up_client_di" bpmnElement="Lane_balance_top_up_client" isHorizontal="true">
+        <dc:Bounds x="120" y="80" width="1720" height="230" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_balance_top_up_di" bpmnElement="Start_balance_top_up">
+        <dc:Bounds x="180" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="168" y="225" width="61" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="fill_balance_top_up_data_di" bpmnElement="fill_balance_top_up_data">
+        <dc:Bounds x="270" y="160" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="validate_balance_top_up_data_di" bpmnElement="validate_balance_top_up_data">
+        <dc:Bounds x="340" y="380" width="140" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_top_up_data_valid_di" bpmnElement="gateway_top_up_data_valid" isMarkerVisible="true">
+        <dc:Bounds x="560" y="395" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="555" y="352" width="60" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="process_bank_payment_di" bpmnElement="process_bank_payment">
+        <dc:Bounds x="695" y="540" width="130" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="gateway_bank_result_di" bpmnElement="gateway_bank_result" isMarkerVisible="true">
+        <dc:Bounds x="970" y="465" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1022" y="496" width="51" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="set_balance_top_up_reject_reason_di" bpmnElement="set_balance_top_up_reject_reason">
+        <dc:Bounds x="780" y="380" width="150" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="show_balance_top_up_reject_reason_di" bpmnElement="show_balance_top_up_reject_reason">
+        <dc:Bounds x="990" y="110" width="150" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_balance_top_up_declined_di" bpmnElement="End_balance_top_up_declined">
+        <dc:Bounds x="1732" y="132" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1719" y="175" width="63" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="credit_balance_after_top_up_di" bpmnElement="credit_balance_after_top_up">
+        <dc:Bounds x="1100" y="380" width="140" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="save_top_up_income_operation_di" bpmnElement="save_top_up_income_operation">
+        <dc:Bounds x="1290" y="380" width="150" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="start_promised_payment_processing_after_top_up_di" bpmnElement="start_promised_payment_processing_after_top_up">
+        <dc:Bounds x="1490" y="380" width="150" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="show_balance_top_up_success_message_di" bpmnElement="show_balance_top_up_success_message">
+        <dc:Bounds x="1490" y="210" width="150" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_balance_top_up_success_di" bpmnElement="End_balance_top_up_success">
+        <dc:Bounds x="1732" y="232" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1719" y="275" width="63" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataStoreReference_top_up_user_data_di" bpmnElement="DataStoreReference_top_up_user_data">
+        <dc:Bounds x="385" y="735" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="386" y="792" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0th1r6d" bpmnElement="DataStoreReference_0dwv6rh">
+        <dc:Bounds x="1145" y="735" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1146" y="792" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataStoreReference_top_up_operations_di" bpmnElement="DataStoreReference_top_up_operations">
+        <dc:Bounds x="1340" y="735" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1338" y="792" width="54" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_start_fill_top_up_data_di" bpmnElement="Flow_start_fill_top_up_data">
+        <di:waypoint x="216" y="200" />
+        <di:waypoint x="270" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_fill_top_up_data_validate_di" bpmnElement="Flow_fill_top_up_data_validate">
+        <di:waypoint x="330" y="240" />
+        <di:waypoint x="330" y="420" />
+        <di:waypoint x="340" y="420" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_validate_gateway_di" bpmnElement="Flow_validate_gateway">
+        <di:waypoint x="480" y="420" />
+        <di:waypoint x="560" y="420" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_data_valid_di" bpmnElement="Flow_data_valid">
+        <di:waypoint x="585" y="445" />
+        <di:waypoint x="585" y="580" />
+        <di:waypoint x="695" y="580" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="594" y="508" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_data_invalid_di" bpmnElement="Flow_data_invalid">
+        <di:waypoint x="610" y="420" />
+        <di:waypoint x="780" y="420" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="688" y="402" width="17" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_bank_gateway_di" bpmnElement="Flow_bank_gateway">
+        <di:waypoint x="825" y="580" />
+        <di:waypoint x="995" y="580" />
+        <di:waypoint x="995" y="515" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_bank_success_di" bpmnElement="Flow_bank_success">
+        <di:waypoint x="995" y="465" />
+        <di:waypoint x="995" y="340" />
+        <di:waypoint x="1170" y="340" />
+        <di:waypoint x="1170" y="380" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1073" y="323" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_bank_error_di" bpmnElement="Flow_bank_error">
+        <di:waypoint x="995" y="465" />
+        <di:waypoint x="995" y="420" />
+        <di:waypoint x="930" y="420" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="997" y="436" width="85" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_reject_reason_show_di" bpmnElement="Flow_reject_reason_show">
+        <di:waypoint x="855" y="380" />
+        <di:waypoint x="855" y="150" />
+        <di:waypoint x="990" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_show_reject_reason_end_di" bpmnElement="Flow_show_reject_reason_end">
+        <di:waypoint x="1140" y="150" />
+        <di:waypoint x="1732" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_credit_operation_di" bpmnElement="Flow_credit_operation">
+        <di:waypoint x="1240" y="420" />
+        <di:waypoint x="1290" y="420" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_operation_promised_payment_di" bpmnElement="Flow_operation_promised_payment">
+        <di:waypoint x="1440" y="420" />
+        <di:waypoint x="1490" y="420" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_success_message_di" bpmnElement="Flow_success_message">
+        <di:waypoint x="1565" y="380" />
+        <di:waypoint x="1565" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_success_end_di" bpmnElement="Flow_success_end">
+        <di:waypoint x="1640" y="250" />
+        <di:waypoint x="1732" y="250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataInputAssociation_validate_top_up_user_data_di" bpmnElement="DataInputAssociation_validate_top_up_user_data">
+        <di:waypoint x="410" y="735" />
+        <di:waypoint x="410" y="460" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_credit_top_up_user_data_di" bpmnElement="DataOutputAssociation_credit_top_up_user_data">
+        <di:waypoint x="1170" y="460" />
+        <di:waypoint x="1170" y="560" />
+        <di:waypoint x="1170" y="735" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_save_top_up_operation_di" bpmnElement="DataOutputAssociation_save_top_up_operation">
+        <di:waypoint x="1365" y="460" />
+        <di:waypoint x="1365" y="735" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_bank_declined_di" bpmnElement="Flow_bank_declined">
+        <di:waypoint x="970" y="490" />
+        <di:waypoint x="855" y="490" />
+        <di:waypoint x="855" y="460" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="884" y="472" width="49" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

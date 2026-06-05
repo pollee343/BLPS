@@ -1,0 +1,19 @@
+{
+  "components": [
+    {
+      "label": "Сообщение",
+      "type": "textarea",
+      "id": "Field_successMessage",
+      "key": "successMessage"
+    }
+  ],
+  "type": "default",
+  "id": "success_message_form",
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.24.0",
+  "schemaVersion": 19,
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.47.0"
+  }
+}

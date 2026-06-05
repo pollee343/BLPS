@@ -2,6 +2,11 @@
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="sid-38422fae-e03e-43a3-bef4-bd33b32041b2" targetNamespace="http://bpmn.io/bpmn" exporter="Camunda Modeler" exporterVersion="5.47.0">
   <collaboration id="Collaboration_126jvoy">
     <participant id="Participant_0mhfz1p" name="Процесс обещанного платежа" processRef="promised_payment_process" />
+    <textAnnotation id="TextAnnotation_0nt8171">
+      <text>Списать amountToRepay с баланса
+-&gt; Установить статус PAID
+-&gt; Сохранить операцию EXPENSE “Списание обещанного платежа”</text>
+    </textAnnotation>
   </collaboration>
   <message id="Message_BalanceTopUpSucceeded" name="BalanceTopUpSucceeded" />
   <message id="Message_PromisedPaymentDueCheck" name="PromisedPaymentDueCheck" />
@@ -9,56 +14,57 @@
     <laneSet id="LaneSet_18cpna5">
       <lane id="Lane_0qncv7z" />
       <lane id="Lane_1myapdv" name="Система">
-        <flowNodeRef>gateway_has_due_payments</flowNodeRef>
+        <flowNodeRef>Gateway_0ndqzhq</flowNodeRef>
         <flowNodeRef>check_balance_for_repayment</flowNodeRef>
-        <flowNodeRef>gateway_balance_enough_for_repay</flowNodeRef>
-        <flowNodeRef>gateway_had_overdue_before</flowNodeRef>
-        <flowNodeRef>gateway_has_overdue_after_processing</flowNodeRef>
-        <flowNodeRef>gateway_payment_was_active</flowNodeRef>
+        <flowNodeRef>Gateway_07qdtkg</flowNodeRef>
+        <flowNodeRef>Gateway_0uhgf9e</flowNodeRef>
+        <flowNodeRef>Gateway_0uke2hy</flowNodeRef>
+        <flowNodeRef>Gateway_08fzxry</flowNodeRef>
         <flowNodeRef>mark_promised_payment_overdue</flowNodeRef>
         <flowNodeRef>send_block_sms</flowNodeRef>
         <flowNodeRef>keep_promised_payment_overdue</flowNodeRef>
+        <flowNodeRef>Event_0iz48aq</flowNodeRef>
         <flowNodeRef>BalanceTopUpSucceeded</flowNodeRef>
         <flowNodeRef>check_promised_payment_access</flowNodeRef>
-        <flowNodeRef>gateway_access_allowed</flowNodeRef>
+        <flowNodeRef>Gateway_0am6msa</flowNodeRef>
         <flowNodeRef>validate_promised_payment_amount</flowNodeRef>
         <flowNodeRef>calculate_monthly_promised_payments</flowNodeRef>
-        <flowNodeRef>gateway_monthly_limit_exceeded</flowNodeRef>
+        <flowNodeRef>Gateway_0iapg3b</flowNodeRef>
         <flowNodeRef>calculate_promised_payment_repay_amount</flowNodeRef>
         <flowNodeRef>create_promised_payment</flowNodeRef>
         <flowNodeRef>increase_balance_by_promised_payment</flowNodeRef>
-        <flowNodeRef>set_promised_payment_reject_reason</flowNodeRef>
-        <flowNodeRef>show_promised_payment_reject_reason</flowNodeRef>
-        <flowNodeRef>gateway_amount_valid</flowNodeRef>
+        <flowNodeRef>Activity_1b7f8b6</flowNodeRef>
+        <flowNodeRef>Activity_0gbrqux</flowNodeRef>
+        <flowNodeRef>Gateway_04mgqa0</flowNodeRef>
         <flowNodeRef>unblock_user_data</flowNodeRef>
         <flowNodeRef>save_promised_payment_income_operation</flowNodeRef>
-        <flowNodeRef>build_promised_payment_success_response</flowNodeRef>
-        <flowNodeRef>send_unblock_sms</flowNodeRef>
+        <flowNodeRef>Activity_0x5asn1</flowNodeRef>
+        <flowNodeRef>Activity_0bvqd3i</flowNodeRef>
         <flowNodeRef>keep_user_blocked</flowNodeRef>
-        <flowNodeRef>end_promised_payment_processing_completed</flowNodeRef>
-        <flowNodeRef>gateway_has_overdue_payment</flowNodeRef>
+        <flowNodeRef>Event_07ck0eq</flowNodeRef>
+        <flowNodeRef>Gateway_0mnvvfs</flowNodeRef>
         <flowNodeRef>check_overdue_promised_payment</flowNodeRef>
         <flowNodeRef>find_user_data_for_promised_payment_processing</flowNodeRef>
         <flowNodeRef>check_had_overdue_before_processing</flowNodeRef>
+        <flowNodeRef>find_due_promised_payments</flowNodeRef>
         <flowNodeRef>block_user_data</flowNodeRef>
         <flowNodeRef>repay_promised_payment</flowNodeRef>
-        <flowNodeRef>find_due_promised_payments</flowNodeRef>
-        <flowNodeRef>PromisedPaymentDueCheckStart</flowNodeRef>
       </lane>
       <lane id="Lane_0u044b4" name="Клиент">
-        <flowNodeRef>start_promised_payment_request</flowNodeRef>
+        <flowNodeRef>Event_0muur2c</flowNodeRef>
+        <flowNodeRef>Activity_18c1ys5</flowNodeRef>
         <flowNodeRef>fill_promised_payment_form</flowNodeRef>
-        <flowNodeRef>end_promised_payment_rejected</flowNodeRef>
-        <flowNodeRef>end_promised_payment_connected</flowNodeRef>
-        <flowNodeRef>show_promised_payment_success_message</flowNodeRef>
+        <flowNodeRef>Event_006fpru</flowNodeRef>
+        <flowNodeRef>Event_0pc3qpj</flowNodeRef>
+        <flowNodeRef>Activity_1r1ce3p</flowNodeRef>
       </lane>
     </laneSet>
-    <exclusiveGateway id="gateway_has_due_payments" name="Есть платежи к обработке?">
+    <exclusiveGateway id="Gateway_0ndqzhq" name="Есть платежи к обработке?">
       <incoming>Flow_0870lyc</incoming>
       <outgoing>Flow_0kk94nm</outgoing>
       <outgoing>Flow_0wrwtp4</outgoing>
     </exclusiveGateway>
-    <serviceTask id="check_balance_for_repayment" name="Проверка баланса абонента" camunda:delegateExpression="${checkBalanceForRepaymentDelegate}">
+    <serviceTask id="check_balance_for_repayment" name="Проверить баланс абонента" camunda:delegateExpression="${checkBalanceForRepaymentDelegate}">
       <incoming>Flow_0kk94nm</incoming>
       <outgoing>Flow_1431e31</outgoing>
       <property id="Property_1987tyl" name="__targetRef_placeholder" />
@@ -67,59 +73,62 @@
         <targetRef>Property_1987tyl</targetRef>
       </dataInputAssociation>
     </serviceTask>
-    <exclusiveGateway id="gateway_balance_enough_for_repay" name="Баланса хватает на сумму к погашению?">
+    <exclusiveGateway id="Gateway_07qdtkg" name="Баланса хватает на amountToRepay?">
       <incoming>Flow_1431e31</incoming>
       <outgoing>Flow_1scqh5k</outgoing>
       <outgoing>Flow_07xuifw</outgoing>
     </exclusiveGateway>
-    <exclusiveGateway id="gateway_had_overdue_before" name="До обработки были просроченные платежи?">
+    <exclusiveGateway id="Gateway_0uhgf9e" name="До обработки были просроченные платежи?">
       <incoming>Flow_17elloy</incoming>
       <outgoing>Flow_07pzmii</outgoing>
       <outgoing>Flow_0ln8rgu</outgoing>
     </exclusiveGateway>
-    <exclusiveGateway id="gateway_has_overdue_after_processing" name="Остались просроченные платежи?">
+    <exclusiveGateway id="Gateway_0uke2hy" name="Остались просроченные платежи?">
       <incoming>Flow_0wrwtp4</incoming>
-      <incoming>Flow_1fnaqoa</incoming>
       <outgoing>Flow_17elloy</outgoing>
       <outgoing>Flow_15ufl7f</outgoing>
     </exclusiveGateway>
-    <exclusiveGateway id="gateway_payment_was_active" name="Платеж был активным?">
+    <exclusiveGateway id="Gateway_08fzxry" name="Платеж был ACTIVE?">
       <incoming>Flow_07xuifw</incoming>
       <outgoing>Flow_067y94p</outgoing>
       <outgoing>Flow_1d6cpnf</outgoing>
     </exclusiveGateway>
-    <serviceTask id="mark_promised_payment_overdue" name="Установка статуса “Просрочен”" camunda:delegateExpression="${markPromisedPaymentOverdueDelegate}">
+    <serviceTask id="mark_promised_payment_overdue" name="Установить статус OVERDUE" camunda:delegateExpression="${markPromisedPaymentOverdueDelegate}">
       <incoming>Flow_067y94p</incoming>
       <outgoing>Flow_18sj7jb</outgoing>
       <dataOutputAssociation id="DataOutputAssociation_0yp23yh">
         <targetRef>DataStoreReference_1y6xycn</targetRef>
       </dataOutputAssociation>
     </serviceTask>
-    <serviceTask id="send_block_sms" name="Отправка SMS о блокировке" camunda:delegateExpression="${sendBlockSmsDelegate}">
+    <serviceTask id="send_block_sms" name="Отправить SMS о блокировке (???)" camunda:delegateExpression="${sendBlockSmsDelegate}">
       <incoming>Flow_06x9c0b</incoming>
       <outgoing>Flow_130hj1p</outgoing>
       <property id="Property_0budrrn" name="__targetRef_placeholder" />
     </serviceTask>
-    <serviceTask id="keep_promised_payment_overdue" name="Сохранение статуса “Просрочен”" camunda:delegateExpression="${keepPromisedPaymentOverdueDelegate}">
+    <serviceTask id="keep_promised_payment_overdue" name="Оставить статус OVERDUE" camunda:delegateExpression="${keepPromisedPaymentOverdueDelegate}">
       <incoming>Flow_1d6cpnf</incoming>
       <outgoing>Flow_1lddtw3</outgoing>
       <property id="Property_090zflv" name="__targetRef_placeholder" />
     </serviceTask>
     <dataStoreReference id="DataStoreReference_0g19cok" name="user_data" />
     <dataStoreReference id="DataStoreReference_1y6xycn" name="promised_payments" />
-    <startEvent id="start_promised_payment_request" name="Запрос на обещанный платеж" camunda:formRef="promised_payment_form" camunda:formRefBinding="deployment">
+    <startEvent id="Event_0muur2c" name="Запрос на обещанный платеж" camunda:formRef="promised_payment_form" camunda:formRefBinding="deployment">
       <outgoing>Flow_0oclq92</outgoing>
     </startEvent>
-    <userTask id="fill_promised_payment_form" name="Заполнение запроса на подключение обещанного платежа" camunda:formRef="promised_payment_form" camunda:formRefBinding="deployment" camunda:candidateUsers="demo">
-      <incoming>Flow_0oclq92</incoming>
-      <outgoing>Flow_1us550l</outgoing>
+    <userTask id="Activity_18c1ys5" name="Отправить запрос на подключение обещанного платежа">
     </userTask>
+    <userTask id="fill_promised_payment_form" name="Заполнить сумму платежа" camunda:formRef="promised_payment_form" camunda:formRefBinding="deployment" camunda:candidateGroups="USER">
+    </userTask>
+    <startEvent id="Event_0iz48aq" name="Периодический запуск">
+      <outgoing>Flow_1py8kz9</outgoing>
+      <messageEventDefinition id="MessageEventDefinition_due_check" messageRef="Message_PromisedPaymentDueCheck" />
+    </startEvent>
     <startEvent id="BalanceTopUpSucceeded" name="Баланс успешно пополнен">
       <outgoing>Flow_1x94hw7</outgoing>
       <messageEventDefinition id="MessageEventDefinition_1nar5wd" messageRef="Message_BalanceTopUpSucceeded" />
     </startEvent>
-    <serviceTask id="check_promised_payment_access" name="Проверка наличия данных абонента" camunda:delegateExpression="${checkPromisedPaymentAccessDelegate}">
-      <incoming>Flow_1us550l</incoming>
+    <serviceTask id="check_promised_payment_access" name="Проверить роль USER и доступ к userDataId" camunda:delegateExpression="${checkPromisedPaymentAccessDelegate}">
+      <incoming>Flow_0oclq92</incoming>
       <outgoing>Flow_1wd6d82</outgoing>
       <property id="Property_0lki4ct" name="__targetRef_placeholder" />
       <dataInputAssociation id="DataInputAssociation_0qs586t">
@@ -128,66 +137,68 @@
       </dataInputAssociation>
     </serviceTask>
     <dataStoreReference id="DataStoreReference_1hlm5kn" name="users_auth, roles, user_roles, user_data" />
-    <exclusiveGateway id="gateway_access_allowed" name="Доступ разрешен?">
+    <exclusiveGateway id="Gateway_0am6msa" name="Доступ разрешен?">
       <incoming>Flow_1wd6d82</incoming>
       <outgoing>Flow_03t4fr4</outgoing>
       <outgoing>Flow_082za32</outgoing>
     </exclusiveGateway>
     <dataStoreReference id="DataStoreReference_0r5r61v" name="promised_payments" />
     <dataStoreReference id="DataStoreReference_1nm8blo" name="user_data" />
-    <sequenceFlow id="Flow_1v6dv97" name="Месячный лимит  превышен?" sourceRef="calculate_monthly_promised_payments" targetRef="gateway_monthly_limit_exceeded" />
-    <sequenceFlow id="Flow_13nq8r6" name="нет" sourceRef="gateway_monthly_limit_exceeded" targetRef="calculate_promised_payment_repay_amount">
+    <sequenceFlow id="Flow_1v6dv97" name="Месячный лимит  превышен?" sourceRef="calculate_monthly_promised_payments" targetRef="Gateway_0iapg3b" />
+    <sequenceFlow id="Flow_13nq8r6" name="нет" sourceRef="Gateway_0iapg3b" targetRef="calculate_promised_payment_repay_amount">
       <conditionExpression xsi:type="tFormalExpression">${monthlyLimitExceeded == false}</conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="Flow_1pqe7y5" sourceRef="calculate_promised_payment_repay_amount" targetRef="create_promised_payment" />
-    <sequenceFlow id="Flow_0870lyc" sourceRef="find_due_promised_payments" targetRef="gateway_has_due_payments" />
-    <sequenceFlow id="Flow_0kk94nm" name="да" sourceRef="gateway_has_due_payments" targetRef="check_balance_for_repayment">
+    <sequenceFlow id="Flow_0870lyc" sourceRef="find_due_promised_payments" targetRef="Gateway_0ndqzhq" />
+    <sequenceFlow id="Flow_0kk94nm" name="да" sourceRef="Gateway_0ndqzhq" targetRef="check_balance_for_repayment">
       <conditionExpression xsi:type="tFormalExpression">${hasPaymentsToProcess == true}</conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="Flow_1431e31" sourceRef="check_balance_for_repayment" targetRef="gateway_balance_enough_for_repay" />
-    <sequenceFlow id="Flow_1scqh5k" name="да" sourceRef="gateway_balance_enough_for_repay" targetRef="repay_promised_payment">
+    <sequenceFlow id="Flow_1431e31" sourceRef="check_balance_for_repayment" targetRef="Gateway_07qdtkg" />
+    <sequenceFlow id="Flow_1scqh5k" name="да" sourceRef="Gateway_07qdtkg" targetRef="repay_promised_payment">
       <conditionExpression xsi:type="tFormalExpression">${balanceEnough == true}</conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="Flow_07xuifw" name="нет" sourceRef="gateway_balance_enough_for_repay" targetRef="gateway_payment_was_active">
+    <sequenceFlow id="Flow_07xuifw" name="нет" sourceRef="Gateway_07qdtkg" targetRef="Gateway_08fzxry">
       <conditionExpression xsi:type="tFormalExpression">${balanceEnough == false}</conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="Flow_17elloy" name="нет" sourceRef="gateway_has_overdue_after_processing" targetRef="gateway_had_overdue_before">
+    <sequenceFlow id="Flow_0c0rcmw" sourceRef="repay_promised_payment" targetRef="find_due_promised_payments" />
+    <sequenceFlow id="Flow_17elloy" name="нет" sourceRef="Gateway_0uke2hy" targetRef="Gateway_0uhgf9e">
       <conditionExpression xsi:type="tFormalExpression">${hasOverdueAfterProcessing == false}</conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="Flow_07pzmii" name="да" sourceRef="gateway_had_overdue_before" targetRef="unblock_user_data">
+    <sequenceFlow id="Flow_07pzmii" name="да" sourceRef="Gateway_0uhgf9e" targetRef="unblock_user_data">
       <conditionExpression xsi:type="tFormalExpression">${hadOverdueBefore == true}</conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="Flow_02he0bs" sourceRef="unblock_user_data" targetRef="send_unblock_sms" />
-    <sequenceFlow id="Flow_067y94p" name="да" sourceRef="gateway_payment_was_active" targetRef="mark_promised_payment_overdue">
+    <sequenceFlow id="Flow_02he0bs" sourceRef="unblock_user_data" targetRef="Activity_0bvqd3i" />
+    <sequenceFlow id="Flow_067y94p" name="да" sourceRef="Gateway_08fzxry" targetRef="mark_promised_payment_overdue">
       <conditionExpression xsi:type="tFormalExpression">${paymentWasActive == true}</conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="Flow_1d6cpnf" name="нет" sourceRef="gateway_payment_was_active" targetRef="keep_promised_payment_overdue">
+    <sequenceFlow id="Flow_1d6cpnf" name="нет" sourceRef="Gateway_08fzxry" targetRef="keep_promised_payment_overdue">
       <conditionExpression xsi:type="tFormalExpression">${paymentWasActive == false}</conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="Flow_18sj7jb" sourceRef="mark_promised_payment_overdue" targetRef="block_user_data" />
     <sequenceFlow id="Flow_06x9c0b" sourceRef="block_user_data" targetRef="send_block_sms" />
-    <sequenceFlow id="Flow_1lddtw3" sourceRef="keep_promised_payment_overdue" targetRef="end_promised_payment_processing_completed" />
+    <sequenceFlow id="Flow_1lddtw3" sourceRef="keep_promised_payment_overdue" targetRef="find_due_promised_payments" />
+    <sequenceFlow id="Flow_1py8kz9" sourceRef="Event_0iz48aq" targetRef="find_user_data_for_promised_payment_processing" />
     <sequenceFlow id="Flow_1x94hw7" sourceRef="BalanceTopUpSucceeded" targetRef="find_user_data_for_promised_payment_processing" />
-    <sequenceFlow id="Flow_0oclq92" sourceRef="start_promised_payment_request" targetRef="fill_promised_payment_form" />
-    <sequenceFlow id="Flow_1wd6d82" sourceRef="check_promised_payment_access" targetRef="gateway_access_allowed" />
-    <sequenceFlow id="Flow_03t4fr4" name="да" sourceRef="gateway_access_allowed" targetRef="validate_promised_payment_amount">
+    <sequenceFlow id="Flow_0oclq92" sourceRef="Event_0muur2c" targetRef="check_promised_payment_access" />
+    <sequenceFlow id="Flow_1wd6d82" sourceRef="check_promised_payment_access" targetRef="Gateway_0am6msa" />
+    <sequenceFlow id="Flow_03t4fr4" name="да" sourceRef="Gateway_0am6msa" targetRef="validate_promised_payment_amount">
       <conditionExpression xsi:type="tFormalExpression">${accessAllowed == true}</conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="Flow_1699ffy" sourceRef="validate_promised_payment_amount" targetRef="gateway_amount_valid" />
+    <sequenceFlow id="Flow_1699ffy" sourceRef="validate_promised_payment_amount" targetRef="Gateway_04mgqa0" />
     <sequenceFlow id="Flow_0m02vlr" sourceRef="create_promised_payment" targetRef="increase_balance_by_promised_payment" />
     <sequenceFlow id="Flow_07jl4mc" sourceRef="increase_balance_by_promised_payment" targetRef="save_promised_payment_income_operation" />
-    <serviceTask id="validate_promised_payment_amount" name="Проверка корректности суммы" camunda:delegateExpression="${validatePromisedPaymentAmountDelegate}">
+    <serviceTask id="validate_promised_payment_amount" name="Проверить, что сумма корректна" camunda:delegateExpression="${validatePromisedPaymentAmountDelegate}">
       <incoming>Flow_03t4fr4</incoming>
       <outgoing>Flow_1699ffy</outgoing>
       <property id="Property_1k90t8y" name="__targetRef_placeholder" />
     </serviceTask>
-    <sequenceFlow id="Flow_082za32" name="нет" sourceRef="gateway_access_allowed" targetRef="set_promised_payment_reject_reason">
+    <sequenceFlow id="Flow_082za32" name="нет" sourceRef="Gateway_0am6msa" targetRef="Activity_1b7f8b6">
       <conditionExpression xsi:type="tFormalExpression">${accessAllowed == false}</conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="Flow_1kuy0r2" name="да" sourceRef="gateway_amount_valid" targetRef="check_overdue_promised_payment">
+    <sequenceFlow id="Flow_1kuy0r2" name="да" sourceRef="Gateway_04mgqa0" targetRef="check_overdue_promised_payment">
       <conditionExpression xsi:type="tFormalExpression">${amountValid == true}</conditionExpression>
     </sequenceFlow>
-    <serviceTask id="calculate_monthly_promised_payments" name="Расчет суммы обещанных платежей за месяц" camunda:delegateExpression="${calculateMonthlyPromisedPaymentsDelegate}">
+    <serviceTask id="calculate_monthly_promised_payments" name="Посчитать сумму обещанных платежей за месяц" camunda:delegateExpression="${calculateMonthlyPromisedPaymentsDelegate}">
       <incoming>Flow_1cs5r2c</incoming>
       <outgoing>Flow_1v6dv97</outgoing>
       <property id="Property_1ye96w7" name="__targetRef_placeholder" />
@@ -197,31 +208,31 @@
       </dataInputAssociation>
     </serviceTask>
     <dataStoreReference id="DataStoreReference_16ia464" name="promised_payments" />
-    <exclusiveGateway id="gateway_monthly_limit_exceeded">
+    <exclusiveGateway id="Gateway_0iapg3b">
       <incoming>Flow_1v6dv97</incoming>
       <outgoing>Flow_13nq8r6</outgoing>
       <outgoing>Flow_0t2fjxb</outgoing>
     </exclusiveGateway>
-    <serviceTask id="calculate_promised_payment_repay_amount" name="Расчет суммы к погашению" camunda:delegateExpression="${calculatePromisedPaymentRepayAmountDelegate}">
+    <serviceTask id="calculate_promised_payment_repay_amount" name="Рассчитать сумму к погашению" camunda:delegateExpression="${calculatePromisedPaymentRepayAmountDelegate}">
       <incoming>Flow_13nq8r6</incoming>
       <outgoing>Flow_1pqe7y5</outgoing>
       <property id="Property_1dqh8vd" name="__targetRef_placeholder" />
     </serviceTask>
-    <serviceTask id="create_promised_payment" name="Создание заявки на обещанный платеж" camunda:delegateExpression="${createPromisedPaymentDelegate}">
+    <serviceTask id="create_promised_payment" name="Создать заявку на обещанный платеж" camunda:delegateExpression="${createPromisedPaymentDelegate}">
       <incoming>Flow_1pqe7y5</incoming>
       <outgoing>Flow_0m02vlr</outgoing>
       <dataOutputAssociation id="DataOutputAssociation_05hlnlx">
         <targetRef>DataStoreReference_0r5r61v</targetRef>
       </dataOutputAssociation>
     </serviceTask>
-    <serviceTask id="increase_balance_by_promised_payment" name="Зачисление средств на счет абонента" camunda:delegateExpression="${increaseBalanceByPromisedPaymentDelegate}">
+    <serviceTask id="increase_balance_by_promised_payment" name="Зачислить средства на счет абонента" camunda:delegateExpression="${increaseBalanceByPromisedPaymentDelegate}">
       <incoming>Flow_0m02vlr</incoming>
       <outgoing>Flow_07jl4mc</outgoing>
       <dataOutputAssociation id="DataOutputAssociation_09yv3hr">
         <targetRef>DataStoreReference_1nm8blo</targetRef>
       </dataOutputAssociation>
     </serviceTask>
-    <serviceTask id="set_promised_payment_reject_reason" name="Формирование причины отказа" camunda:delegateExpression="${setPromisedPaymentRejectReasonDelegate}">
+    <serviceTask id="Activity_1b7f8b6" name="Сформировать причину отказа" camunda:delegateExpression="${setPromisedPaymentRejectReasonDelegate}">
       <incoming>Flow_0gzwqz9</incoming>
       <incoming>Flow_082za32</incoming>
       <incoming>Flow_0t2fjxb</incoming>
@@ -229,27 +240,26 @@
       <outgoing>Flow_1vnzah0</outgoing>
       <property id="Property_05kq6oj" name="__targetRef_placeholder" />
     </serviceTask>
-    <exclusiveGateway id="gateway_amount_valid" name="Сумма корректна?">
+    <exclusiveGateway id="Gateway_04mgqa0" name="Сумма корректна?">
       <incoming>Flow_1699ffy</incoming>
       <outgoing>Flow_1kuy0r2</outgoing>
       <outgoing>Flow_0gzwqz9</outgoing>
     </exclusiveGateway>
-    <sequenceFlow id="Flow_0gzwqz9" name="нет" sourceRef="gateway_amount_valid" targetRef="set_promised_payment_reject_reason">
+    <sequenceFlow id="Flow_0gzwqz9" name="нет" sourceRef="Gateway_04mgqa0" targetRef="Activity_1b7f8b6">
       <conditionExpression xsi:type="tFormalExpression">${amountValid == false}</conditionExpression>
     </sequenceFlow>
-    <userTask id="show_promised_payment_reject_reason" name="Просмотр причины отказа" camunda:formRef="reject_reason_form" camunda:formRefBinding="deployment" camunda:assignee="demo">
+    <userTask id="Activity_0gbrqux" name="Просмотреть причину отказа" camunda:formRef="reject_reason_form" camunda:formRefBinding="deployment">
       <incoming>Flow_1vnzah0</incoming>
       <outgoing>Flow_reject_task_end</outgoing>
-      <outgoing>Flow_0ndm5mx</outgoing>
     </userTask>
-    <sequenceFlow id="Flow_1vnzah0" sourceRef="set_promised_payment_reject_reason" targetRef="show_promised_payment_reject_reason" />
-    <sequenceFlow id="Flow_0t2fjxb" name="да" sourceRef="gateway_monthly_limit_exceeded" targetRef="set_promised_payment_reject_reason">
+    <sequenceFlow id="Flow_1vnzah0" sourceRef="Activity_1b7f8b6" targetRef="Activity_0gbrqux" />
+    <sequenceFlow id="Flow_0t2fjxb" name="да" sourceRef="Gateway_0iapg3b" targetRef="Activity_1b7f8b6">
       <conditionExpression xsi:type="tFormalExpression">${monthlyLimitExceeded == true}</conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="Flow_1trff8v" sourceRef="save_promised_payment_income_operation" targetRef="build_promised_payment_success_response" />
+    <sequenceFlow id="Flow_1trff8v" sourceRef="save_promised_payment_income_operation" targetRef="Activity_0x5asn1" />
     <dataStoreReference id="DataStoreReference_0b9t1ic" name="money_operations" />
-    <dataStoreReference id="DataStoreReference_1diswni" name="user_data" />
-    <serviceTask id="unblock_user_data" name="Разблокировка номера" camunda:delegateExpression="${unblockUserDataDelegate}">
+    <dataStoreReference id="DataStoreReference_1diswni" />
+    <serviceTask id="unblock_user_data" name="Разблокировать номер" camunda:delegateExpression="${unblockUserDataDelegate}">
       <incoming>Flow_07pzmii</incoming>
       <outgoing>Flow_02he0bs</outgoing>
       <property id="Property_0ydudwd" name="__targetRef_placeholder" />
@@ -257,69 +267,64 @@
         <targetRef>DataStoreReference_1diswni</targetRef>
       </dataOutputAssociation>
     </serviceTask>
-    <serviceTask id="save_promised_payment_income_operation" name="Сохранение операции пополнения “Подключение обещанного платежа”" camunda:delegateExpression="${savePromisedPaymentIncomeOperationDelegate}">
+    <serviceTask id="save_promised_payment_income_operation" name="Сохранить операцию INCOME “Подключение обещанного платежа”" camunda:delegateExpression="${savePromisedPaymentIncomeOperationDelegate}">
       <incoming>Flow_07jl4mc</incoming>
       <outgoing>Flow_1trff8v</outgoing>
       <dataOutputAssociation id="DataOutputAssociation_1c7ks5e">
         <targetRef>DataStoreReference_0b9t1ic</targetRef>
       </dataOutputAssociation>
     </serviceTask>
-    <serviceTask id="build_promised_payment_success_response" name="Формирование ответа" camunda:delegateExpression="${setPromisedPaymentSuccessMessageDelegate}">
+    <serviceTask id="Activity_0x5asn1" name="Сформировать ответ" camunda:expression="${true}">
       <incoming>Flow_1trff8v</incoming>
       <outgoing>Flow_1s20i8z</outgoing>
       <property id="Property_1gn43p8" name="__targetRef_placeholder" />
     </serviceTask>
-    <serviceTask id="send_unblock_sms" name="Отправка SMS о разблокировке" camunda:delegateExpression="${sendUnblockSmsDelegate}">
+    <serviceTask id="Activity_0bvqd3i" name="Отправить SMS о разблокировке" camunda:delegateExpression="${sendUnblockSmsDelegate}">
       <incoming>Flow_02he0bs</incoming>
       <outgoing>Flow_1d49o1h</outgoing>
       <property id="Property_0zt6v43" name="__targetRef_placeholder" />
     </serviceTask>
-    <sequenceFlow id="Flow_1s20i8z" sourceRef="build_promised_payment_success_response" targetRef="show_promised_payment_success_message" />
-    <endEvent id="end_promised_payment_rejected" name="Запрос отклонен">
+    <sequenceFlow id="Flow_1s20i8z" sourceRef="Activity_0x5asn1" targetRef="Event_0pc3qpj" />
+    <endEvent id="Event_006fpru" name="Запрос отклонен">
       <incoming>Flow_reject_task_end</incoming>
-      <incoming>Flow_0ndm5mx</incoming>
     </endEvent>
-    <sequenceFlow id="Flow_reject_task_end" sourceRef="show_promised_payment_reject_reason" targetRef="end_promised_payment_rejected" />
-    <endEvent id="end_promised_payment_connected" name="Обещанный платеж подключен">
-      <incoming>Flow_12eqs68</incoming>
-    </endEvent>
-    <userTask id="show_promised_payment_success_message" name="Просмотр сообщения об успешном подключении" camunda:formRef="success_message_form" camunda:formRefBinding="deployment" camunda:assignee="demo">
+    <sequenceFlow id="Flow_reject_task_end" sourceRef="Activity_0gbrqux" targetRef="Event_006fpru" />
+    <endEvent id="Event_0pc3qpj" name="Обещанный платеж подключен">
       <incoming>Flow_1s20i8z</incoming>
-      <outgoing>Flow_12eqs68</outgoing>
+    </endEvent>
+    <userTask id="Activity_1r1ce3p" name="Просмотреть сообщение">
     </userTask>
-    <serviceTask id="keep_user_blocked" name="Сохранение блокировки номера" camunda:delegateExpression="${keepUserBlockedDelegate}">
+    <serviceTask id="keep_user_blocked" name="Оставить номер заблокированным" camunda:delegateExpression="${keepUserBlockedDelegate}">
       <incoming>Flow_15ufl7f</incoming>
       <outgoing>Flow_16npx7f</outgoing>
       <property id="Property_0x72pzb" name="__targetRef_placeholder" />
     </serviceTask>
-    <sequenceFlow id="Flow_15ufl7f" name="да" sourceRef="gateway_has_overdue_after_processing" targetRef="keep_user_blocked">
+    <sequenceFlow id="Flow_15ufl7f" name="да" sourceRef="Gateway_0uke2hy" targetRef="keep_user_blocked">
       <conditionExpression xsi:type="tFormalExpression">${hasOverdueAfterProcessing == true}</conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="Flow_16npx7f" sourceRef="keep_user_blocked" targetRef="end_promised_payment_processing_completed" />
-    <sequenceFlow id="Flow_1d49o1h" sourceRef="send_unblock_sms" targetRef="end_promised_payment_processing_completed" />
-    <endEvent id="end_promised_payment_processing_completed" name="Обработка завершена">
+    <sequenceFlow id="Flow_16npx7f" sourceRef="keep_user_blocked" targetRef="Event_07ck0eq" />
+    <sequenceFlow id="Flow_1d49o1h" sourceRef="Activity_0bvqd3i" targetRef="Event_07ck0eq" />
+    <endEvent id="Event_07ck0eq" name="Обработка завершена">
       <incoming>Flow_16npx7f</incoming>
       <incoming>Flow_1d49o1h</incoming>
       <incoming>Flow_0ln8rgu</incoming>
-      <incoming>Flow_130hj1p</incoming>
-      <incoming>Flow_1lddtw3</incoming>
     </endEvent>
-    <sequenceFlow id="Flow_0ln8rgu" sourceRef="gateway_had_overdue_before" targetRef="end_promised_payment_processing_completed">
+    <sequenceFlow id="Flow_0ln8rgu" sourceRef="Gateway_0uhgf9e" targetRef="Event_07ck0eq">
       <conditionExpression xsi:type="tFormalExpression">${hadOverdueBefore == false}</conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="Flow_02ye11f" sourceRef="check_overdue_promised_payment" targetRef="gateway_has_overdue_payment" />
-    <sequenceFlow id="Flow_0k0mlf4" name="да" sourceRef="gateway_has_overdue_payment" targetRef="set_promised_payment_reject_reason">
+    <sequenceFlow id="Flow_02ye11f" sourceRef="check_overdue_promised_payment" targetRef="Gateway_0mnvvfs" />
+    <sequenceFlow id="Flow_0k0mlf4" name="да" sourceRef="Gateway_0mnvvfs" targetRef="Activity_1b7f8b6">
       <conditionExpression xsi:type="tFormalExpression">${hasOverduePayment == true}</conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="Flow_1cs5r2c" name="нет" sourceRef="gateway_has_overdue_payment" targetRef="calculate_monthly_promised_payments">
+    <sequenceFlow id="Flow_1cs5r2c" name="нет" sourceRef="Gateway_0mnvvfs" targetRef="calculate_monthly_promised_payments">
       <conditionExpression xsi:type="tFormalExpression">${hasOverduePayment == false}</conditionExpression>
     </sequenceFlow>
-    <exclusiveGateway id="gateway_has_overdue_payment" name="Есть просроченный платеж?">
+    <exclusiveGateway id="Gateway_0mnvvfs" name="Есть OVERDUE платеж?">
       <incoming>Flow_02ye11f</incoming>
       <outgoing>Flow_0k0mlf4</outgoing>
       <outgoing>Flow_1cs5r2c</outgoing>
     </exclusiveGateway>
-    <serviceTask id="check_overdue_promised_payment" name="Проверка отсутствия просроченного обещанного платежа" camunda:delegateExpression="${checkOverduePromisedPaymentDelegate}">
+    <serviceTask id="check_overdue_promised_payment" name="Проверить, что нет OVERDUE обещанного платежа" camunda:delegateExpression="${checkOverduePromisedPaymentDelegate}">
       <incoming>Flow_1kuy0r2</incoming>
       <outgoing>Flow_02ye11f</outgoing>
       <property id="Property_0fao1il" name="__targetRef_placeholder" />
@@ -329,16 +334,16 @@
       </dataInputAssociation>
     </serviceTask>
     <dataStoreReference id="DataStoreReference_1m7txrp" name="promised_payments" />
-    <sequenceFlow id="Flow_0wrwtp4" name="нет" sourceRef="gateway_has_due_payments" targetRef="gateway_has_overdue_after_processing">
+    <sequenceFlow id="Flow_0wrwtp4" name="нет" sourceRef="Gateway_0ndqzhq" targetRef="Gateway_0uke2hy">
       <conditionExpression xsi:type="tFormalExpression">${hasPaymentsToProcess == false}</conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="Flow_130hj1p" sourceRef="send_block_sms" targetRef="end_promised_payment_processing_completed" />
+    <sequenceFlow id="Flow_130hj1p" sourceRef="send_block_sms" targetRef="find_due_promised_payments" />
     <dataStoreReference id="DataStoreReference_05fw6yb" name="promised_payments" />
     <dataStoreReference id="DataStoreReference_0jm1ev5" name="promised_payments" />
     <dataStoreReference id="DataStoreReference_0tbbqw6" name="user_data" />
-    <serviceTask id="find_user_data_for_promised_payment_processing" name="Поиск абонента по данным пользователя" camunda:delegateExpression="${findUserDataForPromisedPaymentProcessingDelegate}">
+    <serviceTask id="find_user_data_for_promised_payment_processing" name="Найти пользователя по userDataId" camunda:delegateExpression="${findUserDataForPromisedPaymentProcessingDelegate}">
+      <incoming>Flow_1py8kz9</incoming>
       <incoming>Flow_1x94hw7</incoming>
-      <incoming>Flow_0lug3f2</incoming>
       <outgoing>Flow_0l5v3wg</outgoing>
       <property id="Property_0tvocu3" name="__targetRef_placeholder" />
       <dataInputAssociation id="DataInputAssociation_0uftxcd">
@@ -346,7 +351,7 @@
         <targetRef>Property_0tvocu3</targetRef>
       </dataInputAssociation>
     </serviceTask>
-    <serviceTask id="check_had_overdue_before_processing" name="Проверка просроченных платежей до обработки" camunda:delegateExpression="${checkHadOverdueBeforeProcessingDelegate}">
+    <serviceTask id="check_had_overdue_before_processing" name="Проверить, были ли просроченные платежи до обработ" camunda:delegateExpression="${checkHadOverdueBeforeProcessingDelegate}">
       <incoming>Flow_0l5v3wg</incoming>
       <outgoing>Flow_14e4rs1</outgoing>
       <property id="Property_0bwh6bx" name="__targetRef_placeholder" />
@@ -355,32 +360,11 @@
         <targetRef>Property_0bwh6bx</targetRef>
       </dataInputAssociation>
     </serviceTask>
-    <sequenceFlow id="Flow_0l5v3wg" sourceRef="find_user_data_for_promised_payment_processing" targetRef="check_had_overdue_before_processing" />
-    <sequenceFlow id="Flow_14e4rs1" sourceRef="check_had_overdue_before_processing" targetRef="find_due_promised_payments" />
-    <serviceTask id="block_user_data" name="Блокировка номера" camunda:delegateExpression="${blockUserDataDelegate}">
-      <incoming>Flow_18sj7jb</incoming>
-      <outgoing>Flow_06x9c0b</outgoing>
-      <property id="Property_17yhq0v" name="__targetRef_placeholder" />
-      <dataOutputAssociation id="DataOutputAssociation_1sobi0v">
-        <targetRef>DataStoreReference_1u51x5v</targetRef>
-      </dataOutputAssociation>
-    </serviceTask>
-    <serviceTask id="repay_promised_payment" name="Списание долга, установка статуса и  расхода" camunda:delegateExpression="${repayPromisedPaymentDelegate}">
-      <incoming>Flow_1scqh5k</incoming>
-      <outgoing>Flow_1fnaqoa</outgoing>
-      <property id="Property_13r505j" name="__targetRef_placeholder" />
-      <dataInputAssociation id="DataInputAssociation_1o66yrw">
-        <sourceRef>DataStoreReference_0u48a0b</sourceRef>
-        <targetRef>Property_13r505j</targetRef>
-      </dataInputAssociation>
-    </serviceTask>
-    <dataStoreReference id="DataStoreReference_1u51x5v" name="user_data" />
-    <dataStoreReference id="DataStoreReference_0u48a0b" name="promised_payments" />
-    <sequenceFlow id="Flow_1us550l" sourceRef="fill_promised_payment_form" targetRef="check_promised_payment_access" />
-    <sequenceFlow id="Flow_12eqs68" sourceRef="show_promised_payment_success_message" targetRef="end_promised_payment_connected" />
-    <sequenceFlow id="Flow_0ndm5mx" sourceRef="show_promised_payment_reject_reason" targetRef="end_promised_payment_rejected" />
-    <serviceTask id="find_due_promised_payments" name="Поиск активных и просроченных платежей с наступившим сроком" camunda:delegateExpression="${findDuePromisedPaymentsDelegate}">
+    <serviceTask id="find_due_promised_payments" name="Найти ACTIVE и OVERDUE платежи со сроком dueDate &#60;= now" camunda:delegateExpression="${findDuePromisedPaymentsDelegate}">
       <incoming>Flow_14e4rs1</incoming>
+      <incoming>Flow_0c0rcmw</incoming>
+      <incoming>Flow_130hj1p</incoming>
+      <incoming>Flow_1lddtw3</incoming>
       <outgoing>Flow_0870lyc</outgoing>
       <property id="Property_0fujlwy" name="__targetRef_placeholder" />
       <dataInputAssociation id="DataInputAssociation_0c9o6ds">
@@ -388,12 +372,28 @@
         <targetRef>Property_0fujlwy</targetRef>
       </dataInputAssociation>
     </serviceTask>
-    <sequenceFlow id="Flow_1fnaqoa" sourceRef="repay_promised_payment" targetRef="gateway_has_overdue_after_processing" />
-    <startEvent id="PromisedPaymentDueCheckStart" name="Запуск проверки обещанных платежей от шедулера">
-      <outgoing>Flow_0lug3f2</outgoing>
-      <messageEventDefinition id="MessageEventDefinition_0bh7yjc" messageRef="Message_PromisedPaymentDueCheck" />
-    </startEvent>
-    <sequenceFlow id="Flow_0lug3f2" sourceRef="PromisedPaymentDueCheckStart" targetRef="find_user_data_for_promised_payment_processing" />
+    <sequenceFlow id="Flow_0l5v3wg" sourceRef="find_user_data_for_promised_payment_processing" targetRef="check_had_overdue_before_processing" />
+    <sequenceFlow id="Flow_14e4rs1" sourceRef="check_had_overdue_before_processing" targetRef="find_due_promised_payments" />
+    <serviceTask id="block_user_data" name="Заблокировать номер" camunda:delegateExpression="${blockUserDataDelegate}">
+      <incoming>Flow_18sj7jb</incoming>
+      <outgoing>Flow_06x9c0b</outgoing>
+      <property id="Property_17yhq0v" name="__targetRef_placeholder" />
+      <dataOutputAssociation id="DataOutputAssociation_1sobi0v">
+        <targetRef>DataStoreReference_1u51x5v</targetRef>
+      </dataOutputAssociation>
+    </serviceTask>
+    <serviceTask id="repay_promised_payment" name="Списать amountToRepay, установить PAID и сохранить EXPENSE" camunda:delegateExpression="${repayPromisedPaymentDelegate}">
+      <incoming>Flow_1scqh5k</incoming>
+      <outgoing>Flow_0c0rcmw</outgoing>
+      <property id="Property_13r505j" name="__targetRef_placeholder" />
+      <dataInputAssociation id="DataInputAssociation_1o66yrw">
+        <sourceRef>DataStoreReference_0u48a0b</sourceRef>
+        <targetRef>Property_13r505j</targetRef>
+      </dataInputAssociation>
+    </serviceTask>
+    <dataStoreReference id="DataStoreReference_1u51x5v" name="user_data" />
+    <dataStoreReference id="DataStoreReference_0u48a0b" />
+    <association id="Association_1oezddf" associationDirection="None" sourceRef="repay_promised_payment" targetRef="TextAnnotation_0nt8171" />
   </process>
   <bpmndi:BPMNDiagram id="BpmnDiagram_1">
     <bpmndi:BPMNPlane id="BpmnPlane_1" bpmnElement="Collaboration_126jvoy">
@@ -412,7 +412,7 @@
       <bpmndi:BPMNShape id="Lane_0qncv7z_di" bpmnElement="Lane_0qncv7z" isHorizontal="true">
         <omgdc:Bounds x="190" y="1270" width="2544" height="210" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="gateway_has_due_payments_di" bpmnElement="gateway_has_due_payments" isMarkerVisible="true">
+      <bpmndi:BPMNShape id="Gateway_0ndqzhq_di" bpmnElement="Gateway_0ndqzhq" isMarkerVisible="true">
         <omgdc:Bounds x="1085" y="895" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <omgdc:Bounds x="1071" y="857.5" width="78" height="27" />
@@ -422,25 +422,25 @@
         <omgdc:Bounds x="1200" y="880" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="gateway_balance_enough_for_repay_di" bpmnElement="gateway_balance_enough_for_repay" isMarkerVisible="true">
+      <bpmndi:BPMNShape id="Gateway_07qdtkg_di" bpmnElement="Gateway_07qdtkg" isMarkerVisible="true">
         <omgdc:Bounds x="1427" y="895" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <omgdc:Bounds x="1409" y="832" width="87" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="gateway_had_overdue_before_di" bpmnElement="gateway_had_overdue_before" isMarkerVisible="true">
+      <bpmndi:BPMNShape id="Gateway_0uhgf9e_di" bpmnElement="Gateway_0uhgf9e" isMarkerVisible="true">
         <omgdc:Bounds x="2075" y="895" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <omgdc:Bounds x="2063" y="831.5" width="74" height="53" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="gateway_has_overdue_after_processing_di" bpmnElement="gateway_has_overdue_after_processing" isMarkerVisible="true">
+      <bpmndi:BPMNShape id="Gateway_0uke2hy_di" bpmnElement="Gateway_0uke2hy" isMarkerVisible="true">
         <omgdc:Bounds x="1756" y="895" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <omgdc:Bounds x="1744" y="955" width="74" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="gateway_payment_was_active_di" bpmnElement="gateway_payment_was_active" isMarkerVisible="true">
+      <bpmndi:BPMNShape id="Gateway_08fzxry_di" bpmnElement="Gateway_08fzxry" isMarkerVisible="true">
         <omgdc:Bounds x="1427" y="1035" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <omgdc:Bounds x="1341" y="1050" width="63" height="27" />
@@ -470,14 +470,24 @@
           <omgdc:Bounds x="1410" y="1392" width="85" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="start_promised_payment_request_di" bpmnElement="start_promised_payment_request">
+      <bpmndi:BPMNShape id="Event_0muur2c_di" bpmnElement="Event_0muur2c">
         <omgdc:Bounds x="242" y="242" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_18c1ys5_di" bpmnElement="Activity_18c1ys5">
+        <omgdc:Bounds x="320" y="220" width="100" height="80" />
+        <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_16qanig" bpmnElement="fill_promised_payment_form">
         <omgdc:Bounds x="480" y="220" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="balance_top_up_succeeded_start_di" bpmnElement="BalanceTopUpSucceeded">
+      <bpmndi:BPMNShape id="Event_0iz48aq_di" bpmnElement="Event_0iz48aq">
+        <omgdc:Bounds x="272" y="962" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="260" y="1005" width="61" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1dukubi_di" bpmnElement="BalanceTopUpSucceeded">
         <omgdc:Bounds x="272" y="842" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <omgdc:Bounds x="248" y="885" width="85" height="27" />
@@ -493,7 +503,7 @@
           <omgdc:Bounds x="466" y="1392" width="88" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="gateway_access_allowed_di" bpmnElement="gateway_access_allowed" isMarkerVisible="true">
+      <bpmndi:BPMNShape id="Gateway_0am6msa_di" bpmnElement="Gateway_0am6msa" isMarkerVisible="true">
         <omgdc:Bounds x="645" y="485" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <omgdc:Bounds x="641" y="447.5" width="57" height="27" />
@@ -525,30 +535,30 @@
           <omgdc:Bounds x="1308" y="1392" width="85" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="gateway_monthly_limit_exceeded_di" bpmnElement="gateway_monthly_limit_exceeded" isMarkerVisible="true">
+      <bpmndi:BPMNShape id="Gateway_0iapg3b_di" bpmnElement="Gateway_0iapg3b" isMarkerVisible="true">
         <omgdc:Bounds x="1505" y="615" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1f7384d" bpmnElement="calculate_promised_payment_repay_amount">
         <omgdc:Bounds x="1666" y="600" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="create_promised_payment_di" bpmnElement="create_promised_payment">
+      <bpmndi:BPMNShape id="Activity_1eetukh_di" bpmnElement="create_promised_payment">
         <omgdc:Bounds x="1960" y="600" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="increase_balance_by_promised_payment_di" bpmnElement="increase_balance_by_promised_payment">
+      <bpmndi:BPMNShape id="Activity_0ipfjho_di" bpmnElement="increase_balance_by_promised_payment">
         <omgdc:Bounds x="2105" y="600" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="set_promised_payment_reject_reason_di" bpmnElement="set_promised_payment_reject_reason">
+      <bpmndi:BPMNShape id="BPMNShape_0jhxxwc" bpmnElement="Activity_1b7f8b6">
         <omgdc:Bounds x="950" y="470" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="gateway_amount_valid_di" bpmnElement="gateway_amount_valid" isMarkerVisible="true">
+      <bpmndi:BPMNShape id="Gateway_04mgqa0_di" bpmnElement="Gateway_04mgqa0" isMarkerVisible="true">
         <omgdc:Bounds x="975" y="615" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <omgdc:Bounds x="931" y="656.5" width="58" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="show_promised_payment_reject_reason_di" bpmnElement="show_promised_payment_reject_reason">
+      <bpmndi:BPMNShape id="BPMNShape_0waghl2" bpmnElement="Activity_0gbrqux">
         <omgdc:Bounds x="950" y="220" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
@@ -572,27 +582,27 @@
         <omgdc:Bounds x="2300" y="600" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="build_promised_payment_success_response_di" bpmnElement="build_promised_payment_success_response">
+      <bpmndi:BPMNShape id="BPMNShape_0y41twt" bpmnElement="Activity_0x5asn1">
         <omgdc:Bounds x="2450" y="600" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="send_unblock_sms_di" bpmnElement="send_unblock_sms">
+      <bpmndi:BPMNShape id="BPMNShape_1krsvqx" bpmnElement="Activity_0bvqd3i">
         <omgdc:Bounds x="2450" y="880" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="end_promised_payment_rejected_di" bpmnElement="end_promised_payment_rejected">
+      <bpmndi:BPMNShape id="Event_006fpru_di" bpmnElement="Event_006fpru">
         <omgdc:Bounds x="2602" y="122" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <omgdc:Bounds x="2575" y="165" width="90" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="end_promised_payment_connected_di" bpmnElement="end_promised_payment_connected">
+      <bpmndi:BPMNShape id="Event_0pc3qpj_di" bpmnElement="Event_0pc3qpj">
         <omgdc:Bounds x="2602" y="322" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <omgdc:Bounds x="2647" y="320" width="68" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="show_promised_payment_success_message_di" bpmnElement="show_promised_payment_success_message">
+      <bpmndi:BPMNShape id="BPMNShape_1k4r9er" bpmnElement="Activity_1r1ce3p">
         <omgdc:Bounds x="2450" y="300" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
@@ -600,13 +610,13 @@
         <omgdc:Bounds x="1731" y="760" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_04qocfk" bpmnElement="end_promised_payment_processing_completed">
+      <bpmndi:BPMNShape id="BPMNShape_04qocfk" bpmnElement="Event_07ck0eq">
         <omgdc:Bounds x="2602" y="902" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <omgdc:Bounds x="2652" y="914" width="57" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="gateway_has_overdue_payment_di" bpmnElement="gateway_has_overdue_payment" isMarkerVisible="true">
+      <bpmndi:BPMNShape id="Gateway_0mnvvfs_di" bpmnElement="Gateway_0mnvvfs" isMarkerVisible="true">
         <omgdc:Bounds x="1085" y="615" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <omgdc:Bounds x="1129.5" y="656" width="81" height="27" />
@@ -648,6 +658,10 @@
         <omgdc:Bounds x="720" y="880" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0ny6eug" bpmnElement="find_due_promised_payments">
+        <omgdc:Bounds x="850" y="880" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1l93d83" bpmnElement="block_user_data">
         <omgdc:Bounds x="1640" y="1150" width="100" height="80" />
         <bpmndi:BPMNLabel />
@@ -665,17 +679,7 @@
       <bpmndi:BPMNShape id="BPMNShape_1lmm3cs" bpmnElement="DataStoreReference_0u48a0b">
         <omgdc:Bounds x="1550" y="1335" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds x="1533" y="1392" width="85" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_0ny6eug" bpmnElement="find_due_promised_payments">
-        <omgdc:Bounds x="860" y="880" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_0ob6h20" bpmnElement="PromisedPaymentDueCheckStart">
-        <omgdc:Bounds x="272" y="972" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <omgdc:Bounds x="248" y="1015" width="85" height="53" />
+          <omgdc:Bounds x="602" y="1216" width="47" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1v6dv97_di" bpmnElement="Flow_1v6dv97">
@@ -697,7 +701,7 @@
         <omgdi:waypoint x="1960" y="640" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0870lyc_di" bpmnElement="Flow_0870lyc">
-        <omgdi:waypoint x="960" y="920" />
+        <omgdi:waypoint x="950" y="920" />
         <omgdi:waypoint x="1085" y="920" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0kk94nm_di" bpmnElement="Flow_0kk94nm">
@@ -724,6 +728,10 @@
         <bpmndi:BPMNLabel>
           <omgdc:Bounds x="1459" y="987" width="17" height="14" />
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0c0rcmw_di" bpmnElement="Flow_0c0rcmw">
+        <omgdi:waypoint x="1625" y="920" />
+        <omgdi:waypoint x="1756" y="920" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_17elloy_di" bpmnElement="Flow_17elloy">
         <omgdi:waypoint x="1806" y="920" />
@@ -768,7 +776,13 @@
       <bpmndi:BPMNEdge id="Flow_1lddtw3_di" bpmnElement="Flow_1lddtw3">
         <omgdi:waypoint x="1831" y="1060" />
         <omgdi:waypoint x="2620" y="1060" />
-        <omgdi:waypoint x="2620" y="940" />
+        <omgdi:waypoint x="2620" y="938" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1py8kz9_di" bpmnElement="Flow_1py8kz9">
+        <omgdi:waypoint x="308" y="980" />
+        <omgdi:waypoint x="470" y="980" />
+        <omgdi:waypoint x="470" y="920" />
+        <omgdi:waypoint x="590" y="920" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1x94hw7_di" bpmnElement="Flow_1x94hw7">
         <omgdi:waypoint x="308" y="860" />
@@ -778,7 +792,7 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0oclq92_di" bpmnElement="Flow_0oclq92">
         <omgdi:waypoint x="278" y="260" />
-        <omgdi:waypoint x="480" y="260" />
+        <omgdi:waypoint x="320" y="260" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1wd6d82_di" bpmnElement="Flow_1wd6d82">
         <omgdi:waypoint x="580" y="510" />
@@ -899,7 +913,7 @@
       <bpmndi:BPMNEdge id="Flow_130hj1p_di" bpmnElement="Flow_130hj1p">
         <omgdi:waypoint x="1980" y="1190" />
         <omgdi:waypoint x="2620" y="1190" />
-        <omgdi:waypoint x="2620" y="940" />
+        <omgdi:waypoint x="2620" y="938" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0l5v3wg_di" bpmnElement="Flow_0l5v3wg">
         <omgdi:waypoint x="690" y="920" />
@@ -907,32 +921,16 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_14e4rs1_di" bpmnElement="Flow_14e4rs1">
         <omgdi:waypoint x="820" y="920" />
-        <omgdi:waypoint x="860" y="920" />
+        <omgdi:waypoint x="850" y="920" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1us550l_di" bpmnElement="Flow_1us550l">
-        <omgdi:waypoint x="530" y="300" />
-        <omgdi:waypoint x="530" y="470" />
+      <bpmndi:BPMNEdge id="Association_1oezddf_di" bpmnElement="Association_1oezddf">
+        <omgdi:waypoint x="1576" y="880" />
+        <omgdi:waypoint x="1578" y="800" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_12eqs68_di" bpmnElement="Flow_12eqs68">
-        <omgdi:waypoint x="2550" y="340" />
-        <omgdi:waypoint x="2602" y="340" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0ndm5mx_di" bpmnElement="Flow_0ndm5mx">
-        <omgdi:waypoint x="1050" y="260" />
-        <omgdi:waypoint x="1826" y="260" />
-        <omgdi:waypoint x="1826" y="140" />
-        <omgdi:waypoint x="2602" y="140" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1fnaqoa_di" bpmnElement="Flow_1fnaqoa">
-        <omgdi:waypoint x="1625" y="920" />
-        <omgdi:waypoint x="1756" y="920" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0lug3f2_di" bpmnElement="Flow_0lug3f2">
-        <omgdi:waypoint x="308" y="990" />
-        <omgdi:waypoint x="449" y="990" />
-        <omgdi:waypoint x="449" y="920" />
-        <omgdi:waypoint x="590" y="920" />
-      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="TextAnnotation_0nt8171_di" bpmnElement="TextAnnotation_0nt8171">
+        <omgdc:Bounds x="1460" y="730" width="230" height="70" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="DataInputAssociation_1ir4net_di" bpmnElement="DataInputAssociation_1ir4net">
         <omgdi:waypoint x="1250" y="1335" />
         <omgdi:waypoint x="1250" y="960" />
@@ -977,6 +975,10 @@
         <omgdi:waypoint x="770" y="1335" />
         <omgdi:waypoint x="770" y="960" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataInputAssociation_0c9o6ds_di" bpmnElement="DataInputAssociation_0c9o6ds">
+        <omgdi:waypoint x="900" y="1325" />
+        <omgdi:waypoint x="900" y="960" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="DataOutputAssociation_1sobi0v_di" bpmnElement="DataOutputAssociation_1sobi0v">
         <omgdi:waypoint x="1690" y="1230" />
         <omgdi:waypoint x="1690" y="1335" />
@@ -984,10 +986,6 @@
       <bpmndi:BPMNEdge id="DataInputAssociation_1o66yrw_di" bpmnElement="DataInputAssociation_1o66yrw">
         <omgdi:waypoint x="1575" y="1335" />
         <omgdi:waypoint x="1575" y="960" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DataInputAssociation_0c9o6ds_di" bpmnElement="DataInputAssociation_0c9o6ds">
-        <omgdi:waypoint x="901" y="1325" />
-        <omgdi:waypoint x="909" y="960" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

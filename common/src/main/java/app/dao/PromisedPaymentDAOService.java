@@ -36,7 +36,7 @@ public class PromisedPaymentDAOService {
         return paymentRepository.findByUserDataIdAndStatusInAndDueDateLessThanEqualOrderByDueDateAscCreatedAtAsc(userDataId, statuses, now);
     }
 
-    public List<Long> findDistinctUserIdsWithDuePayments(Collection<PromisedPaymentStatus> statuses,
+    public List<Long> findDistinctUserIdsWithDuePayments(Collection<String> statuses,
                                                          LocalDateTime now) {
         return paymentRepository.findDistinctUserIdsWithDuePayments(statuses, now);
     }

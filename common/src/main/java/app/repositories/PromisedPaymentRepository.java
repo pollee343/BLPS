@@ -36,13 +36,15 @@ public interface PromisedPaymentRepository extends JpaRepository<PromisedPayment
     );
 
     @Query("""
-            SELECT DISTINCT p.userData.id
-            FROM PromisedPayment p
-            WHERE p.status IN :statuses
-              AND p.dueDate <= :now
-            """)
-    List<Long> findDistinctUserIdsWithDuePayments(@Param("statuses") Collection<PromisedPaymentStatus> statuses,
-                                                  @Param("now") LocalDateTime now);
+SELECT DISTINCT p.userData.id
+FROM PromisedPayment p
+WHERE CAST(p.status AS string) IN :statuses
+AND p.dueDate <= :now
+""")
+    List<Long> findDistinctUserIdsWithDuePayments(
+            @Param("statuses") Collection<String> statuses,
+            @Param("now") LocalDateTime now
+    );
 
     List<PromisedPayment> getByUserData(UserData userData);
 }

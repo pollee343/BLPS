@@ -41,7 +41,7 @@
       <outgoing>Flow_14a4ylo</outgoing>
       <errorEventDefinition id="ErrorEventDefinition_0mgcqms" />
     </boundaryEvent>
-    <userTask id="Activity_06q8lsj" name="Показ сообщения об ошибке" camunda:formRef="Form_1jrlus2" camunda:formRefBinding="deployment" camunda:candidateUsers="admin">
+    <userTask id="Activity_06q8lsj" name="Показ сообщения об ошибке" camunda:formRef="reject_reason_form" camunda:formRefBinding="deployment" camunda:candidateUsers="admin">
       <incoming>Flow_14a4ylo</incoming>
       <incoming>Flow_1v9f9u7</incoming>
       <incoming>Flow_1g2x6di</incoming>
@@ -176,7 +176,7 @@
       <incoming>Flow_0m1j4g3</incoming>
       <outgoing>Flow_1kfmeh6</outgoing>
     </userTask>
-    <userTask id="Activity_0ez6do4" name="Показ сообщения об ошибке" camunda:formRef="Form_1jrlus2" camunda:formRefBinding="deployment" camunda:candidateUsers="admin">
+    <userTask id="Activity_0ez6do4" name="Показ сообщения об ошибке" camunda:formRef="reject_reason_form" camunda:formRefBinding="deployment" camunda:candidateUsers="admin">
       <incoming>Flow_0r4p5dj</incoming>
       <incoming>Flow_0nhuj0v</incoming>
       <outgoing>Flow_1m4shqu</outgoing>
@@ -243,7 +243,7 @@
       <incoming>Flow_1i65zlg</incoming>
       <outgoing>Flow_183cdke</outgoing>
     </sendTask>
-    <userTask id="Activity_1yme0jg" name="Показ сообщения об ошибке" camunda:formRef="Form_1jrlus2" camunda:formRefBinding="deployment" camunda:candidateUsers="admin">
+    <userTask id="Activity_1yme0jg" name="Показ сообщения об ошибке" camunda:formRef="reject_reason_form" camunda:formRefBinding="deployment" camunda:candidateUsers="admin">
       <incoming>Flow_0t1dfup</incoming>
       <incoming>Flow_0hhlx56</incoming>
       <incoming>Flow_0gr4ck0</incoming>

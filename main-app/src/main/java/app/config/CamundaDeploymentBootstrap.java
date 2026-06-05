@@ -33,8 +33,7 @@ public class CamundaDeploymentBootstrap {
             }
 
             DeploymentBuilder builder = repositoryService.createDeployment()
-                    .name("BootstrapDeployment")
-                    .enableDuplicateFiltering(true);
+                    .name("BootstrapDeployment");
 
             for (Resource resource : resourcesToDeploy) {
                 if (!resource.exists()) {

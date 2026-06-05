@@ -56,7 +56,7 @@
       <bpmn:incoming>Flow_0zfj9w0</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_1tejmio" sourceRef="Activity_0ohm9es" targetRef="Activity_0gylhpu" />
-    <bpmn:userTask id="Activity_07dzyaa" name="Показ сообщения об отказе в создании заявки" camunda:formRef="Form_1jrlus2" camunda:formRefBinding="deployment">
+    <bpmn:userTask id="Activity_07dzyaa" name="Показ сообщения об отказе в создании заявки" camunda:formRef="reject_reason_form" camunda:formRefBinding="deployment">
       <bpmn:incoming>Flow_1ozdxo2</bpmn:incoming>
       <bpmn:outgoing>Flow_0zfj9w0</bpmn:outgoing>
     </bpmn:userTask>
@@ -260,7 +260,7 @@
     <bpmn:endEvent id="Event_1qexbrc" name="Получена ошибка валидации">
       <bpmn:incoming>Flow_0nabyg4</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:userTask id="Activity_0dxbtk6" name="Показ сообщения об ошибке валидации файла" camunda:formRef="Form_1jrlus2" camunda:formRefBinding="deployment">
+    <bpmn:userTask id="Activity_0dxbtk6" name="Показ сообщения об ошибке валидации файла" camunda:formRef="reject_reason_form" camunda:formRefBinding="deployment">
       <bpmn:incoming>Flow_0xifq1q</bpmn:incoming>
       <bpmn:outgoing>Flow_0nabyg4</bpmn:outgoing>
     </bpmn:userTask>
