@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_0xxslf4" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.46.1" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.24.0">
+  <bpmn:collaboration id="Collaboration_06bdfy9">
+    <bpmn:participant id="Participant_03hcnd9" name="Выгрузка заявки в Jira" processRef="Process_0rqve3c" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_0rqve3c" name="Выгрузка заявки в Jira" isExecutable="true" camunda:historyTimeToLive="30">
+    <bpmn:laneSet id="LaneSet_0icmf1z">
+      <bpmn:lane id="Lane_0hon19q" name="База данных" />
+      <bpmn:lane id="Lane_1nqq8mv" name="worker">
+        <bpmn:flowNodeRef>Event_StartJiraExport</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_1er5nd7</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_0g5sth0</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_JiraCreated</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_033lim0</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_EndJiraSuccess</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_0jelz9d</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_EndJiraFailed</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Event_StartJiraExport" name="Получено сообщение о новой заявке">
+      <bpmn:outgoing>Flow_1v13nej</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1mkcuq5" messageRef="Message_PromisedPaymentRejectionCreated" />
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="Activity_1er5nd7" name="Получение заявки по id" camunda:delegateExpression="${loadApplicationForJiraDelegate}">
+      <bpmn:incoming>Flow_1v13nej</bpmn:incoming>
+      <bpmn:outgoing>Flow_1umzobz</bpmn:outgoing>
+      <bpmn:property id="Property_1pyo2le" name="__targetRef_placeholder" />
+      <bpmn:dataInputAssociation id="DataInputAssociation_1moj3zf">
+        <bpmn:sourceRef>DataStoreReference_0zhy1qt</bpmn:sourceRef>
+        <bpmn:targetRef>Property_1pyo2le</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_0g5sth0" name="Создание задачи в Jira" camunda:delegateExpression="${createJiraIssueDelegate}">
+      <bpmn:incoming>Flow_1umzobz</bpmn:incoming>
+      <bpmn:outgoing>Flow_1rucptq</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_JiraCreated" name="Jira-задача создана?" default="Flow_Jira_No">
+      <bpmn:incoming>Flow_1rucptq</bpmn:incoming>
+      <bpmn:outgoing>Flow_Jira_Yes</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Jira_No</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Activity_033lim0" name="Изменение статуса заявки на WAITING_EMPLOYEE" camunda:delegateExpression="${markApplicationWaitingEmployeeDelegate}">
+      <bpmn:incoming>Flow_Jira_Yes</bpmn:incoming>
+      <bpmn:outgoing>Flow_0ep786n</bpmn:outgoing>
+      <bpmn:dataOutputAssociation id="DataOutputAssociation_14ee1o6">
+        <bpmn:targetRef>DataStoreReference_1tmkhml</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="Event_EndJiraSuccess" name="Заявка передана модератору">
+      <bpmn:incoming>Flow_0ep786n</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:dataStoreReference id="DataStoreReference_0zhy1qt" name="Applications" />
+    <bpmn:dataStoreReference id="DataStoreReference_1tmkhml" name="Applications" />
+    <bpmn:dataStoreReference id="DataStoreReference_0wm1fpe" name="Applications" />
+    <bpmn:serviceTask id="Activity_0jelz9d" name="Изменение статуса заявки на FAILED" camunda:delegateExpression="${markApplicationFailedDelegate}">
+      <bpmn:incoming>Flow_Jira_No</bpmn:incoming>
+      <bpmn:outgoing>Flow_12ey65h</bpmn:outgoing>
+      <bpmn:dataOutputAssociation id="DataOutputAssociation_1fur1nd">
+        <bpmn:targetRef>DataStoreReference_0wm1fpe</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="Event_EndJiraFailed" name="Выгрузка в Jira не удалась">
+      <bpmn:incoming>Flow_12ey65h</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1v13nej" sourceRef="Event_StartJiraExport" targetRef="Activity_1er5nd7" />
+    <bpmn:sequenceFlow id="Flow_1umzobz" sourceRef="Activity_1er5nd7" targetRef="Activity_0g5sth0" />
+    <bpmn:sequenceFlow id="Flow_1rucptq" sourceRef="Activity_0g5sth0" targetRef="Gateway_JiraCreated" />
+    <bpmn:sequenceFlow id="Flow_Jira_Yes" name="Да" sourceRef="Gateway_JiraCreated" targetRef="Activity_033lim0">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${jiraTaskCreated}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_Jira_No" name="Нет" sourceRef="Gateway_JiraCreated" targetRef="Activity_0jelz9d" />
+    <bpmn:sequenceFlow id="Flow_0ep786n" sourceRef="Activity_033lim0" targetRef="Event_EndJiraSuccess" />
+    <bpmn:sequenceFlow id="Flow_12ey65h" sourceRef="Activity_0jelz9d" targetRef="Event_EndJiraFailed" />
+  </bpmn:process>
+  <bpmn:message id="Message_PromisedPaymentRejectionCreated" name="PromisedPaymentRejectionCreated" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_06bdfy9">
+      <bpmndi:BPMNShape id="BPMNShape_0i3ac8v" bpmnElement="Participant_03hcnd9" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="1081" height="290" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1of64ll" bpmnElement="Lane_0hon19q" isHorizontal="true">
+        <dc:Bounds x="190" y="275" width="1051" height="95" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1404qn1" bpmnElement="Lane_1nqq8mv" isHorizontal="true">
+        <dc:Bounds x="190" y="80" width="1051" height="195" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_StartJiraExport_di" bpmnElement="Event_StartJiraExport">
+        <dc:Bounds x="242" y="137" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="226" y="173" width="68" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1p6d6s5_di" bpmnElement="Activity_1er5nd7">
+        <dc:Bounds x="370" y="115" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0r362gw_di" bpmnElement="Activity_0g5sth0">
+        <dc:Bounds x="520" y="115" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_JiraCreated_di" bpmnElement="Gateway_JiraCreated" isMarkerVisible="true">
+        <dc:Bounds x="675" y="130" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="671" y="93" width="57" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_02xdl9l_di" bpmnElement="Activity_033lim0">
+        <dc:Bounds x="800" y="95" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_EndJiraSuccess_di" bpmnElement="Event_EndJiraSuccess">
+        <dc:Bounds x="1102" y="107" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1076" y="143" width="88" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0f2npiw" bpmnElement="DataStoreReference_0zhy1qt">
+        <dc:Bounds x="395" y="285" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="390" y="342" width="60" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1o4m1st" bpmnElement="DataStoreReference_1tmkhml">
+        <dc:Bounds x="825" y="290" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="820" y="347" width="60" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_13dppn3" bpmnElement="DataStoreReference_0wm1fpe">
+        <dc:Bounds x="965" y="285" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="960" y="342" width="60" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1v374qh_di" bpmnElement="Activity_0jelz9d">
+        <dc:Bounds x="940" y="170" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_EndJiraFailed_di" bpmnElement="Event_EndJiraFailed">
+        <dc:Bounds x="1105" y="192" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1085" y="228" width="77" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1v13nej_di" bpmnElement="Flow_1v13nej">
+        <di:waypoint x="278" y="155" />
+        <di:waypoint x="370" y="155" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1umzobz_di" bpmnElement="Flow_1umzobz">
+        <di:waypoint x="470" y="155" />
+        <di:waypoint x="520" y="155" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1rucptq_di" bpmnElement="Flow_1rucptq">
+        <di:waypoint x="620" y="155" />
+        <di:waypoint x="675" y="155" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Jira_Yes_di" bpmnElement="Flow_Jira_Yes">
+        <di:waypoint x="725" y="155" />
+        <di:waypoint x="763" y="155" />
+        <di:waypoint x="763" y="135" />
+        <di:waypoint x="800" y="135" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="762" y="116" width="14" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Jira_No_di" bpmnElement="Flow_Jira_No">
+        <di:waypoint x="700" y="180" />
+        <di:waypoint x="700" y="210" />
+        <di:waypoint x="940" y="210" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="704" y="221" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ep786n_di" bpmnElement="Flow_0ep786n">
+        <di:waypoint x="900" y="125" />
+        <di:waypoint x="1102" y="125" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_12ey65h_di" bpmnElement="Flow_12ey65h">
+        <di:waypoint x="1040" y="210" />
+        <di:waypoint x="1105" y="210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataInputAssociation_1moj3zf_di" bpmnElement="DataInputAssociation_1moj3zf">
+        <di:waypoint x="420" y="285" />
+        <di:waypoint x="420" y="195" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_14ee1o6_di" bpmnElement="DataOutputAssociation_14ee1o6">
+        <di:waypoint x="850" y="175" />
+        <di:waypoint x="850" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_1fur1nd_di" bpmnElement="DataOutputAssociation_1fur1nd">
+        <di:waypoint x="990" y="250" />
+        <di:waypoint x="990" y="285" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

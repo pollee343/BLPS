@@ -62,7 +62,7 @@ public class ExpensesController {
         variables.put("operationName", null);
 
         ProcessInstanceWithVariables result = runtimeService
-                .createProcessInstanceByKey("Process_1")
+                .createProcessInstanceByKey("expensesData")
                 .setVariables(variables)
                 .executeWithVariablesInReturn();
 

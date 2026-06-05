@@ -1,4 +1,4 @@
-package app.delegates;
+package app.delegates.application.create;
 
 import app.model.enams.ApplicationType;
 import app.services.interfases.ApplicationServiceInterface;
@@ -10,11 +10,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-@Component("markApplicationProcessedDelegate")
+@Component("checkWaitingEmployeeApplicationDelegate")
 @RequiredArgsConstructor
-public class MarkApplicationProcessedDelegate implements JavaDelegate {
+public class CheckWaitingEmployeeApplicationDelegate implements JavaDelegate {
 
-    private static final Logger log = LoggerFactory.getLogger(MarkApplicationProcessedDelegate.class);
+    private static final Logger log = LoggerFactory.getLogger(CheckWaitingEmployeeApplicationDelegate.class);
 
     private final ApplicationServiceInterface applicationService;
 
@@ -32,14 +32,24 @@ public class MarkApplicationProcessedDelegate implements JavaDelegate {
             throw new BpmnError("BAD_REQUEST", "applicationType is required");
         }
 
+        String applicationEmail;
         try {
-            applicationService.makeApplicationProcessed(accountNumber, applicationType);
+            applicationEmail = applicationService.findWaitingEmployeeApplicationEmail(accountNumber, applicationType).orElse(null);
         } catch (RuntimeException exception) {
             execution.setVariable("errorMessage", exception.getMessage());
             throw new BpmnError("BAD_REQUEST", exception.getMessage());
         }
-        log.info("MarkApplicationProcessedDelegate: processInstanceId={}, accountNumber={}, applicationType={}",
-                execution.getProcessInstanceId(), accountNumber, applicationType);
+
+        boolean found = applicationEmail != null;
+        execution.setVariable("applicationFound", found);
+        if (found) {
+            execution.setVariable("applicationEmail", applicationEmail);
+        } else {
+            execution.setVariable("errorMessage", "Не найдены необработанные заявки");
+        }
+
+        log.info("CheckWaitingEmployeeApplicationDelegate: processInstanceId={}, accountNumber={}, applicationType={}, found={}",
+                execution.getProcessInstanceId(), accountNumber, applicationType, found);
     }
 
     private ApplicationType readApplicationType(Object value) {

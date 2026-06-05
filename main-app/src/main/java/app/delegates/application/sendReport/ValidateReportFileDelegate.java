@@ -1,6 +1,5 @@
-package app.delegates;
+package app.delegates.application.sendReport;
 
-import org.camunda.bpm.engine.delegate.BpmnError;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.camunda.bpm.engine.variable.value.FileValue;

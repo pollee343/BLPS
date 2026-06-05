@@ -1,6 +1,7 @@
 package app.delegates;
 
 import app.model.entities.Application;
+import app.services.ApplicationProcessingService;
 import app.services.JiraAccessService;
 import jakarta.resource.ResourceException;
 import lombok.RequiredArgsConstructor;
@@ -18,16 +19,18 @@ public class CreateJiraIssueDelegate implements JavaDelegate {
     private static final Logger log = LoggerFactory.getLogger(CreateJiraIssueDelegate.class);
 
     private final JiraAccessService jiraAccessService;
+    private final ApplicationProcessingService applicationProcessingService;
 
     @Override
     public void execute(DelegateExecution execution) {
-        Object rawApplication = execution.getVariable("application");
-        if (!(rawApplication instanceof Application application)) {
-            execution.setVariable("errorMessage", "application is required");
-            throw new BpmnError("JIRA_EXPORT_FAILED", "application is required");
+        Long applicationId = readLong(execution.getVariable("applicationId"));
+        if (applicationId == null) {
+            execution.setVariable("errorMessage", "applicationId is required");
+            throw new BpmnError("JIRA_EXPORT_FAILED", "applicationId is required");
         }
 
         try {
+            Application application = applicationProcessingService.getApplicationById(applicationId);
             String jiraIssueKey = jiraAccessService.createTask(application);
             execution.setVariable("jiraIssueKey", jiraIssueKey);
             execution.setVariable("jiraTaskCreated", true);
@@ -38,5 +41,19 @@ public class CreateJiraIssueDelegate implements JavaDelegate {
             execution.setVariable("errorMessage", exception.getMessage());
             throw new BpmnError("JIRA_EXPORT_FAILED", exception.getMessage());
         }
+    }
+
+    private Long readLong(Object value) {
+        if (value instanceof Number number) {
+            return number.longValue();
+        }
+        if (value instanceof String stringValue && !stringValue.isBlank()) {
+            try {
+                return Long.parseLong(stringValue);
+            } catch (NumberFormatException ignored) {
+                return null;
+            }
+        }
+        return null;
     }
 }

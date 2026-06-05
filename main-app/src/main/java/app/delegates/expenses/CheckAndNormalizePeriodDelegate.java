@@ -1,4 +1,4 @@
-package app.delegates;
+package app.delegates.expenses;
 
 import lombok.RequiredArgsConstructor;
 import org.camunda.bpm.engine.delegate.BpmnError;

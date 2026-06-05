@@ -1,4 +1,4 @@
-package app.delegates;
+package app.delegates.application.sendReport;
 
 import app.model.enams.ApplicationType;
 import app.services.interfases.ReportServiceInterface;

@@ -1,4 +1,4 @@
-package app.delegates;
+package app.delegates.expenses.bill;
 
 import lombok.RequiredArgsConstructor;
 import org.camunda.bpm.engine.delegate.BpmnError;
@@ -8,11 +8,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-@Component("prepareGeneratedReportDelegate")
+@Component("prepareGeneratedBillDelegate")
 @RequiredArgsConstructor
-public class PrepareGeneratedReportDelegate implements JavaDelegate {
+public class PrepareGeneratedBillDelegate implements JavaDelegate {
 
-    private static final Logger log = LoggerFactory.getLogger(PrepareGeneratedReportDelegate.class);
+    private static final Logger log = LoggerFactory.getLogger(PrepareGeneratedBillDelegate.class);
 
     @Override
     public void execute(DelegateExecution execution) {
@@ -33,7 +33,7 @@ public class PrepareGeneratedReportDelegate implements JavaDelegate {
         }
 
         execution.setVariable("reportSummary", "Отчет " + fileName + " сформирован, размер " + report.length + " байт");
-        log.info("PrepareGeneratedReportDelegate success: processInstanceId={}, fileName={}, reportBytes={}",
+        log.info("PrepareGeneratedBillDelegate success: processInstanceId={}, fileName={}, reportBytes={}",
                 execution.getProcessInstanceId(), fileName, report.length);
     }
 }

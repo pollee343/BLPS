@@ -1,7 +1,6 @@
 package app.delegates;
 
 import app.model.enams.ApplicationStatus;
-import app.model.entities.Application;
 import app.services.ApplicationProcessingService;
 import lombok.RequiredArgsConstructor;
 import org.camunda.bpm.engine.delegate.BpmnError;
@@ -21,20 +20,34 @@ public class MarkApplicationFailedDelegate implements JavaDelegate {
 
     @Override
     public void execute(DelegateExecution execution) {
-        Object rawApplication = execution.getVariable("application");
-        if (!(rawApplication instanceof Application application)) {
-            execution.setVariable("errorMessage", "application is required");
-            throw new BpmnError("BAD_REQUEST", "application is required");
+        Long applicationId = readLong(execution.getVariable("applicationId"));
+        if (applicationId == null) {
+            execution.setVariable("errorMessage", "applicationId is required");
+            throw new BpmnError("BAD_REQUEST", "applicationId is required");
         }
 
         try {
+            var application = applicationProcessingService.getApplicationById(applicationId);
             applicationProcessingService.updateStatus(application, ApplicationStatus.FAILED);
-            execution.setVariable("application", application);
             log.info("MarkApplicationFailedDelegate: processInstanceId={}, applicationId={}",
                     execution.getProcessInstanceId(), application.getId());
         } catch (RuntimeException exception) {
             execution.setVariable("errorMessage", exception.getMessage());
             throw new BpmnError("BAD_REQUEST", exception.getMessage());
         }
+    }
+
+    private Long readLong(Object value) {
+        if (value instanceof Number number) {
+            return number.longValue();
+        }
+        if (value instanceof String stringValue && !stringValue.isBlank()) {
+            try {
+                return Long.parseLong(stringValue);
+            } catch (NumberFormatException ignored) {
+                return null;
+            }
+        }
+        return null;
     }
 }

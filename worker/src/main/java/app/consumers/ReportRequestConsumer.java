@@ -1,9 +1,9 @@
 package app.consumers;
 
 import app.dto.messages.ApplicationJiraExportMessage;
-import app.services.ApplicationProcessingService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.camunda.bpm.engine.RuntimeService;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
@@ -14,11 +14,13 @@ import org.springframework.stereotype.Component;
 public class ReportRequestConsumer {
 
     private final ObjectMapper objectMapper;
-    private final ApplicationProcessingService applicationProcessingService;
+    private final RuntimeService runtimeService;
 
     @JmsListener(destination = "${app.queues.legal-report}")
     public void receive(String body) throws Exception {
         ApplicationJiraExportMessage message = objectMapper.readValue(body, ApplicationJiraExportMessage.class);
-        applicationProcessingService.process(message.getApplicationId());
+        runtimeService.createMessageCorrelation("PromisedPaymentRejectionCreated")
+                .setVariable("applicationId", message.getApplicationId())
+                .correlateStartMessage();
     }
 }

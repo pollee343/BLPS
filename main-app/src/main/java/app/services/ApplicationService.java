@@ -62,13 +62,9 @@ public class ApplicationService implements ApplicationServiceInterface {
     }
 
     @Override
-    public boolean hasCreatedPromisedPaymentRejectionApplication(String accountNumber) {
+    public boolean hasPromisedPaymentRejectionApplication(String accountNumber) {
         UserData userData = getUserDataByAccountNumber(accountNumber);
-        return applicationDAOService.findWaitingApplications(
-                userData,
-                ApplicationType.PROMISED_PAYMENT_REJECTION,
-                ApplicationStatus.WAITING_EMPLOYEE
-        ).isPresent();
+        return findWaitingEmployeeApplicationEmail(accountNumber, ApplicationType.PROMISED_PAYMENT_REJECTION).isPresent();
     }
 
     @Override

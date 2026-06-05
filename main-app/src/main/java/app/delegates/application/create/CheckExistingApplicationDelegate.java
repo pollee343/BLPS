@@ -1,4 +1,4 @@
-package app.delegates;
+package app.delegates.application.create;
 
 import app.services.interfases.ApplicationServiceInterface;
 import lombok.RequiredArgsConstructor;
@@ -9,11 +9,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-@Component("checkExistingPromisedPaymentRejectionApplicationDelegate")
+@Component("checkExistingApplicationDelegate")
 @RequiredArgsConstructor
-public class CheckExistingPromisedPaymentRejectionApplicationDelegate implements JavaDelegate {
+public class CheckExistingApplicationDelegate implements JavaDelegate {
 
-    private static final Logger log = LoggerFactory.getLogger(CheckExistingPromisedPaymentRejectionApplicationDelegate.class);
+    private static final Logger log = LoggerFactory.getLogger(CheckExistingApplicationDelegate.class);
 
     private final ApplicationServiceInterface applicationService;
 
@@ -27,7 +27,7 @@ public class CheckExistingPromisedPaymentRejectionApplicationDelegate implements
 
         boolean exists;
         try {
-            exists = applicationService.hasCreatedPromisedPaymentRejectionApplication(accountNumber);
+            exists = applicationService.hasPromisedPaymentRejectionApplication(accountNumber);
         } catch (RuntimeException exception) {
             execution.setVariable("errorMessage", exception.getMessage());
             throw new BpmnError("BAD_REQUEST", exception.getMessage());
@@ -39,7 +39,7 @@ public class CheckExistingPromisedPaymentRejectionApplicationDelegate implements
                     "Заявка на получение информации об отказе в получении обещанного платежа уже создана");
         }
 
-        log.info("CheckExistingPromisedPaymentRejectionApplicationDelegate: processInstanceId={}, accountNumber={}, exists={}",
+        log.info("CheckExistingApplicationDelegate: processInstanceId={}, accountNumber={}, exists={}",
                 execution.getProcessInstanceId(), accountNumber, exists);
     }
 }

@@ -1,4 +1,4 @@
-package app.delegates;
+package app.delegates.expenses;
 
 import org.camunda.bpm.engine.delegate.BpmnError;
 
@@ -9,12 +9,12 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 
-final class CamundaDateValueReader {
+public final class CamundaDateValueReader {
 
     private CamundaDateValueReader() {
     }
 
-    static LocalDate readLocalDate(Object value, String errorCode, String errorMessage) {
+    public static LocalDate readLocalDate(Object value, String errorCode, String errorMessage) {
         if (value == null) {
             return null;
         }

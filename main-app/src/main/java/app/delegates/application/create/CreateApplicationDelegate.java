@@ -1,4 +1,4 @@
-package app.delegates;
+package app.delegates.application.create;
 
 import app.dao.ApplicationDAOService;
 import app.dao.UserDataDAOService;
@@ -15,11 +15,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-@Component("createPromisedPaymentRejectionApplicationDelegate")
+@Component("createApplicationDelegate")
 @RequiredArgsConstructor
-public class CreatePromisedPaymentRejectionApplicationDelegate implements JavaDelegate {
+public class CreateApplicationDelegate implements JavaDelegate {
 
-    private static final Logger log = LoggerFactory.getLogger(CreatePromisedPaymentRejectionApplicationDelegate.class);
+    private static final Logger log = LoggerFactory.getLogger(CreateApplicationDelegate.class);
 
     private final ApplicationServiceInterface applicationService;
     private final UserDataDAOService userDataDAOService;
@@ -52,7 +52,7 @@ public class CreatePromisedPaymentRejectionApplicationDelegate implements JavaDe
 
         execution.setVariable("applicationId", application.getId());
 
-        log.info("CreatePromisedPaymentRejectionApplicationDelegate: processInstanceId={}, applicationId={}",
+        log.info("CreateApplicationDelegate: processInstanceId={}, applicationId={}",
                 execution.getProcessInstanceId(), application.getId());
     }
 }

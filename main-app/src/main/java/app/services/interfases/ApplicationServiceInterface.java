@@ -12,7 +12,7 @@ public interface ApplicationServiceInterface {
     void legallyReliableReport(String accountNumber, String email);
     List<ApplicationResponse> getAllPromisedPaymentRejectionApps();
     List<ApplicationResponse> getAllLegallyReliableRetortApps();
-    boolean hasCreatedPromisedPaymentRejectionApplication(String accountNumber);
+    boolean hasPromisedPaymentRejectionApplication(String accountNumber);
     Optional<String> findWaitingEmployeeApplicationEmail(String accountNumber, ApplicationType applicationType);
     void makeApplicationProcessed(String accountNumber, ApplicationType applicationType);
     void makeApplicationProcessed(UserData userData, ApplicationType applicationType);

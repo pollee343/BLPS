@@ -34,10 +34,20 @@
       },
       "id": "Field_0egbog0",
       "key": "to"
+    },
+    {
+      "label": "Email",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_0qtztdx",
+        "columns": null
+      },
+      "id": "Field_1ank5ic",
+      "key": "email"
     }
   ],
   "type": "default",
-  "id": "Form_183abfr",
+  "id": "expensesReport",
   "exporter": {
     "name": "Camunda Modeler",
     "version": "5.46.1"

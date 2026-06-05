@@ -12,19 +12,18 @@
       "key": "reportFileName"
     },
     {
-      "label": "Результат",
-      "type": "textarea",
+      "label": "Информации о расходах",
+      "type": "documentPreview",
       "layout": {
         "row": "Row_1v9p3pv",
         "columns": null
       },
       "id": "Field_13gom1d",
-      "key": "reportSummary",
-      "disabled": true
+      "key": "reportFile"
     }
   ],
   "type": "default",
-  "id": "Form_139lz5x",
+  "id": "fileShow",
   "exporter": {
     "name": "Camunda Modeler",
     "version": "5.46.1"

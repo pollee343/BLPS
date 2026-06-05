@@ -54,7 +54,7 @@ public class ReportController {
                 accountNumber, date.getFirst(), date.getSecond());
 
         ProcessInstanceWithVariables result = runtimeService
-                .createProcessInstanceByKey("Process_057ekc3")
+                .createProcessInstanceByKey("expensesReport")
                 .setVariables(buildCommonVariables(accountNumber, authentication))
                 .setVariable("from", date.getFirst())
                 .setVariable("to", date.getSecond())
@@ -106,7 +106,7 @@ public class ReportController {
                 accountNumber, date, email);
 
         ProcessInstanceWithVariables result = runtimeService
-                .createProcessInstanceByKey("Process_0xitu1x")
+                .createProcessInstanceByKey("bill")
                 .setVariables(buildCommonVariables(accountNumber, authentication))
                 .setVariable("date", date)
                 .setVariable("email", email)

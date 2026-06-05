@@ -15,7 +15,6 @@ public class ApplicationProcessingService {
     private final ApplicationDAOService applicationDAOService;
     private final JiraAccessService jiraAccessService;
 
-    @Transactional
     public void process(Long applicationId) {
         Application application = getApplicationById(applicationId);
         if (application.getApplicationStatus() != ApplicationStatus.CREATED) {
@@ -33,13 +32,11 @@ public class ApplicationProcessingService {
         }
     }
 
-    @Transactional(readOnly = true)
     public Application getApplicationById(Long applicationId) {
         return applicationDAOService.findById(applicationId)
                 .orElseThrow(() -> new IllegalArgumentException("Application not found: " + applicationId));
     }
 
-    @Transactional
     public void updateStatus(Application application, ApplicationStatus applicationStatus) {
         application.setApplicationStatus(applicationStatus);
         applicationDAOService.createApplication(application);

@@ -1,6 +1,5 @@
 package app.delegates;
 
-import app.model.entities.Application;
 import app.services.ApplicationProcessingService;
 import lombok.RequiredArgsConstructor;
 import org.camunda.bpm.engine.delegate.BpmnError;
@@ -27,8 +26,7 @@ public class LoadApplicationForJiraDelegate implements JavaDelegate {
         }
 
         try {
-            Application application = applicationProcessingService.getApplicationById(applicationId);
-            execution.setVariable("application", application);
+            applicationProcessingService.getApplicationById(applicationId);
             log.info("LoadApplicationForJiraDelegate: processInstanceId={}, applicationId={}",
                     execution.getProcessInstanceId(), applicationId);
         } catch (RuntimeException exception) {

@@ -1,6 +1,8 @@
-package app.delegates;
+package app.delegates.expenses.expensesData;
 
+import app.delegates.expenses.CamundaDateValueReader;
 import app.dto.responses.ExpensesResponse;
+import app.model.enams.OperationType;
 import app.services.interfases.ExpensesServiceInterface;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,18 +17,18 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.util.List;
 
-@Component("getDataByPeriodDelegate")
+@Component("getDataByOperationTypeDelegate")
 @RequiredArgsConstructor
-public class GetDataByPeriodDelegate implements JavaDelegate {
+public class GetDataByOperationTypeDelegate implements JavaDelegate {
 
-    private static final Logger log = LoggerFactory.getLogger(GetDataByPeriodDelegate.class);
+    private static final Logger log = LoggerFactory.getLogger(GetDataByOperationTypeDelegate.class);
 
     private final ExpensesServiceInterface expensesService;
     private final ObjectMapper objectMapper;
 
     @Override
     public void execute(DelegateExecution execution) {
-        log.info("GetDataByPeriodDelegate start: processInstanceId={}, activityId={}",
+        log.info("GetDataByOperationTypeDelegate start: processInstanceId={}, activityId={}",
                 execution.getProcessInstanceId(),
                 execution.getCurrentActivityId());
 
@@ -35,19 +37,26 @@ public class GetDataByPeriodDelegate implements JavaDelegate {
                 execution.getVariable("from"), "BAD_REQUEST", "Некорректный формат даты начала");
         LocalDate to = CamundaDateValueReader.readLocalDate(
                 execution.getVariable("to"), "BAD_REQUEST", "Некорректный формат даты окончания");
+        OperationType operationType = readOperationType(execution.getVariable("operationType"));
 
-        log.info("GetDataByPeriodDelegate input: processInstanceId={}, accountNumber={}, from={}, to={}",
+        log.info("GetDataByOperationTypeDelegate input: processInstanceId={}, accountNumber={}, from={}, to={}, operationType={}",
                 execution.getProcessInstanceId(),
                 accountNumber,
                 from,
-                to);
+                to,
+                operationType);
 
         if (accountNumber == null || accountNumber.isBlank()) {
             execution.setVariable("errorMessage", "accountNumber is required");
             throw new BpmnError("BAD_REQUEST", "accountNumber is required");
         }
+        if (operationType == null) {
+            execution.setVariable("errorMessage", "operationType is required");
+            throw new BpmnError("BAD_REQUEST", "operationType is required");
+        }
 
-        List<ExpensesResponse> expenses = expensesService.getExpensesForPeriod(accountNumber, from, to);
+        List<ExpensesResponse> expenses =
+                expensesService.getExpensesForPeriodAndOperationType(accountNumber, from, to, operationType);
         execution.setVariable("expenses", expenses);
         try {
             execution.setVariable("expensesJson", objectMapper.writeValueAsString(expenses));
@@ -56,9 +65,19 @@ public class GetDataByPeriodDelegate implements JavaDelegate {
             throw new BpmnError("BAD_REQUEST", "Не удалось сериализовать результат");
         }
 
-        log.info("GetDataByPeriodDelegate success: processInstanceId={}, expensesCount={}, expensesJsonLength={}",
+        log.info("GetDataByOperationTypeDelegate success: processInstanceId={}, expensesCount={}, expensesJsonLength={}",
                 execution.getProcessInstanceId(),
                 expenses == null ? null : expenses.size(),
                 ((String) execution.getVariable("expensesJson")) == null ? null : ((String) execution.getVariable("expensesJson")).length());
+    }
+
+    private OperationType readOperationType(Object value) {
+        if (value == null) return null;
+        if (value instanceof OperationType ot) return ot;
+        if (value instanceof String s) {
+            if (s.isBlank() || "ANY".equals(s)) return null;
+            return OperationType.valueOf(s);
+        }
+        throw new BpmnError("BAD_REQUEST", "Некорректный operationType");
     }
 }
